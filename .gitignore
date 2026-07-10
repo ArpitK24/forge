@@ -1,0 +1,39 @@
+# --- Build artifacts ---
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Binaries produced by `go build`
+/forge
+/forge.exe
+/dist/
+/build/
+
+# --- Spec / internal docs (not for public repo) ---
+# Keep the build spec out of version control
+FORGE_BUILD_SPEC.md
+/docs/internal/
+
+# --- Editor / OS noise ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Secrets / env ---
+.env
+.env.local
+*.pem
+*.key
+
+# --- Go workspace / vendor (if used later) ---
+vendor/
+go.work
+go.work.sum
