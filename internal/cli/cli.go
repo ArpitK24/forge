@@ -77,6 +77,10 @@ type Args struct {
 	// APIKey is the --api-key override.
 	APIKey string
 
+	// APIBase is the --api-base override. Empty = use the
+	// provider's default base (NIM for the openai adapter).
+	APIBase string
+
 	// MaxTokens is the --max-tokens override, or 0 for "use default."
 	MaxTokens int
 
@@ -155,6 +159,7 @@ func (p *Parser) Parse() (*Args, error) {
 	p.fs.StringVar(&a.AppendSystemPrompt, "append-system-prompt", "",
 		"appended to the default system prompt")
 	p.fs.StringVar(&a.APIKey, "api-key", "", "explicit API key override")
+	p.fs.StringVar(&a.APIBase, "api-base", "", "API base URL override (default: NIM)")
 	p.fs.StringVar(&a.Cwd, "cwd", "", "working directory override")
 	p.fs.StringVar(&a.MCPConfig, "mcp-config", "",
 		"path to a JSON file of MCP server configs to connect at startup")
@@ -243,6 +248,7 @@ func (a *Args) ToConfig() *core.Config {
 	c := &core.Config{
 		Provider:              "", // empty = "use default" (Anthropic in Phase 2)
 		APIKey:                a.APIKey,
+		APIBase:               a.APIBase,
 		Model:                 a.Model,
 		MaxTokens:             a.MaxTokens,
 		MaxTurns:              a.MaxTurns,
@@ -287,6 +293,7 @@ func Usage(program string) string {
 	b.WriteString("      --output-format <fmt>        text | json | stream-json\n")
 	b.WriteString("  -v, --verbose                    enable debug-level logging\n")
 	b.WriteString("      --api-key <key>              explicit API key override\n")
+	b.WriteString("      --api-base <url>             API base URL override (default: NIM)\n")
 	b.WriteString("      --max-tokens <n>             override the per-response output token cap\n")
 	b.WriteString("      --cwd <path>                 working directory override\n")
 	b.WriteString("      --dangerously-skip-permissions\n")

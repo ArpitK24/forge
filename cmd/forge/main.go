@@ -76,13 +76,19 @@ func run(program string, args []string) error {
 		"has_prompt", parsed.PositionalPrompt != "" || parsed.FromStdin,
 	)
 
-	// Phase 1: settings loading is not implemented yet. We assemble
-	// a Config from CLI flags only. Later phases will layer settings
-	// on top of this.
+	// Phase 2: load settings and apply them under the CLI
+	// overrides. CLI flags still win; settings.json is the
+	// fallback. Failures here are non-fatal: we warn on stderr
+	// and continue with the CLI-only config.
 	cfg := parsed.ToConfig()
+	settings, err := cli.LoadLayeredSettings(resolveCwd(parsed.Cwd))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "warning: could not load settings:", err)
+		settings = core.Settings{}
+	}
+	cfg = cli.ApplySettings(cfg, settings)
 
-	// --dump-system-prompt: in Phase 1 this prints a placeholder.
-	// The real assembly lands in Phase 2 when context.go (§2.5) exists.
+	// --dump-system-prompt: prints the real assembled prompt.
 	if parsed.DumpSystemPrompt {
 		return dumpSystemPrompt(cfg)
 	}
@@ -96,14 +102,11 @@ func run(program string, args []string) error {
 		parsed.PositionalPrompt = prompt
 	}
 
-	// Headless vs. interactive: spec §7.5. Phase 1 doesn't have a TUI
-	// yet, so the only modes we support are:
-	//   - "give me a prompt and I'll echo it back" (placeholder for
-	//     the real headless one-shot in Phase 2)
-	//   - "no prompt, no -p, no stdin" → start the TUI (also a
-	//     placeholder until Phase 3)
+	// Headless vs. interactive: spec §7.5.
+	//   - "give me a prompt and I'll print the answer" → runHeadless
+	//   - "no prompt, no -p, no stdin" → start the TUI (Phase 3)
 	if parsed.Print || parsed.PositionalPrompt != "" {
-		return runHeadlessPlaceholder(parsed, cfg, logger)
+		return runHeadless(parsed, cfg, logger)
 	}
 	return runInteractivePlaceholder(parsed, cfg, logger)
 }
@@ -123,14 +126,11 @@ func setupLogging(verbose bool) *slog.Logger {
 	return slog.New(handler)
 }
 
-// dumpSystemPrompt is the --dump-system-prompt handler. Phase 1
-// stub: it prints a synthetic system prompt and the resolved
-// settings so the user can see what would be sent. The real
-// implementation in Phase 2 calls build_system_context (§2.5).
+// dumpSystemPrompt is the --dump-system-prompt handler. It
+// prints the resolved configuration and the fully-assembled
+// system prompt the model will see on the next turn.
 func dumpSystemPrompt(cfg *core.Config) error {
-	cwd, _ := os.Getwd()
-	fmt.Println("# System prompt (Phase 1 stub)")
-	fmt.Println()
+	cwd := resolveCwd(cfg.WorkingDir)
 	fmt.Println("# Resolved configuration")
 	fmt.Printf("model:           %s\n", cfg.EffectiveModel())
 	fmt.Printf("max_tokens:      %d\n", cfg.EffectiveMaxTokens())
@@ -142,8 +142,8 @@ func dumpSystemPrompt(cfg *core.Config) error {
 	}
 	fmt.Printf("auto_compact:    %v\n", cfg.AutoCompact)
 	fmt.Println()
-	fmt.Println("# Placeholder base system prompt")
-	fmt.Println(baseSystemPrompt())
+	fmt.Println("# Assembled system prompt")
+	fmt.Println(core.BuildSystemPrompt(cfg, cwd))
 	return nil
 }
 
@@ -167,24 +167,8 @@ func readPromptFromStdin() (string, error) {
 	return strings.TrimRight(b.String(), "\n"), nil
 }
 
-// runHeadlessPlaceholder is the Phase-1 headless stub. It prints
-// what it would have sent, then exits 0. Phase 2 replaces this with
-// the real query loop in headless mode.
-func runHeadlessPlaceholder(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
-	logger.Info("headless mode (Phase 1 placeholder)",
-		"model", cfg.EffectiveModel(),
-		"prompt_chars", len(a.PositionalPrompt),
-	)
-	fmt.Printf("forge %s — headless mode (Phase 1 placeholder)\n", core.AppVersion)
-	fmt.Printf("  model:           %s\n", cfg.EffectiveModel())
-	fmt.Printf("  permission_mode: %s\n", cfg.PermissionMode)
-	fmt.Printf("  max_turns:       %d\n", effectiveMaxTurns(cfg))
-	fmt.Printf("  prompt:          %s\n", truncate(a.PositionalPrompt, 200))
-	fmt.Println()
-	fmt.Println("The real agent loop lands in Phase 2.")
-	fmt.Println("For now, this confirms argument parsing and config assembly work.")
-	return nil
-}
+// runHeadlessPlaceholder was the Phase-1 headless stub. The
+// real implementation now lives in headless.go as runHeadless.
 
 // runInteractivePlaceholder is the Phase-1 TUI stub. It prints a
 // message telling the user to come back in Phase 3 and exits 0.
@@ -206,36 +190,6 @@ func effectiveMaxTurns(cfg *core.Config) int {
 		return cfg.MaxTurns
 	}
 	return core.DefaultMaxTurns
-}
-
-// truncate shortens a string to n runes with an ellipsis if cut.
-func truncate(s string, n int) string {
-	if len(s) <= n {
-		return s
-	}
-	return s[:n] + "..."
-}
-
-// baseSystemPrompt returns the compiled-in baseline system prompt
-// referenced by spec §7.4. This is the full Phase-1 placeholder;
-// later phases expand it as we add more behavioral guidelines.
-func baseSystemPrompt() string {
-	return strings.Join([]string{
-		"You are " + core.AppName + ", " + core.AppTagline,
-		"",
-		"Behavioral guidelines:",
-		"- Read files before editing them.",
-		"- Prefer editing existing files over creating new ones.",
-		"- Write idiomatic, clean code that matches the surrounding style.",
-		"- Run tests after making changes when tests exist.",
-		"- Consult git log/diff for repository context before assuming.",
-		"- Be concise. Do not narrate your work.",
-		"- Never introduce security vulnerabilities.",
-		"- Produce production-quality output, not sketches.",
-		"",
-		"(The real baseline system prompt is compiled into the binary in Phase 2.)",
-		"",
-	}, "\n")
 }
 
 // exitError is a sentinel error type that run() returns to signal

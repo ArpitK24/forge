@@ -27,6 +27,14 @@ FORGE_BUILD_SPEC.md
 .DS_Store
 Thumbs.db
 
+# --- Claude Code state (local-only, not part of the project) ---
+# The .claude/ directory is Claude Code's per-repo runtime state
+# (permission allowlists, session logs, agent files, etc.). It is
+# not part of the project's source and is intentionally kept out
+# of version control so that the project's GitHub identity stays
+# clean of Claude Code internals.
+.claude/
+
 # --- Secrets / env ---
 .env
 .env.local

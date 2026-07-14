@@ -21,17 +21,23 @@ const (
 // smart) and let the user override per-invocation.
 const (
 	// DefaultModel is the model used when no other choice is specified.
-	// Anthropic's current fast/cheap default at the time of writing.
-	DefaultModel = "claude-sonnet-4-5"
+	//
+	// Phase 2 ships against NVIDIA NIM (an OpenAI-compatible endpoint),
+	// so the default is a NIM-hosted model — meta/llama-3.3-70b-instruct
+	// has always-on tool calling on NIM and no thinking toggle is
+	// required. When the user supplies an Anthropic key in a later
+	// phase, they can re-pin the default to claude-sonnet-4-5 by
+	// editing the model field in settings.json (or passing --model).
+	DefaultModel = "meta/llama-3.3-70b-instruct"
 
 	// FastModel is the cheap/fast tier. Used for things like the
 	// summarize-head call in auto-compaction (§5.2) where we want
 	// cost efficiency more than reasoning depth.
-	FastModel = "claude-haiku-4-5"
+	FastModel = "meta/llama-3.1-8b-instruct"
 
 	// SmartModel is the expensive/capable tier. The user can switch
 	// to it via --model or /model.
-	SmartModel = "claude-opus-4-7"
+	SmartModel = "meta/llama-3.1-70b-instruct"
 )
 
 // Token defaults. Per spec §2.4.
@@ -99,9 +105,12 @@ const (
 	// vendor" requirement).
 	ProviderMinimax = "minimax"
 
-	// DefaultAPIBase is the default Anthropic API base URL.
-	// Other providers override this per-adapter.
-	DefaultAPIBase = "https://api.anthropic.com"
+	// DefaultAPIBase is the default NVIDIA NIM API base URL. NIM
+	// exposes an OpenAI-compatible /v1/chat/completions endpoint, and
+	// is the default provider in Phase 2 (per project memory: NIM
+	// key, not Anthropic). When an Anthropic adapter lands, its
+	// default will override this per-adapter.
+	DefaultAPIBase = "https://integrate.api.nvidia.com/v1"
 
 	// WireAPIVersion is the value sent in the Anthropic API version
 	// header. Bump when we adopt a new wire feature.
