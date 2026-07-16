@@ -15,10 +15,14 @@
 /build/
 
 # --- Spec / internal docs (not for public repo) ---
-# Keep the build spec out of version control
+# Keep the build spec and the live per-phase status logs out
+# of version control. The user-facing record of each phase
+# lives in README.md and the commit messages; PHASE_*.md
+# files are private working notes that should not be
+# pushed to GitHub.
 FORGE_BUILD_SPEC.md
 /docs/internal/
-PHASE_2.md
+PHASE_*.md
 
 # --- Editor / OS noise ---
 .vscode/
