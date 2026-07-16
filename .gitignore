@@ -18,6 +18,7 @@
 # Keep the build spec out of version control
 FORGE_BUILD_SPEC.md
 /docs/internal/
+PHASE_2.md
 
 # --- Editor / OS noise ---
 .vscode/

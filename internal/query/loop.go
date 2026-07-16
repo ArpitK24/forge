@@ -138,12 +138,29 @@ type StreamEventForward struct {
 	Event api.StreamEvent
 }
 
+// OutcomeEvent is the loop's terminal summary. The loop emits
+// it on the event channel immediately before closing, so
+// renderers and observers (the json output renderer in
+// particular) can see the final Outcome's Kind, Usage, Turns,
+// and Err without needing to also receive a return value.
+//
+// This is how the spec's "headless output formats report the
+// final outcome" requirement lands without each consumer
+// having to call RunQueryLoop synchronously.
+type OutcomeEvent struct {
+	Kind   OutcomeKind
+	Usage  core.UsageInfo
+	Turns  int
+	Err    *core.Error
+}
+
 func (ToolStartEvent) isEvent()      {}
 func (ToolEndEvent) isEvent()        {}
 func (TurnCompleteEvent) isEvent()   {}
 func (StatusEvent) isEvent()         {}
 func (ErrorEvent) isEvent()          {}
 func (StreamEventForward) isEvent()  {}
+func (OutcomeEvent) isEvent()        {}
 
 // RunQueryLoop is the agentic turn-execution loop. Spec §5.1.
 //
@@ -200,6 +217,20 @@ func RunQueryLoop(
 	var lastMessage core.Message
 	turns := 0
 
+	// finalize emits an OutcomeEvent carrying the final
+	// Outcome summary and returns the Outcome itself. Every
+	// return path in the loop calls this so renderers and
+	// observers always see the same terminal view.
+	finalize := func(o Outcome) Outcome {
+		sendEvent(eventCh, OutcomeEvent{
+			Kind:  o.Kind,
+			Usage: o.Usage,
+			Turns: o.Turns,
+			Err:   o.Err,
+		})
+		return o
+	}
+
 	for {
 		turns++
 
@@ -213,12 +244,12 @@ func RunQueryLoop(
 
 		// 2. Cancellation. Spec §5.1 step 2.
 		if err := ctx.Err(); err != nil {
-			return Outcome{
+			return finalize(Outcome{
 				Kind:    OutcomeCancelled,
 				Message: lastMessage,
 				Usage:   totalUsage,
 				Turns:   turns - 1,
-			}
+			})
 		}
 
 		// 3. Build the request. The system prompt is already
@@ -246,12 +277,12 @@ func RunQueryLoop(
 		for {
 			select {
 			case <-ctx.Done():
-				return Outcome{
+				return finalize(Outcome{
 					Kind:    OutcomeCancelled,
 					Message: lastMessage,
 					Usage:   totalUsage,
 					Turns:   turns - 1,
-				}
+				})
 			case ev, ok := <-events:
 				if !ok {
 					break drain
@@ -282,12 +313,12 @@ func RunQueryLoop(
 		// If the stream produced an error and no assistant
 		// message accumulated, return Error outcome.
 		if streamErr != nil && accum.message.Role == 0 {
-			return Outcome{
+			return finalize(Outcome{
 				Kind:  OutcomeError,
 				Usage: totalUsage,
 				Turns: turns - 1,
 				Err:   streamErr,
-			}
+			})
 		}
 
 		// If the ctx was cancelled mid-stream, the provider
@@ -296,12 +327,12 @@ func RunQueryLoop(
 		// end_turn, so callers can distinguish "user pressed
 		// Ctrl+C" from "model finished naturally."
 		if err := ctx.Err(); err != nil {
-			return Outcome{
+			return finalize(Outcome{
 				Kind:    OutcomeCancelled,
 				Message: accum.message,
 				Usage:   totalUsage,
 				Turns:   turns - 1,
-			}
+			})
 		}
 
 		// 6. Finalize the assistant message and append it to
@@ -345,12 +376,12 @@ func RunQueryLoop(
 			// "anything unrecognized → fire the Stop hook,
 			// return EndTurn" (spec §5.1 step 8a). The hook
 			// is Phase 4 territory; we just return.
-			return Outcome{
+			return finalize(Outcome{
 				Kind:    OutcomeEndTurn,
 				Message: assistantMsg,
 				Usage:   totalUsage,
 				Turns:   turns,
-			}
+			})
 
 		case api.StopToolUse:
 			// 8. Execute the tool calls. Spec §5.3.
@@ -363,50 +394,50 @@ func RunQueryLoop(
 				// No tool calls were executed (e.g. all denied
 				// by permissions). Return end_turn to avoid an
 				// infinite loop.
-				return Outcome{
+				return finalize(Outcome{
 					Kind:    OutcomeEndTurn,
 					Message: assistantMsg,
 					Usage:   totalUsage,
 					Turns:   turns,
-				}
+				})
 			}
 			// Loop back to step 1.
 
 		case api.StopMaxTokens:
-			return Outcome{
+			return finalize(Outcome{
 				Kind:    OutcomeMaxTokens,
 				Message: assistantMsg,
 				Usage:   totalUsage,
 				Turns:   turns,
-			}
+			})
 
 		case api.StopCancelled:
-			return Outcome{
+			return finalize(Outcome{
 				Kind:    OutcomeCancelled,
 				Message: assistantMsg,
 				Usage:   totalUsage,
 				Turns:   turns,
-			}
+			})
 
 		default:
 			// Unknown stop reason: end the turn defensively
 			// rather than spinning.
-			return Outcome{
+			return finalize(Outcome{
 				Kind:    OutcomeEndTurn,
 				Message: assistantMsg,
 				Usage:   totalUsage,
 				Turns:   turns,
-			}
+			})
 		}
 	}
 
 	// Reached when turns > maxTurns.
-	return Outcome{
+	return finalize(Outcome{
 		Kind:    OutcomeEndTurn,
 		Message: lastMessage,
 		Usage:   totalUsage,
 		Turns:   turns - 1,
-	}
+	})
 }
 
 // executeToolCalls runs every ToolUse block in the assistant's

@@ -265,6 +265,16 @@ func (c *Config) EffectiveMaxTokens() int {
 	return c.MaxTokens
 }
 
+// EffectiveMaxTurns returns the per-session cap on agentic turns,
+// falling back to DefaultMaxTurns if Config.MaxTurns is zero.
+// Spec §5.1 default is 10.
+func (c *Config) EffectiveMaxTurns() int {
+	if c.MaxTurns > 0 {
+		return c.MaxTurns
+	}
+	return DefaultMaxTurns
+}
+
 // Settings is the persisted, user-facing preferences file.
 // Spec §2.3: load() returns defaults if the file is missing; save()
 // creates parent directories as needed.

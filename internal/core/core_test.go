@@ -185,14 +185,20 @@ func TestConfigEffectiveDefaults(t *testing.T) {
 	if got := c.EffectiveMaxTokens(); got != DefaultMaxTokens {
 		t.Errorf("EffectiveMaxTokens = %d, want %d", got, DefaultMaxTokens)
 	}
+	if got := c.EffectiveMaxTurns(); got != DefaultMaxTurns {
+		t.Errorf("EffectiveMaxTurns = %d, want %d", got, DefaultMaxTurns)
+	}
 
 	// Explicit values are respected.
-	c = &Config{Model: "claude-opus-4-7", MaxTokens: 16384}
+	c = &Config{Model: "claude-opus-4-7", MaxTokens: 16384, MaxTurns: 25}
 	if got := c.EffectiveModel(); got != "claude-opus-4-7" {
 		t.Errorf("EffectiveModel = %q, want %q", got, "claude-opus-4-7")
 	}
 	if got := c.EffectiveMaxTokens(); got != 16384 {
 		t.Errorf("EffectiveMaxTokens = %d, want 16384", got)
+	}
+	if got := c.EffectiveMaxTurns(); got != 25 {
+		t.Errorf("EffectiveMaxTurns = %d, want 25", got)
 	}
 
 	// Runaway values are clamped to the hard ceiling.

@@ -414,6 +414,54 @@ func TestRunQueryLoopEventsAreEmitted(t *testing.T) {
 	}
 }
 
+func TestRunQueryLoopEmitsOutcomeEvent(t *testing.T) {
+	// Every terminal state of RunQueryLoop MUST emit an
+	// OutcomeEvent on the event channel with the same
+	// Kind/Usage/Turns/Err as the returned Outcome. The
+	// renderers (json, stream-json) rely on this instead of
+	// inspecting the return value.
+	fp := api.NewFakeProvider(api.ScriptTextResponse("hi"))
+	tc := testTC(t, core.PermissionBypassPermissions, &core.Config{})
+	toolsList, _ := testToolsList(t)
+
+	ch := newEventSink()
+	out := RunQueryLoop(
+		context.Background(),
+		fp,
+		[]core.Message{core.NewUserText("hi")},
+		toolsList,
+		tc,
+		Config{Model: "fake-model", MaxTurns: 5},
+		nil,
+		ch,
+	)
+	close(ch)
+
+	// Drain and find the terminal OutcomeEvent.
+	var last *OutcomeEvent
+	for ev := range ch {
+		if oe, ok := ev.(OutcomeEvent); ok {
+			// Capture a copy; the event is small enough to
+			// copy by value but we'll keep the last one we
+			// see.
+			oe := oe
+			last = &oe
+		}
+	}
+	if last == nil {
+		t.Fatal("no OutcomeEvent emitted on the event channel")
+	}
+	if last.Kind != out.Kind {
+		t.Errorf("OutcomeEvent.Kind = %v, want %v (matches returned Outcome.Kind)", last.Kind, out.Kind)
+	}
+	if last.Turns != out.Turns {
+		t.Errorf("OutcomeEvent.Turns = %d, want %d (matches returned Outcome.Turns)", last.Turns, out.Turns)
+	}
+	if last.Usage != out.Usage {
+		t.Errorf("OutcomeEvent.Usage = %+v, want %+v (matches returned Outcome.Usage)", last.Usage, out.Usage)
+	}
+}
+
 func TestRunQueryLoopNoProviderStreamErrorIsHandled(t *testing.T) {
 	// An empty provider script emits just EventMessageStop with
 	// no content; the loop should treat it as an end-turn with

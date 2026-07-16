@@ -170,6 +170,21 @@ func (c *CostTracker) Calls() int {
 	return int(c.callCount.Load())
 }
 
+// Reset zeros every counter. Used by the headless retry
+// wrapper so a failed attempt's usage doesn't double-count
+// against a successful retry.
+func (c *CostTracker) Reset() {
+	if c == nil {
+		return
+	}
+	c.inputTokens.Store(0)
+	c.outputTokens.Store(0)
+	c.cacheCreationInputTokens.Store(0)
+	c.cacheReadInputTokens.Store(0)
+	c.callCount.Store(0)
+	c.LastModel = ""
+}
+
 // TotalCostUSD returns the estimated USD cost of the accumulated
 // usage against the last-used model.
 func (c *CostTracker) TotalCostUSD() float64 {

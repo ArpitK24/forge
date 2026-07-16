@@ -176,6 +176,32 @@ func TestCostTrackerSummaryFormat(t *testing.T) {
 	}
 }
 
+func TestCostTrackerReset(t *testing.T) {
+	ct := NewCostTracker()
+	ct.AddUsage(UsageInfo{InputTokens: 100, OutputTokens: 50}, "model-a")
+	ct.AddUsage(UsageInfo{InputTokens: 200, OutputTokens: 100}, "model-a")
+	if ct.Calls() != 2 {
+		t.Errorf("pre-reset Calls = %d, want 2", ct.Calls())
+	}
+	if ct.Totals().InputTokens != 300 {
+		t.Errorf("pre-reset InputTokens = %d, want 300", ct.Totals().InputTokens)
+	}
+	ct.Reset()
+	if ct.Calls() != 0 {
+		t.Errorf("post-reset Calls = %d, want 0", ct.Calls())
+	}
+	if ct.Totals().InputTokens != 0 {
+		t.Errorf("post-reset InputTokens = %d, want 0", ct.Totals().InputTokens)
+	}
+	if ct.LastModel != "" {
+		t.Errorf("post-reset LastModel = %q, want ''", ct.LastModel)
+	}
+	// Nil-safe.
+	ct.Reset()
+	var nilCT *CostTracker
+	nilCT.Reset() // must not panic
+}
+
 func TestFormatIntAndFloat(t *testing.T) {
 	cases := []struct {
 		in   int

@@ -183,15 +183,6 @@ func runInteractivePlaceholder(a *cli.Args, cfg *core.Config, logger *slog.Logge
 	return nil
 }
 
-// effectiveMaxTurns returns the configured max-turns or the default
-// if the user didn't override it. Mirrors Config.EffectiveMaxTokens.
-func effectiveMaxTurns(cfg *core.Config) int {
-	if cfg.MaxTurns > 0 {
-		return cfg.MaxTurns
-	}
-	return core.DefaultMaxTurns
-}
-
 // exitError is a sentinel error type that run() returns to signal
 // a specific exit code. main() inspects the error with errors.As
 // to decide the code. Using a typed error (rather than os.Exit at
