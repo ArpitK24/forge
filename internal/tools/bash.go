@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
+	"syscall"
 	"time"
 
 	"github.com/ArpitK24/forge/internal/core"
@@ -36,7 +37,7 @@ var bashInputSchema = json.RawMessage(`{
   "properties": {
     "command": {
       "type": "string",
-      "description": "The shell command to run. On Windows this is passed to cmd /c; on Unix to bash -c."
+      "description": "The shell command line to run. On Windows this is passed to cmd /c; on Unix to bash -c."
     },
     "timeout_seconds": {
       "type": "integer",
@@ -52,6 +53,13 @@ var bashInputSchema = json.RawMessage(`{
   "required": ["command"],
   "additionalProperties": false
 }`)
+
+// bashTimeoutGrace is how long we wait between the first kill
+// signal (SIGTERM on Unix, Ctrl+Break on Windows) and a
+// hard-kill follow-up. 2 seconds is enough for well-behaved
+// processes to flush and exit, short enough that the tool
+// call doesn't hang visibly to the user.
+const bashTimeoutGrace = 2 * time.Second
 
 // BashTool is the implementation of the Bash tool. Spec §3.2.
 type BashTool struct{}
@@ -79,7 +87,11 @@ func (b *BashTool) InputSchema() json.RawMessage { return bashInputSchema }
 //   - Decode the JSON input into BashInput.
 //   - Resolve TimeoutSeconds: 0 → default; clamp to MaxBashTimeoutSeconds.
 //   - Spawn via os/exec with context.WithTimeout. Use `bash -c` on Unix,
-//     `cmd /c` on Windows.
+//     `cmd /c` on Windows. On Windows, the cmd.exe is started with
+//     CREATE_NEW_PROCESS_GROUP so we can deliver a Ctrl+Break event
+//     to the whole group on timeout (this is the Phase 3 hardening
+//     that makes kill actually propagate to grandchildren like
+//     `ping` and `timeout`).
 //   - Run in the ToolContext's WorkingDir (or "." if empty).
 //   - Collect combined stdout+stderr into a buffer.
 //   - On success: ToolResult{Text, Metadata: {"exit_code": 0, "duration_ms": ...}}.
@@ -120,14 +132,40 @@ func (b *BashTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 	defer cancel()
 
 	// Pick the shell. Unix: bash -c "command". Windows: cmd /c "command".
-	// Spec §3.2 also lists PowerShell as a separate tool; Phase 2
+	// Spec §3.2 also lists PowerShell as a separate tool; Phase 3
 	// only ships Bash, and on Windows it uses cmd /c. PowerShell
-	// will land as a separate tool in Phase 2.1/3.
+	// will land as a separate tool in Phase 3.1.
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
 		cmd = exec.CommandContext(runCtx, "cmd", "/c", in.Command)
+		// CREATE_NEW_PROCESS_GROUP (0x00000200) makes cmd.exe
+		// the root of a new console process group. When we
+		// signal cancellation below, GenerateConsoleCtrlEvent
+		// with CTRL_BREAK_EVENT can target the whole group
+		// — which is how child processes spawned by cmd.exe
+		// (ping, timeout, anything started with start /wait)
+		// finally get killed. Without this, os.Process.Kill
+		// only kills cmd.exe, leaving the grandchild
+		// orphaned.
+		cmd.SysProcAttr = &syscall.SysProcAttr{
+			CreationFlags: 0x00000200, // CREATE_NEW_PROCESS_GROUP
+		}
+		// Cancel is called by os/exec when the context is
+		// cancelled. On Windows, it must be set to a non-nil
+		// func to opt out of the default Kill (which would
+		// only kill cmd.exe). We send Ctrl+Break first and
+		// then escalate to Kill after bashTimeoutGrace.
+		cmd.Cancel = func() error {
+			return sendCtrlBreakToProcessGroup(cmd.Process)
+		}
+		cmd.WaitDelay = bashTimeoutGrace
 	} else {
 		cmd = exec.CommandContext(runCtx, "bash", "-c", in.Command)
+		// Unix: put the child in its own process group and
+		// install a Cancel that sends SIGTERM to the group.
+		// os/exec's WaitDelay then escalates to SIGKILL if
+		// the group hasn't exited.
+		applyProcessGroupSetup(cmd)
 	}
 	if tc != nil && tc.WorkingDir != "" {
 		cmd.Dir = tc.WorkingDir
@@ -152,12 +190,19 @@ func (b *BashTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 	exitCode := 0
 	var runErr string
 	if err != nil {
-		// exec.ExitError carries the exit code. Other errors
-		// (e.g. binary not found) are surfaced as the IsError
-		// case with the err text.
-		if ee, ok := err.(*exec.ExitError); ok {
-			exitCode = ee.ExitCode()
-		} else if runCtx.Err() == context.DeadlineExceeded {
+		// On both Unix and Windows, our Cancel function
+		// (SIGTERM on Unix, Ctrl+Break on Windows) lets
+		// the child exit gracefully. The child then returns
+		// a non-zero exit code (e.g. 143 on Unix from
+		// SIGTERM=15+128, 1 on Windows from ping's handling
+		// of Ctrl+Break). We need to distinguish "child
+		// exited because we asked it to" from "child exited
+		// with an error of its own". The way to do that is
+		// to check runCtx.Err() first: if the context was
+		// cancelled (deadline or parent cancel), the non-
+		// zero exit is *our* doing, not the child's.
+		switch {
+		case runCtx.Err() == context.DeadlineExceeded:
 			return ToolResult{
 				Text: fmt.Sprintf("command timed out after %ds\n%s", timeoutSec, truncated),
 				IsError: true,
@@ -167,6 +212,27 @@ func (b *BashTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 					"timed_out":   true,
 				},
 			}
+		case runCtx.Err() == context.Canceled:
+			// Parent context was cancelled (e.g. user
+			// hit Ctrl+C in the TUI, or the loop is
+			// shutting down). Surface as a cancelled
+			// result, not as the child's exit code.
+			return ToolResult{
+				Text:    "command cancelled",
+				IsError: true,
+				Metadata: map[string]any{
+					"exit_code":   -1,
+					"duration_ms": duration.Milliseconds(),
+					"cancelled":   true,
+				},
+			}
+		}
+		// Otherwise the child exited on its own with a
+		// non-zero code (or a different error). exec.ExitError
+		// carries the exit code; other errors (e.g. binary
+		// not found) are surfaced as the spawn-error case.
+		if ee, ok := err.(*exec.ExitError); ok {
+			exitCode = ee.ExitCode()
 		} else {
 			runErr = err.Error()
 		}

@@ -65,13 +65,14 @@ func TestBashTimeout(t *testing.T) {
 		t.Skip("skipping timeout test in -short mode")
 	}
 	if runtime.GOOS == "windows" {
-		// On Windows, `cmd /c ping` doesn't always exit promptly
-		// when the parent context is cancelled, because cmd
-		// doesn't propagate the kill to the child ping process.
-		// The proper fix is to set CREATE_NEW_PROCESS_GROUP and
-		// kill the group, which is a Phase-3 hardening item.
-		// For now, this test only runs on POSIX.
-		t.Skip("Bash timeout test: skipping on Windows (see comment)")
+		// Phase 3 hardened this path: cmd.exe is now
+		// spawned with CREATE_NEW_PROCESS_GROUP and the
+		// Cancel function delivers a CTRL_BREAK_EVENT to
+		// the whole group via GenerateConsoleCtrlEvent.
+		// The below test exercises the timeout; the
+		// Windows-specific test for that path lives in
+		// bash_cancel_test.go.
+		t.Skip("Bash timeout test on Windows runs in bash_cancel_test.go")
 	}
 	b := &BashTool{}
 	tc := bashTC()
@@ -191,8 +192,8 @@ func TestBashRespectsParentContextCancel(t *testing.T) {
 		t.Skip("skipping in -short mode")
 	}
 	if runtime.GOOS == "windows" {
-		// See TestBashTimeout for the same skip reason.
-		t.Skip("Bash cancel test: skipping on Windows")
+		// Windows cancel test lives in bash_cancel_test.go.
+		t.Skip("Bash cancel test: see bash_cancel_test.go on Windows")
 	}
 	b := &BashTool{}
 	ctx, cancel := context.WithCancel(context.Background())
