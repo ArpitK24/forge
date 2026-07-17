@@ -97,9 +97,25 @@ type ToolContext struct {
 }
 
 // AllTools returns every built-in tool, in the order the model
-// should see them in its system prompt. Phase 2: Bash only.
+// should see them in its system prompt. Spec §3.2. Order is
+// deliberate: the read/search tools first (the model reaches
+// for these to understand context), then the write/edit tools
+// (mutating, gated by PermWrite), then execution last (gated
+// by PermExecute — the most privileged level).
+//
+// Phase 3 adds the five file/search tools (Read, Write, Edit,
+// Glob, Grep). The remaining tools in the spec (WebFetch,
+// Task, NotebookEdit, ApplyPatch, etc.) land in Phase 4.
 func AllTools() []Tool {
 	return []Tool{
+		// Read/search (PermReadOnly — auto-allowed in Default).
+		&ReadTool{},
+		&GlobTool{},
+		&GrepTool{},
+		// File mutation (PermWrite).
+		&WriteTool{},
+		&EditTool{},
+		// Process execution (PermExecute).
 		&BashTool{},
 	}
 }
