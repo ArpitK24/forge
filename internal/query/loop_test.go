@@ -26,8 +26,8 @@ type recordingTool struct {
 	panicNext atomic.Bool
 }
 
-func (r *recordingTool) Name() string                        { return r.name }
-func (r *recordingTool) Description() string                 { return "test tool" }
+func (r *recordingTool) Name() string        { return r.name }
+func (r *recordingTool) Description() string { return "test tool" }
 func (r *recordingTool) PermissionLevel() core.PermissionLevel {
 	return core.PermExecute
 }

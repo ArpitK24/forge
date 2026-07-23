@@ -80,6 +80,13 @@ type Outcome struct {
 	Turns   int
 	// Err is set when Kind == OutcomeError.
 	Err *core.Error
+	// Messages is the final state of the conversation history
+	// (every assistant + tool-result message the loop appended).
+	// Populated by finalize on every terminal return path so
+	// multi-turn callers (the TUI) can pick up where the loop
+	// left off without rebuilding history from the event stream.
+	// Single-turn callers (headless one-shots) ignore this field.
+	Messages []core.Message
 }
 
 // Event is the sealed event type the loop emits on the
@@ -148,19 +155,19 @@ type StreamEventForward struct {
 // final outcome" requirement lands without each consumer
 // having to call RunQueryLoop synchronously.
 type OutcomeEvent struct {
-	Kind   OutcomeKind
-	Usage  core.UsageInfo
-	Turns  int
-	Err    *core.Error
+	Kind  OutcomeKind
+	Usage core.UsageInfo
+	Turns int
+	Err   *core.Error
 }
 
-func (ToolStartEvent) isEvent()      {}
-func (ToolEndEvent) isEvent()        {}
-func (TurnCompleteEvent) isEvent()   {}
-func (StatusEvent) isEvent()         {}
-func (ErrorEvent) isEvent()          {}
-func (StreamEventForward) isEvent()  {}
-func (OutcomeEvent) isEvent()        {}
+func (ToolStartEvent) isEvent()     {}
+func (ToolEndEvent) isEvent()       {}
+func (TurnCompleteEvent) isEvent()  {}
+func (StatusEvent) isEvent()        {}
+func (ErrorEvent) isEvent()         {}
+func (StreamEventForward) isEvent() {}
+func (OutcomeEvent) isEvent()       {}
 
 // RunQueryLoop is the agentic turn-execution loop. Spec §5.1.
 //
@@ -222,6 +229,7 @@ func RunQueryLoop(
 	// return path in the loop calls this so renderers and
 	// observers always see the same terminal view.
 	finalize := func(o Outcome) Outcome {
+		o.Messages = messages
 		sendEvent(eventCh, OutcomeEvent{
 			Kind:  o.Kind,
 			Usage: o.Usage,

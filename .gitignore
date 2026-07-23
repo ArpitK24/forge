@@ -24,6 +24,13 @@ FORGE_BUILD_SPEC.md
 /docs/internal/
 PHASE_*.md
 
+# AGENTS.md is the private build-handoff document for AI agents
+# working on this repo. It encodes the architecture, conventions,
+# and phase methodology so a fresh agent can pick up the build.
+# It is intentionally not published to GitHub — the public record
+# of how to use Forge lives in README.md.
+AGENTS.md
+
 # --- Editor / OS noise ---
 .vscode/
 .idea/

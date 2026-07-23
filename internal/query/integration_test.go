@@ -49,10 +49,10 @@ func TestRunQueryLoopEndToEndNIM(t *testing.T) {
 		// tool result from turn 1's execution, and (c) sent
 		// the tool definitions every turn.
 		var reqBody struct {
-			Model    string             `json:"model"`
-			Stream   bool               `json:"stream"`
-			Messages []map[string]any   `json:"messages"`
-			Tools    []map[string]any   `json:"tools"`
+			Model    string           `json:"model"`
+			Stream   bool             `json:"stream"`
+			Messages []map[string]any `json:"messages"`
+			Tools    []map[string]any `json:"tools"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Errorf("decode request: %v", err)

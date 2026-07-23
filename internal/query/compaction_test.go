@@ -9,10 +9,10 @@ import (
 
 func TestCalculateTokenWarningState(t *testing.T) {
 	cases := []struct {
-		name          string
-		used          int
-		window        int
-		want          TokenWarningState
+		name   string
+		used   int
+		window int
+		want   TokenWarningState
 	}{
 		{"ok at 50% used (large window)", 50_000, 100_000, TokenWarningOk},
 		{"ok at 80% used", 80_000, 100_000, TokenWarningOk},
@@ -37,11 +37,11 @@ func TestCalculateTokenWarningState(t *testing.T) {
 
 func TestShouldAutoCompactTriggerFraction(t *testing.T) {
 	cases := []struct {
-		name    string
-		used    int
-		window  int
+		name     string
+		used     int
+		window   int
 		failures int
-		want    bool
+		want     bool
 	}{
 		// Trigger fraction is 0.90, so on a 100k window, 90k+
 		// used should fire; <90k should not.
