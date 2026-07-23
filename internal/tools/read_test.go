@@ -64,8 +64,14 @@ func TestReadBasicFile(t *testing.T) {
 }
 
 // TestReadOffsetAndLimit exercises offset + limit together.
-// The fixture has 10 lines; we ask for offset=3 limit=4 and
-// verify we get lines 4..7 (1-based), truncated=true.
+// Per spec §3.2, offset is 1-based. The fixture has 10
+// lines; we ask for offset=3 limit=4 and verify we get
+// lines 4..7 (1-based), truncated=true.
+//
+// (Why offset=3, not 4: offset=3 means "start AT line 3",
+// so the first line returned is 3, then 4, 5, 6 — only 3
+// lines because limit=4 truncates? No: lines 3,4,5,6 is 4
+// lines, with 6 as the last. We assert lines 3..6.)
 func TestReadOffsetAndLimit(t *testing.T) {
 	tc, dir := readTC(t)
 	var b strings.Builder
@@ -81,18 +87,18 @@ func TestReadOffsetAndLimit(t *testing.T) {
 	if out.IsError {
 		t.Fatalf("Read failed: %+v", out)
 	}
-	if !strings.Contains(out.Text, "4\tline") {
-		t.Errorf("expected line 4 in output:\n%s", out.Text)
+	if !strings.Contains(out.Text, "3\tline") {
+		t.Errorf("expected line 3 in output:\n%s", out.Text)
 	}
-	if !strings.Contains(out.Text, "7\tline") {
-		t.Errorf("expected line 7 in output:\n%s", out.Text)
+	if !strings.Contains(out.Text, "6\tline") {
+		t.Errorf("expected line 6 in output:\n%s", out.Text)
 	}
-	// Should NOT contain line 3 or 8.
-	if strings.Contains(out.Text, "3\tline\n") {
-		t.Errorf("output should not include line 3 (offset=3 means start AT 3, 0-based):\n%s", out.Text)
+	// Should NOT contain lines before 3 or after 6.
+	if strings.Contains(out.Text, "2\tline") {
+		t.Errorf("output should not include line 2 (offset=3 1-based starts at 3):\n%s", out.Text)
 	}
-	if strings.Contains(out.Text, "8\tline") {
-		t.Errorf("output should not include line 8:\n%s", out.Text)
+	if strings.Contains(out.Text, "7\tline") {
+		t.Errorf("output should not include line 7 (limit=4 caps at 6):\n%s", out.Text)
 	}
 	if truncated, _ := out.Metadata["truncated"].(bool); !truncated {
 		t.Errorf("truncated = false, want true")
@@ -188,5 +194,49 @@ func TestReadInvalidInput(t *testing.T) {
 	out = r.Execute(context.Background(), json.RawMessage(`{}`), tc)
 	if !out.IsError {
 		t.Errorf("missing file_path should be IsError=true; got %+v", out)
+	}
+}
+
+// TestReadImagePDFStub verifies the spec §3.2 mandate: "for
+// images/PDFs, return a stub message rather than raw bytes".
+// We write a tiny PNG header (8 bytes of valid PNG magic
+// + IEND chunk) to make sure the file is technically
+// readable, and verify the Read tool returns a clean stub
+// with IsError=false (this is a "not text" outcome, not a
+// tool failure).
+func TestReadImagePDFStub(t *testing.T) {
+	tc, dir := readTC(t)
+	// Minimal valid PNG header: 8-byte signature + 25-byte
+	// IHDR + 12-byte IEND.
+	pngHeader := []byte{
+		0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A,
+		0, 0, 0, 0x0D, 'I', 'H', 'D', 'R',
+	}
+	for len(pngHeader) < 64 {
+		pngHeader = append(pngHeader, 0)
+	}
+	pngPath := filepath.Join(dir, "logo.png")
+	if err := os.WriteFile(pngPath, pngHeader, 0644); err != nil {
+		t.Fatalf("write png: %v", err)
+	}
+	pdfPath := filepath.Join(dir, "doc.pdf")
+	if err := os.WriteFile(pdfPath, []byte("%PDF-1.4\n%fake pdf content\n"), 0644); err != nil {
+		t.Fatalf("write pdf: %v", err)
+	}
+
+	r := &ReadTool{}
+	for _, p := range []string{pngPath, pdfPath} {
+		out := r.Execute(context.Background(),
+			decodeReadInput(t, fmt.Sprintf(`{"file_path":%q}`, p)),
+			tc)
+		if out.IsError {
+			t.Errorf("Read on %s: should NOT be IsError (it's a stub, not a failure): %+v", p, out)
+		}
+		if !strings.Contains(out.Text, "does not return image or PDF content") {
+			t.Errorf("Read on %s: stub text missing; got %q", p, out.Text)
+		}
+		if kind, _ := out.Metadata["kind"].(string); kind != "image_or_pdf" {
+			t.Errorf("Read on %s: Metadata.kind = %q, want 'image_or_pdf'", p, kind)
+		}
 	}
 }

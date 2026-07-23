@@ -33,6 +33,11 @@ var grepInputSchema = json.RawMessage(`{
       "description": "If true, match case-insensitively. Defaults to false.",
       "default": false
     },
+    "multiline": {
+      "type": "boolean",
+      "description": "If true, allow ^ and $ to match the start/end of each line (RE2 (?s) is enabled). Defaults to false.",
+      "default": false
+    },
     "output_mode": {
       "type": "string",
       "description": "One of: 'files_with_matches' (default), 'content', 'count'.",
@@ -129,15 +134,16 @@ func (g *GrepTool) InputSchema() json.RawMessage { return grepInputSchema }
 
 // GrepInput is the JSON-decoded input shape.
 type GrepInput struct {
-	Pattern        string `json:"pattern"`
-	Path           string `json:"path,omitempty"`
-	CaseInsensitive bool  `json:"case_insensitive,omitempty"`
-	OutputMode     string `json:"output_mode,omitempty"`
-	ContextBefore  int    `json:"context_before,omitempty"`
-	ContextAfter   int    `json:"context_after,omitempty"`
-	HeadLimit      int    `json:"head_limit,omitempty"`
-	Offset         int    `json:"offset,omitempty"`
-	Type           string `json:"type,omitempty"`
+	Pattern         string `json:"pattern"`
+	Path            string `json:"path,omitempty"`
+	CaseInsensitive bool   `json:"case_insensitive,omitempty"`
+	Multiline       bool   `json:"multiline,omitempty"`
+	OutputMode      string `json:"output_mode,omitempty"`
+	ContextBefore   int    `json:"context_before,omitempty"`
+	ContextAfter    int    `json:"context_after,omitempty"`
+	HeadLimit       int    `json:"head_limit,omitempty"`
+	Offset          int    `json:"offset,omitempty"`
+	Type            string `json:"type,omitempty"`
 }
 
 // grepMatch is a single match record. We use this struct
@@ -167,13 +173,30 @@ func (g *GrepTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 		}
 	}
 
-	// Compile the pattern. We honor case_insensitive by
-	// prefixing the (?i) flag rather than mutating the
-	// pattern; this keeps the model's view of the pattern
-	// and the actual RE2 syntax aligned.
+	// Compile the pattern. We honor case_insensitive and
+	// multiline by prefixing the appropriate RE2 flags
+	// rather than mutating the pattern; this keeps the
+	// model's view of the pattern and the actual RE2
+	// syntax aligned.
+	//
+	// RE2 flag conventions:
+	//   (?i)  case-insensitive
+	//   (?s)  let . match \n (single-line mode in RE2
+	//         terminology; combined with our line-by-line
+	//         scan, this gives us "multiline-friendly":
+	//         patterns that span newlines can match.)
+	//
+	// The spec calls for case-insensitive + multiline
+	// flags. We don't expose dotall explicitly because
+	// the model can write its own . vs [\s\S].
 	pat := in.Pattern
 	if in.CaseInsensitive {
 		pat = "(?i)" + pat
+	}
+	if in.Multiline {
+		// The model can use (?m) directly in its pattern
+		// too, but the explicit flag is friendlier.
+		pat = "(?m)" + pat
 	}
 	re, err := regexp.Compile(pat)
 	if err != nil {

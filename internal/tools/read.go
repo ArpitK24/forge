@@ -15,6 +15,10 @@ import (
 // readInputSchema is the JSON Schema for the Read tool's
 // input. Hand-written (stable, small) so we can iterate on
 // the model's view of the tool without bumping the Go types.
+//
+// The `offset` is 1-based per spec §3.2: passing 1 starts
+// at the first line. Passing 0 (or omitting) also starts at
+// the first line — the model can use either form.
 var readInputSchema = json.RawMessage(`{
   "type": "object",
   "properties": {
@@ -24,7 +28,7 @@ var readInputSchema = json.RawMessage(`{
     },
     "offset": {
       "type": "integer",
-      "description": "Optional 0-based line number to start reading from. Defaults to 0.",
+      "description": "Optional 1-based line number to start reading from. 0 or omitted means start at line 1.",
       "minimum": 0
     },
     "limit": {
@@ -40,7 +44,7 @@ var readInputSchema = json.RawMessage(`{
 // readDefaultLimit is the default cap on lines returned per
 // call. The model can override with `limit`; this is the
 // safety net so a single Read on a 5M-line file doesn't
-// blow the context.
+// blow the context. Matches the spec §3.2 default.
 const readDefaultLimit = 2000
 
 // readBinarySentinelByte is the byte value we use to decide
@@ -49,6 +53,26 @@ const readDefaultLimit = 2000
 // almost every binary format (ELF, PE, PNG, ZIP, even
 // UTF-16 with BOM) does.
 const readBinarySentinelByte byte = 0x00
+
+// readImagePDFExts is the set of file extensions the spec
+// calls "images/PDFs" — files the Read tool should NOT try
+// to return as text. For these, we return a stub message
+// instead (per spec §3.2: "returns a stub message for
+// images/PDFs rather than raw bytes"). Vision/PDF parsing
+// of the actual content is a future phase.
+var readImagePDFExts = map[string]bool{
+	".png":  true,
+	".jpg":  true,
+	".jpeg": true,
+	".gif":  true,
+	".bmp":  true,
+	".webp": true,
+	".tiff": true,
+	".tif":  true,
+	".ico":  true,
+	".svg":  true,
+	".pdf":  true,
+}
 
 // ReadTool is the implementation of the Read tool.
 // Spec §3.2 (file tools).
@@ -84,6 +108,11 @@ type ReadInput struct {
 //     tc.WorkingDir / tc.ResolvePath).
 //   - Read the file. Errors on missing / permission denied /
 //     is-a-directory.
+//   - If the extension is an image or PDF (see
+//     readImagePDFExts), return a stub message instead of
+//     the raw bytes — the spec calls for this so the model
+//     can know "this file exists but I can't read its
+//     bytes".
 //   - Detect binary content by scanning for NUL bytes in the
 //     first 8 KiB. If found, return IsError=true (we don't
 //     hand binary content to the model — the Edit/Write tools
@@ -91,9 +120,10 @@ type ReadInput struct {
 //   - Split into lines (keeping line endings out of the
 //     output), apply offset/limit, and format each line as
 //     `{line_number}\t{content}` where line_number is 1-based
-//     (matching what every editor shows).
+//     (matching what every editor shows). `offset` itself
+//     is 1-based per spec §3.2.
 //   - On success: ToolResult{Text, Metadata: {"total_lines",
-//     "returned_lines", "truncated"}}.
+//     "returned_lines", "truncated", "file_path"}}.
 //   - On error: ToolResult{IsError: true, Text: "..."}.
 func (r *ReadTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolContext) ToolResult {
 	var in ReadInput
@@ -143,6 +173,24 @@ func (r *ReadTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 		return ToolResult{
 			Text:    fmt.Sprintf("Read: %s is a directory; use Glob/Grep instead", abs),
 			IsError: true,
+		}
+	}
+
+	// Image / PDF short-circuit. We do this BEFORE the
+	// binary sniff because the model expects a clear
+	// "this is a PNG; I can't read it as text" message
+	// rather than "this looks like a binary file". Spec
+	// §3.2 mandates a stub here.
+	ext := strings.ToLower(filepath.Ext(abs))
+	if readImagePDFExts[ext] {
+		return ToolResult{
+			Text: fmt.Sprintf("[Read: %s is a %s file; the Read tool does not return image or PDF content. "+
+				"Use a vision-capable sub-agent or an external tool to inspect it.]",
+				abs, strings.TrimPrefix(ext, ".")),
+			Metadata: map[string]any{
+				"file_path": abs,
+				"kind":      "image_or_pdf",
+			},
 		}
 	}
 
@@ -244,9 +292,11 @@ func (r *ReadTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 
 	total := len(lines)
 
-	// Apply offset (clamp to total). Negative offset would
-	// be a programming error in the model; treat as 0.
-	start := in.Offset
+	// Apply offset. Spec §3.2: offset is 1-based. We accept
+	// both 0 and omitted as "start at the first line" so
+	// the model can use either form. The translation to a
+	// 0-based slice index is `start = max(0, offset-1)`.
+	start := in.Offset - 1
 	if start < 0 {
 		start = 0
 	}
