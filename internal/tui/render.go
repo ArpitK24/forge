@@ -14,6 +14,13 @@ import (
 //
 // Layout (spec §9.4): vertically split into scrollable message
 // pane → bordered multi-line input → one-line status bar.
+//
+// Step 5: when a permission dialog is open, it overlays the
+// base layout. The user confirmed the freeze-everything design,
+// so the dialog is the only visible interaction surface while
+// it's up. The base layout is still rendered (so the message
+// pane doesn't appear to vanish), but lipgloss.Place draws the
+// dialog on top of it.
 func (m Model) View() string {
 	if m.Quitting {
 		return ""
@@ -51,7 +58,24 @@ func (m Model) View() string {
 	b.WriteByte('\n')
 	b.WriteString(status)
 
-	return b.String()
+	base := b.String()
+
+	// 5. Overlay the help or permission dialog if visible. The
+	// permission dialog takes priority: if both are up (which
+	// shouldn't happen in practice, but is possible if a help
+	// overlay was open when a tool call needed permission), the
+	// dialog wins because it's the time-sensitive surface.
+	if m.PermissionDialog != nil {
+		return lipgloss.Place(m.Width, m.Height,
+			lipgloss.Center, lipgloss.Center,
+			m.renderPermissionDialog())
+	}
+	if m.HelpVisible {
+		return lipgloss.Place(m.Width, m.Height,
+			lipgloss.Center, lipgloss.Center,
+			m.renderHelpOverlay())
+	}
+	return base
 }
 
 // renderMessage formats a single message for display in the

@@ -136,14 +136,38 @@ func (s *sharedState) lockMessages() (*[]core.Message, func()) {
 }
 
 // PermissionDialogState holds the state for the in-TUI permission
-// dialog (Step 5). Defined here as a placeholder so the Model
-// struct is complete; the actual dialog rendering and interaction
-// lands in perm_dialog.go.
+// dialog. While this is non-nil, the dialog owns all input — see
+// handlePermissionDialog in update.go. The lifecycle is:
+//  1. The query loop's CheckPermission closure posts a permRequest
+//     on the bridge's per-turn channel.
+//  2. The TUI's Update loop drains the channel and builds a
+//     PermissionDialogState, stashing it on the Model.
+//  3. The user navigates with Tab/Shift+Tab and activates with
+//     Enter (or hits Esc to deny).
+//  4. respondPermission() invokes Respond (with the chosen decision),
+//     nils the field, and (for "always" decisions) appends a
+//     core.PermissionRule to the active Config.
 type PermissionDialogState struct {
-	ToolName    string
+	// ToolName is the tool asking for permission (e.g. "Bash").
+	ToolName string
+	// Description is a short human-readable summary of the call
+	// ("run `rm -rf /tmp/foo` in /home/user/proj"). For Bash this
+	// is the actual command line; for Edit/Write it's the file
+	// path and the change description.
 	Description string
-	Details     map[string]any
-	Respond     func(decision core.PermissionDecision)
+	// Details is optional structured context the renderer can
+	// surface. Currently used to carry the Bash command under
+	// the "command" key.
+	Details map[string]any
+	// Focused is 0..3, the index into the button row
+	// {Allow, Allow always, Deny, Deny always}. The renderer
+	// styles the focused button differently.
+	Focused int
+	// Respond is the closure the dialog uses to send the user's
+	// decision back to the query loop's blocked CheckPermission
+	// call. The loop is reading from a buffered channel; the
+	// closure writes one value to that channel and returns.
+	Respond func(decision core.PermissionDecision)
 }
 
 // InitialModel creates a Model with sensible defaults. The caller
@@ -196,6 +220,27 @@ type queryEventMsg query.Event
 // on this message, because the channel-close path has no value to
 // send.
 type loopFinishedMsg struct{}
+
+// permissionRequestMsg wraps a permRequest so bubbletea's runtime
+// can deliver it as a tea.Msg. The program.go permReqCh-drain Cmd
+// sends these.
+type permissionRequestMsg struct{ req permRequest }
+
+// permRequest is the loop→TUI handoff for a permission check. The
+// query loop's CheckPermission closure writes one of these to
+// the bridge's permReqCh, then blocks on RespondCh until the TUI
+// posts the user's decision. This handshake is the entire Step 5
+// integration: the closure replaces the AutoPermissionHandler
+// with a channel-based bridge.
+//
+// RespondCh is buffered (size 1) so the closure can complete
+// without the dialog handler needing to know whether the TUI
+// still has a reference to the value. The single write happens
+// once and then the closure returns.
+type permRequest struct {
+	Request   core.PermissionRequest
+	RespondCh chan core.PermissionDecision
+}
 
 // appendMessage adds a rendered message to the model's list and
 // scrolls to the end if AutoScroll is on. Called from Update.

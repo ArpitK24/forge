@@ -65,6 +65,64 @@ var helpOverlayStyle = lipgloss.NewStyle().
 	BorderForeground(lipgloss.Color("#666666")).
 	Padding(1, 2)
 
+// --- Permission dialog styles (Step 5) ---
+
+// dialogOverlayStyle wraps the modal body. The border is amber
+// (matches toolMsgStyle) so the dialog reads as a system-driven
+// prompt rather than a regular message. Width is fixed so the
+// dialog doesn't reflow as the button row grows.
+var dialogOverlayStyle = lipgloss.NewStyle().
+	Border(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color("#d7a000")).
+	Padding(1, 3).
+	Width(64)
+
+// dialogTitleStyle is the headline of the dialog ("Permission
+// needed"). Bold + amber to match the border.
+var dialogTitleStyle = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("#d7a000"))
+
+// dialogToolNameStyle is the "Tool: Bash" line. The tool name
+// gets a brighter foreground so the user knows at a glance which
+// tool is asking.
+var dialogToolNameStyle = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("#5afdff"))
+
+// dialogBodyStyle is the "Choose how to handle this call:" line
+// and other secondary text.
+var dialogBodyStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("#cccccc"))
+
+// dialogCommandStyle is the verbatim Bash command block. Italic
+// + dim to make it visually distinct from the prose description
+// above it.
+var dialogCommandStyle = lipgloss.NewStyle().
+	Italic(true).
+	Foreground(lipgloss.Color("#aaaaaa"))
+
+// dialogHintStyle is the keyboard hint footer.
+var dialogHintStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("#888888")).
+	Italic(true)
+
+// dialogBtnFocused is the focused button: black on amber, bold.
+// Matches the border so the user sees a single amber "selection"
+// in the dialog.
+var dialogBtnFocused = lipgloss.NewStyle().
+	Bold(true).
+	Foreground(lipgloss.Color("#000000")).
+	Background(lipgloss.Color("#d7a000")).
+	Padding(0, 1)
+
+// dialogBtnUnfocused is the unfocused button: grey foreground,
+// no background. Padded the same as focused so the row doesn't
+// shift when focus moves.
+var dialogBtnUnfocused = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("#888888")).
+	Padding(0, 1)
+
 // computeLayout updates the model's viewport and textarea
 // dimensions based on the current terminal size. Called on every
 // tea.WindowSizeMsg.

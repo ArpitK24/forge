@@ -311,6 +311,56 @@ func TestExecuteCommand_PermissionsOutput(t *testing.T) {
 	}
 }
 
+// TestExecuteCommand_PermissionsSetMode verifies that
+// /permissions <mode> flips the active mode and returns a
+// ResultConfigChange so the TUI can swap the new config in.
+func TestExecuteCommand_PermissionsSetMode(t *testing.T) {
+	ctx := testCtx()
+	if ctx.Config == nil {
+		t.Fatal("testCtx returned nil Config")
+	}
+	if ctx.Config.PermissionMode != core.PermissionDefault {
+		t.Fatalf("test setup: PermissionMode = %v, want Default",
+			ctx.Config.PermissionMode)
+	}
+
+	res := ExecuteCommand(context.Background(), "/permissions accept-edits", ctx)
+	if res == nil {
+		t.Fatal("/permissions accept-edits returned nil")
+	}
+	if res.Kind != ResultConfigChange {
+		t.Errorf("Kind = %v, want ResultConfigChange", res.Kind)
+	}
+	if res.Config == nil {
+		t.Fatal("Config payload is nil")
+	}
+	if res.Config.PermissionMode != core.PermissionAcceptEdits {
+		t.Errorf("PermissionMode = %v, want AcceptEdits",
+			res.Config.PermissionMode)
+	}
+}
+
+// TestExecuteCommand_PermissionsSetModeUnknown rejects bad input.
+func TestExecuteCommand_PermissionsSetModeUnknown(t *testing.T) {
+	res := ExecuteCommand(context.Background(), "/permissions banana", testCtx())
+	if res == nil || res.Kind != ResultError {
+		t.Fatalf("Kind = %v, want ResultError", res.Kind)
+	}
+	if !strings.Contains(res.Text, "unknown mode") {
+		t.Errorf("error should mention 'unknown mode', got: %s", res.Text)
+	}
+}
+
+// TestExecuteCommand_PermissionsNoopOnSameMode returns a plain
+// message (not ConfigChange) when the requested mode is already
+// the active one. Avoids a needless Model swap.
+func TestExecuteCommand_PermissionsNoopOnSameMode(t *testing.T) {
+	res := ExecuteCommand(context.Background(), "/permissions default", testCtx())
+	if res == nil || res.Kind != ResultMessage {
+		t.Fatalf("Kind = %v, want ResultMessage (noop)", res.Kind)
+	}
+}
+
 // ---------------------------------------------------------------------------
 // /diff (stub)
 // ---------------------------------------------------------------------------

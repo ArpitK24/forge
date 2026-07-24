@@ -470,11 +470,14 @@ func executeToolCalls(
 	anyExecuted := false
 	for _, tu := range uses {
 		// Permission check. Use the tool's declared permission
-		// level: PermReadOnly passes auto, others ask.
+		// level: PermReadOnly passes auto, others ask. The
+		// description is tool-specific so the TUI permission
+		// dialog can surface the actual command (Bash) or
+		// file path (Write/Edit) instead of a generic label.
 		decision := core.DecisionAllow
 		if tc != nil && tc.CheckPermission != nil {
 			isReadOnly := toolIsReadOnly(toolsList, tu.Name)
-			decision = tc.CheckPermission(tu.Name, tu.Name+" tool call", isReadOnly)
+			decision = tc.CheckPermission(tu.Name, describeToolCall(tu), isReadOnly)
 		}
 
 		if decision == core.DecisionDeny || decision == core.DecisionDenyPermanently {
@@ -663,4 +666,39 @@ func nilEventSink() chan<- Event {
 		}
 	}()
 	return ch
+}
+
+// describeToolCall produces a human-readable summary of a tool
+// call for the permission dialog. The shape is tool-specific:
+//   - Bash: the actual command line (e.g. "rm -rf /tmp/foo")
+//   - Write/Edit: the file path
+//   - everything else: "ToolName tool call" as a fallback
+//
+// We avoid depending on the tools package here to keep the loop
+// decoupled from per-tool input shapes; the JSON field names
+// (Bash: "command", Write/Edit: "file_path") are stable and
+// documented in the tool InputSchema() outputs. If the JSON is
+// malformed, the function falls back to the generic label rather
+// than erroring — the dialog's purpose is to inform the user,
+// not to be a validator.
+func describeToolCall(tu core.ToolUse) string {
+	if len(tu.Input) == 0 {
+		return tu.Name + " tool call"
+	}
+	// Peek into the JSON. We only care about one field, so a
+	// typed decode avoids the cost of a full unmarshal.
+	var peek struct {
+		Command  string `json:"command"`
+		FilePath string `json:"file_path"`
+	}
+	if err := json.Unmarshal(tu.Input, &peek); err != nil {
+		return tu.Name + " tool call"
+	}
+	if peek.Command != "" {
+		return peek.Command
+	}
+	if peek.FilePath != "" {
+		return tu.Name + ": " + peek.FilePath
+	}
+	return tu.Name + " tool call"
 }

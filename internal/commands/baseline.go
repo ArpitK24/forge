@@ -317,26 +317,57 @@ func (thinkingCmd) Execute(_ context.Context, _ string, cctx *CommandContext) Co
 }
 
 // permissionsCmd lists the current permission posture and any
-// persisted rules. Read-only in Phase 3.
+// persisted rules, and (with an argument) switches the active
+// mode for the rest of the session. The argument is one of
+// the four PermissionMode values: default, accept-edits,
+// bypass-permissions, plan. Without an argument, the command
+// is read-only.
+//
+// "Allow always" / "Deny always" decisions made via the TUI
+// dialog are appended to Config.PermissionRules in-memory;
+// disk persistence is Phase 3.1.
 type permissionsCmd struct{}
 
-func (permissionsCmd) Name() string        { return "permissions" }
-func (permissionsCmd) Aliases() []string   { return []string{"perm"} }
-func (permissionsCmd) Description() string { return "show the current permission mode and rules" }
-func (permissionsCmd) Hidden() bool        { return false }
-func (permissionsCmd) Help() string        { return "" }
-func (permissionsCmd) Execute(_ context.Context, _ string, cctx *CommandContext) CommandResult {
+func (permissionsCmd) Name() string      { return "permissions" }
+func (permissionsCmd) Aliases() []string { return []string{"perm"} }
+func (permissionsCmd) Description() string {
+	return "show the current permission mode and rules (or set with /permissions <mode>)"
+}
+func (permissionsCmd) Hidden() bool { return false }
+func (permissionsCmd) Help() string {
+	return "/permissions                         show the current mode and rules\n" +
+		"/permissions <mode>                  set the active mode (default, accept-edits, bypass-permissions, plan)"
+}
+func (permissionsCmd) Execute(_ context.Context, args string, cctx *CommandContext) CommandResult {
 	if cctx == nil || cctx.Config == nil {
 		return ErrorResult("permissions: no config in context")
 	}
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "Active mode: %s\n", cctx.Config.PermissionMode)
-	// Persisted rules: Phase 3 stores "always allow/deny" decisions
-	// in-memory only (disk persistence is Phase 3.1), so there's
-	// nothing to enumerate here yet. Surface the placeholder so the
-	// command shape is stable.
-	sb.WriteString("Persisted rules: (none — disk persistence lands in a later phase)")
-	return MessageResult(sb.String())
+	modeArg := strings.TrimSpace(args)
+	if modeArg == "" {
+		// Read-only display.
+		var sb strings.Builder
+		fmt.Fprintf(&sb, "Active mode: %s\n", cctx.Config.PermissionMode)
+		sb.WriteString("Persisted rules: (none — disk persistence lands in a later phase)")
+		return MessageResult(sb.String())
+	}
+	// Argument path: switch the active mode for the rest of
+	// the session. core.ParsePermissionMode handles unknown
+	// values by returning ok=false.
+	newMode, ok := core.ParsePermissionMode(modeArg)
+	if !ok {
+		return ErrorResult(fmt.Sprintf(
+			"permissions: unknown mode %q (try: default, accept-edits, bypass-permissions, plan)",
+			modeArg))
+	}
+	if newMode == cctx.Config.PermissionMode {
+		return MessageResult(fmt.Sprintf("Permission mode is already %s.", newMode))
+	}
+	// Build a shallow copy of the config with the new mode.
+	// The in-memory rule list is shared (same underlying array)
+	// so "always" decisions survive the mode switch.
+	newCfg := *cctx.Config
+	newCfg.PermissionMode = newMode
+	return ConfigChangeResult(&newCfg)
 }
 
 // ---------------------------------------------------------------------------

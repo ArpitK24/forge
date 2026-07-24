@@ -18,9 +18,10 @@ import (
 
 // programState holds the long-lived state the TUI's Update loop
 // reads but doesn't own directly: the API provider, the system
-// prompt, the event channel, and the loop's cancel function. It
-// is set up once by RunProgram and shared with the Model via the
-// Model.loopBridge field.
+// prompt, the event channel, the loop's cancel function, and the
+// per-turn permission-request channel. It is set up once by
+// RunProgram and shared with the Model via the Model.loopBridge
+// field.
 type programState struct {
 	Provider     api.Provider
 	SystemPrompt string
@@ -31,6 +32,13 @@ type programState struct {
 	// it to reset the Model's streaming state and pick up the
 	// final message history.
 	LastOutcome *query.Outcome
+	// PermReqCh carries permission-check requests from the
+	// in-flight query loop to the TUI. The loop's CheckPermission
+	// closure posts a permRequest and blocks on the per-request
+	// RespondCh; the TUI's Update drains PermReqCh on every
+	// permissionRequestMsg and posts the user's decision back.
+	// Closed by the loop goroutine on exit.
+	PermReqCh chan permRequest
 }
 
 // RunProgram is the TUI entry point. It sets up the terminal,
@@ -160,6 +168,16 @@ func (m Model) startQueryLoop() tea.Cmd {
 	eventCh := make(chan query.Event, 64)
 	m.currentEventCh = eventCh
 
+	// Per-turn permission-request channel. The loop's CheckPermission
+	// closure posts a permRequest here and blocks on the per-request
+	// RespondCh; the TUI's Update drains this channel via
+	// waitForPermRequest. Buffered (size 4) so a burst of tool
+	// calls in one turn doesn't deadlock; the loop's CheckPermission
+	// is still called serially so the buffered slots are rarely all
+	// used at once.
+	permReqCh := make(chan permRequest, 4)
+	m.bridge.PermReqCh = permReqCh
+
 	// Snapshot the messages under the mutex so the loop has a
 	// stable starting history.
 	m.shared.mu.Lock()
@@ -179,23 +197,59 @@ func (m Model) startQueryLoop() tea.Cmd {
 	// outcome so handleLoopFinished picks it up.
 	go func() {
 		defer close(eventCh)
+		defer close(permReqCh)
 		toolsList := tools.AllTools()
 		tc := &tools.ToolContext{
 			WorkingDir:  cfg.WorkingDir,
 			CostTracker: cost,
 			Cfg:         cfg,
 			SessionID:   "",
+			// Step 5: replace the headless AutoPermissionHandler
+			// with a channel-based bridge to the TUI. The closure
+			// still returns a single PermissionDecision, but it
+			// blocks on a per-request channel until the user
+			// picks. Short-circuit for the auto-allow modes so
+			// the dialog never opens in BypassPermissions /
+			// AcceptEdits (matches the spec).
 			CheckPermission: func(name, desc string, isReadOnly bool) core.PermissionDecision {
-				// Phase 3 Step 5 wires the interactive dialog here.
-				// For now, defer to the AutoPermissionHandler so
-				// the loop runs to completion in non-interactive
-				// test contexts.
-				h := &core.AutoPermissionHandler{Mode: cfg.PermissionMode}
-				return h.RequestPermission(core.PermissionRequest{
-					ToolName:    name,
-					Description: desc,
-					IsReadOnly:  isReadOnly,
-				})
+				mode := cfg.PermissionMode
+				if mode == core.PermissionBypassPermissions ||
+					mode == core.PermissionAcceptEdits {
+					return core.DecisionAllow
+				}
+				// Default / Plan: consult the in-memory rule list
+				// first so "always" decisions are honored without
+				// re-asking the user.
+				if rule, ok := matchPermissionRule(cfg.PermissionRules, name, desc); ok {
+					return rule.Decision
+				}
+				// Hand off to the TUI. Read-only tools are still
+				// auto-allowed in Default mode (matches the
+				// AutoPermissionHandler behavior), so the dialog
+				// only opens for tools that actually need a
+				// human decision.
+				if isReadOnly {
+					return core.DecisionAllow
+				}
+				req := permRequest{
+					Request: core.PermissionRequest{
+						ToolName:    name,
+						Description: desc,
+						Details:     nil,
+						IsReadOnly:  isReadOnly,
+					},
+					RespondCh: make(chan core.PermissionDecision, 1),
+				}
+				select {
+				case permReqCh <- req:
+					return <-req.RespondCh
+				case <-ctx.Done():
+					// Loop was cancelled while the request was in
+					// flight (e.g. user hit Esc on the streaming
+					// turn, which propagates to the loop's ctx).
+					// Deny rather than block forever.
+					return core.DecisionDeny
+				}
 			},
 		}
 		outcome := query.RunQueryLoop(ctx, provider, history, toolsList, tc, query.Config{
@@ -221,8 +275,14 @@ func (m Model) startQueryLoop() tea.Cmd {
 		m.bridge.LastOutcome = &outcome
 	}()
 
-	// Return the subscribe Cmd: block on the next event, wrap it.
-	return waitForEvent(eventCh)
+	// Return two subscribe Cmds: one for the loop event stream
+	// and one for the permission-request stream. tea.Batch
+	// runs them in parallel; bubbletea re-issues each via its
+	// own Update response.
+	return tea.Batch(
+		waitForEvent(eventCh),
+		waitForPermRequest(permReqCh),
+	)
 }
 
 // waitForEvent blocks until an event arrives on ch, then returns
@@ -237,6 +297,24 @@ func waitForEvent(ch chan query.Event) tea.Cmd {
 			return loopFinishedMsg{}
 		}
 		return queryEventMsg(ev)
+	}
+}
+
+// waitForPermRequest is the parallel subscription for the
+// permission-request channel. The query loop's CheckPermission
+// closure posts a permRequest and blocks on its RespondCh; this
+// Cmd pulls one off the bridge channel and delivers it as a
+// permissionRequestMsg so Update can build the dialog state. On
+// channel close (loop done) it returns nil — the per-turn channel
+// is already drained, the next permReqCh is created on the next
+// turn, so there's nothing to do.
+func waitForPermRequest(ch chan permRequest) tea.Cmd {
+	return func() tea.Msg {
+		req, ok := <-ch
+		if !ok {
+			return nil
+		}
+		return permissionRequestMsg{req: req}
 	}
 }
 

@@ -167,12 +167,12 @@ type McpServerConfig struct {
 
 // Config is the effective, resolved runtime configuration. It is
 // assembled by the CLI from (in order of increasing priority):
-//   1. Compiled-in defaults
-//   2. Managed/enterprise settings (read-only, injected by admin)
-//   3. Global settings.json (~/.forge/settings.json)
-//   4. Project settings.json (.forge/settings.json)
-//   5. Project-local settings.json (.forge/settings.local.json)
-//   6. CLI flag overrides
+//  1. Compiled-in defaults
+//  2. Managed/enterprise settings (read-only, injected by admin)
+//  3. Global settings.json (~/.forge/settings.json)
+//  4. Project settings.json (.forge/settings.json)
+//  5. Project-local settings.json (.forge/settings.local.json)
+//  6. CLI flag overrides
 //
 // Per spec §2.3, Config is "runtime, layered." The loader in
 // internal/cli (Phase 1) builds it; later phases add the layer-merging
@@ -241,6 +241,16 @@ type Config struct {
 
 	// WorkingDir is the effective working directory. CLI: --cwd.
 	WorkingDir string `json:"working_dir,omitempty"`
+
+	// PermissionRules is the in-memory record of "always allow" /
+	// "always deny" decisions made during this session. Populated
+	// by the TUI's permission dialog (Step 5) when the user picks
+	// the "always" button; consulted by the loop's CheckPermission
+	// closure before posting a request to the user. The same field
+	// is persisted in Settings.PermissionRules; this in-memory copy
+	// is the one the active session consults. Disk persistence of
+	// new rules is Phase 3.1.
+	PermissionRules []PermissionRule `json:"permission_rules,omitempty"`
 }
 
 // EffectiveModel returns the model to use, falling back to the default
@@ -319,9 +329,9 @@ type PermissionRule struct {
 func DefaultSettings() Settings {
 	autoCompact := true
 	return Settings{
-		Model:        DefaultModel,
-		MaxTokens:    DefaultMaxTokens,
-		AutoCompact:  &autoCompact,
+		Model:          DefaultModel,
+		MaxTokens:      DefaultMaxTokens,
+		AutoCompact:    &autoCompact,
 		PermissionMode: PermissionDefault,
 	}
 }

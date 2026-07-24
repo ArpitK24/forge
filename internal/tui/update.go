@@ -21,12 +21,29 @@ import (
 // Spec §9.3 governs key handling. The disambiguation rule for Esc
 // is critical: Esc cancels a streaming turn OR clears the input OR
 // quits, depending on state — never one key always meaning quit.
+//
+// Step 5: while the permission dialog is open, it owns ALL input.
+// The user confirmed the freeze-everything design: no scroll, no
+// input dispatch except into the dialog. Esc inside the dialog
+// denies the call (does NOT quit the TUI), Tab/Shift+Tab cycle
+// focus, Enter activates the focused button.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// If the permission dialog is open, it owns all input until
-	// the user decides. Step 5 wires the actual dialog; for now
-	// this branch is dead but kept so the structure is in place.
+	// the user decides. This branch is reached on EVERY message
+	// type — key presses, loop events, window resizes — and
+	// short-circuits the rest of Update. The only messages we
+	// still care about while the dialog is open are key presses
+	// (to navigate/activate) and any pending permissionRequestMsg
+	// that would queue a second dialog (we leave that one on the
+	// channel — see openPermissionDialog).
 	if m.PermissionDialog != nil {
-		return m.handlePermissionDialog(msg)
+		if k, ok := msg.(tea.KeyMsg); ok {
+			return m.handlePermissionDialogKey(k)
+		}
+		// Non-key messages (window resize, loop events) are
+		// dropped while the dialog is up. This matches the
+		// "freeze everything" decision.
+		return m, nil
 	}
 
 	switch msg := msg.(type) {
@@ -52,6 +69,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case loopFinishedMsg:
 		return m.handleLoopFinished(msg)
+
+	// --- Permission request from the loop (Step 5) ---
+	case permissionRequestMsg:
+		return m.openPermissionDialog(msg)
 
 	// --- Key presses ---
 	case tea.KeyMsg:
@@ -513,10 +534,128 @@ func (m Model) handleLoopFinished(msg loopFinishedMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// handlePermissionDialog routes all input to the permission dialog
-// while it's open. Stub for Step 5.
-func (m Model) handlePermissionDialog(msg tea.Msg) (tea.Model, tea.Cmd) {
-	// Step 5 implements this. For now, the dialog is never opened.
+// openPermissionDialog is called when the loop's CheckPermission
+// closure posts a request. We build the dialog state and stash it
+// on the Model; the next Update will see PermissionDialog != nil
+// and route all subsequent input into the dialog.
+//
+// The Respond closure writes the user's decision to the per-request
+// channel. Because permReqCh has capacity 4 and the loop calls
+// CheckPermission serially, only one dialog can be open at a time;
+// this method is therefore a simple swap of the dialog pointer.
+func (m Model) openPermissionDialog(p permissionRequestMsg) (tea.Model, tea.Cmd) {
+	req := p.req
+	m.PermissionDialog = &PermissionDialogState{
+		ToolName:    req.Request.ToolName,
+		Description: req.Request.Description,
+		Details:     req.Request.Details,
+		// Default focus on Allow (index 0) — it's the safest
+		// "let it through" choice and matches the AutoPermissionHandler
+		// behavior in non-strict modes.
+		Focused: 0,
+		Respond: func(d core.PermissionDecision) {
+			req.RespondCh <- d
+		},
+	}
+	// Suspend the loop's auto-scroll while the dialog is up so
+	// the message pane doesn't drift under the modal.
+	m.AutoScroll = false
+	return m, nil
+}
+
+// handlePermissionDialogKey routes a key press to the right dialog
+// action. Only tea.KeyMsg reaches this method; Update filters out
+// non-key messages while the dialog is open.
+//
+// Esc always denies (regardless of the focused button) — this
+// matches spec §9.5 and Claude Code's behavior. Enter activates
+// the focused button. Tab cycles forward; Shift+Tab cycles
+// backward.
+func (m Model) handlePermissionDialogKey(k tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch k.String() {
+	case "tab":
+		m.PermissionDialog.Focused = (m.PermissionDialog.Focused + 1) % 4
+		return m, nil
+	case "shift+tab":
+		// Adding 3 (== -1 mod 4) wraps backward.
+		m.PermissionDialog.Focused = (m.PermissionDialog.Focused + 3) % 4
+		return m, nil
+	case "enter":
+		return m.activatePermissionButton()
+	case "esc":
+		return m.respondPermission(core.DecisionDeny)
+	}
+	// Any other key is ignored — the dialog is the only thing
+	// the user can do right now.
+	return m, nil
+}
+
+// activatePermissionButton is the Enter handler. It maps the
+// currently focused button (0..3) to the corresponding
+// PermissionDecision and routes it through respondPermission.
+func (m Model) activatePermissionButton() (tea.Model, tea.Cmd) {
+	if m.PermissionDialog == nil {
+		return m, nil
+	}
+	idx := m.PermissionDialog.Focused
+	if idx < 0 || idx >= len(permissionButtonDecisions) {
+		// Defensive: should never happen because Focused is
+		// always set by the key handler modulo 4, but if a
+		// future caller constructs a dialog with an out-of-
+		// range Focused we don't want to panic.
+		return m.respondPermission(core.DecisionDeny)
+	}
+	return m.respondPermission(permissionButtonDecisions[idx])
+}
+
+// respondPermission records the user's decision and posts it
+// back to the loop. For "always" decisions it also appends a
+// core.PermissionRule to the active Config's in-memory rule
+// list so subsequent matching calls auto-decide.
+//
+// The dialog pointer is nilled BEFORE Respond is called so the
+// loop's next CheckPermission call (if the model makes a
+// follow-up tool call) can post a fresh request without
+// short-circuiting on the previous dialog.
+func (m Model) respondPermission(d core.PermissionDecision) (tea.Model, tea.Cmd) {
+	if m.PermissionDialog == nil {
+		return m, nil
+	}
+	dlg := m.PermissionDialog
+	m.PermissionDialog = nil
+
+	// Append a session-scoped rule for the "always" decisions.
+	// ArgPattern is the verbatim description the loop passed
+	// (for Bash, this is the command line). Phase 3 uses
+	// substring matching; Phase 3.1 upgrades to glob.
+	if d == core.DecisionAllowPermanently || d == core.DecisionDenyPermanently {
+		if m.Config != nil {
+			m.Config.PermissionRules = append(m.Config.PermissionRules,
+				core.PermissionRule{
+					Tool:       dlg.ToolName,
+					ArgPattern: dlg.Description,
+					Decision:   d,
+				})
+		}
+	}
+
+	// Update the status line so the user has visible feedback
+	// after the dialog closes. (The dialog itself disappears;
+	// the status line is the next thing they see.)
+	switch d {
+	case core.DecisionAllow:
+		m.Status = "Allowed: " + dlg.ToolName
+	case core.DecisionAllowPermanently:
+		m.Status = "Allowed (always): " + dlg.ToolName
+	case core.DecisionDeny:
+		m.Status = "Denied: " + dlg.ToolName
+	case core.DecisionDenyPermanently:
+		m.Status = "Denied (always): " + dlg.ToolName
+	}
+
+	if dlg.Respond != nil {
+		dlg.Respond(d)
+	}
 	return m, nil
 }
 
