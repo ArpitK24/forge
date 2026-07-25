@@ -88,11 +88,19 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 	// 5. Run the bubbletea program. Wrap in panic-recovery so a
 	// crash in Update still restores the terminal.
 	p := tea.NewProgram(m, tea.WithAltScreen())
+	var finalModel tea.Model
 	withPanicRestore(restore, func() {
-		if _, err := p.Run(); err != nil {
+		finalModel, err = p.Run()
+		if err != nil {
 			logger.Error("bubbletea program exited with error", "err", err)
 		}
 	})
+	// Save the session BEFORE restoring the terminal — any
+	// stderr output we produce will still be readable. We
+	// recover the final *Model from p.Run()'s return value;
+	// bubbletea passes the last value Update produced, which
+	// is the most up-to-date snapshot of the conversation.
+	saveSessionOnExit(cfg, logger, finalModel)
 	restore()
 	return nil
 }
