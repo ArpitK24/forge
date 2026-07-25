@@ -21,6 +21,7 @@ import (
 
 	"github.com/ArpitK24/forge/internal/cli"
 	"github.com/ArpitK24/forge/internal/core"
+	"github.com/ArpitK24/forge/internal/tui"
 )
 
 func main() {
@@ -108,7 +109,13 @@ func run(program string, args []string) error {
 	if parsed.Print || parsed.PositionalPrompt != "" {
 		return runHeadless(parsed, cfg, logger)
 	}
-	return runInteractivePlaceholder(parsed, cfg, logger)
+	// Interactive path: launch the bubbletea TUI. The
+	// TUI owns the terminal, blocks until the user quits,
+	// and saves the session on graceful exit (Step 6).
+	// A fresh CostTracker is constructed here — the TUI
+	// is the only writer to it in this mode.
+	cost := core.NewCostTracker()
+	return tui.RunProgram(cfg, cost, logger)
 }
 
 // setupLogging constructs the slog.Logger. Default level is WARN;
@@ -169,19 +176,6 @@ func readPromptFromStdin() (string, error) {
 
 // runHeadlessPlaceholder was the Phase-1 headless stub. The
 // real implementation now lives in headless.go as runHeadless.
-
-// runInteractivePlaceholder is the Phase-1 TUI stub. It prints a
-// message telling the user to come back in Phase 3 and exits 0.
-func runInteractivePlaceholder(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
-	logger.Info("interactive mode (Phase 1 placeholder)")
-	fmt.Printf("forge %s — interactive mode (Phase 1 placeholder)\n", core.AppVersion)
-	fmt.Println()
-	fmt.Println("The TUI lands in Phase 3. For now:")
-	fmt.Println("  - run `forge -p \"hello\"` for a headless one-shot")
-	fmt.Println("  - run `forge --help` for the full flag list")
-	fmt.Println("  - run `forge --version` for the version")
-	return nil
-}
 
 // exitError is a sentinel error type that run() returns to signal
 // a specific exit code. main() inspects the error with errors.As
