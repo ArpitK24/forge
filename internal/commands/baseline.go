@@ -134,21 +134,24 @@ func (compactCmd) Description() string { return "summarize the conversation to r
 func (compactCmd) Hidden() bool        { return false }
 func (compactCmd) Help() string {
 	return "Replaces the conversation history with a shorter summary. " +
-		"The most recent few turns are kept verbatim. Phase 3's " +
-		"summarizer is a stub (the trigger math and the hook are real; " +
-		"the actual summarization model call lands in Phase 4), so for " +
-		"now this is effectively a no-op that reports the current length."
+		"The most recent " + fmt.Sprintf("%d", core.AutoCompactTailKeep) +
+		" messages are kept verbatim; everything older is collapsed " +
+		"into one summary message produced by a model call. The " +
+		"summary model is currently " + core.FastModel + "."
 }
 func (compactCmd) Execute(ctx context.Context, _ string, cctx *CommandContext) CommandResult {
 	if cctx == nil {
 		return ErrorResult("compact: no command context")
+	}
+	if cctx.Client == nil {
+		return ErrorResult("compact: no model client available")
 	}
 	before := len(cctx.Messages)
 	model := ""
 	if cctx.Config != nil {
 		model = cctx.Config.EffectiveModel()
 	}
-	compacted, err := query.CompactConversation(ctx, cctx.Messages, model)
+	compacted, err := query.CompactConversation(ctx, cctx.Client, cctx.Messages, model, core.FastModel)
 	if err != nil {
 		return ErrorResult(fmt.Sprintf("compact failed: %v", err))
 	}

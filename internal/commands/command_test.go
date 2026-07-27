@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ArpitK24/forge/internal/api"
 	"github.com/ArpitK24/forge/internal/core"
 )
 
@@ -22,6 +23,11 @@ func testCtx(overrides ...func(*CommandContext)) *CommandContext {
 		Cost:       core.NewCostTracker(),
 		Messages:   nil,
 		WorkingDir: ".",
+		// Default Client: a no-script FakeProvider. Tests that
+		// don't issue a model call leave it idle; tests that do
+		// (e.g. /compact with messages) override via the
+		// overrides variadic.
+		Client: api.NewFakeProvider(),
 	}
 	for _, fn := range overrides {
 		fn(c)

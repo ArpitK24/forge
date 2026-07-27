@@ -367,12 +367,22 @@ func RunQueryLoop(
 			cost.AddUsage(turnUsage, cfg.Model)
 		}
 
-		// 6.5. Auto-compaction check. Phase 2's CompactConversation
-		// is a stub that returns messages unchanged; the trigger
-		// math is still wired up so the wiring is in place for
-		// Phase 4.
+		// 6.5. Auto-compaction check. Spec §5.2: when input
+		// tokens cross the trigger fraction of the context
+		// window, summarize the older messages and keep the
+		// most recent AutoCompactTailKeep verbatim.
+		//
+		// The per-session counter state (failure count,
+		// circuit-breaker flag) is local to this loop call:
+		// headless one-shots start fresh per invocation, and
+		// the TUI's session-scoped state will live on the
+		// shared Model in a future step. Per-loop scope is
+		// sufficient to exercise the trigger math + summarizer
+		// path Step 1 cares about.
 		if toolCtx != nil && toolCtx.Cfg != nil && toolCtx.Cfg.AutoCompact {
-			_ = AutoCompactIfNeeded(ctx, &messages, cfg.Model, turnUsage, cost)
+			compactState := &CompactState{}
+			_ = AutoCompactIfNeeded(ctx, client, &messages, cfg.Model,
+				core.FastModel, turnUsage, compactState, eventCh)
 		}
 
 		// 7. Branch on stop reason.

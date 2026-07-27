@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 
+	"github.com/ArpitK24/forge/internal/api"
 	"github.com/ArpitK24/forge/internal/core"
 )
 
@@ -63,6 +64,14 @@ type CommandContext struct {
 	// WorkingDir is the directory the TUI is running in. Used by
 	// /init to scaffold a FORGE.md and by /status for display.
 	WorkingDir string
+	// Client is the active api.Provider. Carried so commands
+	// that need to issue a model call (currently /compact,
+	// which uses it to summarize the conversation) can do so
+	// without the caller having to thread it through the
+	// command's arguments. May be nil in unit tests where the
+	// command's body doesn't issue a model call; /compact
+	// surfaces a friendly error when nil.
+	Client api.Provider
 }
 
 // ResultKind discriminates the CommandResult variants. Spec §6.1.

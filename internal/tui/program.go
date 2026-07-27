@@ -78,6 +78,12 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 		SystemPrompt: systemPrompt,
 		Logger:       logger,
 	}
+	// Expose the provider to slash commands that issue their own
+	// model calls (currently /compact). The provider is fixed
+	// for the lifetime of the session, so a one-time assignment
+	// is enough; commands read it from m.CmdCtx.Client via the
+	// dispatchCommand path.
+	m.CmdCtx.Client = provider
 	if providerErr != nil {
 		m.Messages = append(m.Messages, renderedMessage{
 			Role: "error",
