@@ -10,7 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/ArpitK24/forge/internal/api"
-	"github.com/ArpitK24/forge/internal/api/openai"
+	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/query"
 	"github.com/ArpitK24/forge/internal/tools"
@@ -111,20 +111,16 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 	return nil
 }
 
-// buildProvider constructs the OpenAI-compatible provider from the
-// resolved Config. Returns an error if the API key is missing; the
-// caller decides whether to surface it or proceed without a
-// provider (the TUI still works for /commands).
+// buildProvider constructs the active api.Provider from the
+// resolved Config. Phase 4 Step 3: routes through the selector
+// so an Anthropic-shaped API base URL picks the Anthropic adapter
+// and any other base URL keeps the OpenAI-compatible default.
+// Returns an error if the API key is missing; the caller decides
+// whether to surface it or proceed without a provider (the TUI
+// still works for /commands).
 func buildProvider(cfg *core.Config, logger *slog.Logger) (api.Provider, error) {
 	apiKey := resolveAPIKey(cfg)
-	if apiKey == "" {
-		return nil, fmt.Errorf("no API key found")
-	}
-	base := cfg.APIBase
-	if base == "" {
-		base = core.DefaultAPIBase
-	}
-	return openai.New(base, apiKey, cfg.EffectiveModel()), nil
+	return selector.Select(cfg, apiKey)
 }
 
 // resolveAPIKey mirrors headless.go's precedence:

@@ -107,7 +107,80 @@ var knownModels = []ModelInfo{
 		SupportsPromptCaching:    false,
 		SupportsExtendedThinking: false,
 	},
-	// Future: Anthropic models (Phase 4) will have SupportsPromptCaching=true.
+	// Anthropic Claude 4 family. All ship with 200k context,
+	// native prompt caching (cache_control: ephemeral markers),
+	// and extended thinking. Spec §5.7: "Anthropic adapter in
+	// Phase 4 will set this true" — this is that step.
+	//
+	// Model ids are Anthropic's published names; substring
+	// matching in ContextWindowForModel means partial ids
+	// (e.g. "claude-sonnet-4-5-20251001") resolve correctly.
+	{
+		ID:                       "claude-opus-4-1",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: true,
+	},
+	{
+		ID:                       "claude-opus-4",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: true,
+	},
+	{
+		ID:                       "claude-sonnet-4-5",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: true,
+	},
+	{
+		ID:                       "claude-sonnet-4",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: true,
+	},
+	{
+		ID:                       "claude-haiku-4",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: true,
+	},
+	{
+		ID:                       "claude-3-7-sonnet-latest",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: true,
+	},
+	{
+		ID:                       "claude-3-5-sonnet-latest",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: false,
+	},
+	{
+		ID:                       "claude-3-5-haiku-latest",
+		Provider:                 "anthropic",
+		ContextWindow:            200_000,
+		SupportsToolUse:          true,
+		SupportsPromptCaching:    true,
+		SupportsExtendedThinking: false,
+	},
+	// Future: more providers (Google Gemini, GitHub Copilot) will
+	// add their own entries here as we ship their adapters.
 }
 
 // DefaultContextWindowFallback is the context-window size we
@@ -117,7 +190,7 @@ var knownModels = []ModelInfo{
 // industry-standard "big enough for anything" current-gen
 // window. Older / smaller models fall back to 8k.
 const (
-	DefaultContextWindowFallback  = 128_000
+	DefaultContextWindowFallback      = 128_000
 	ConservativeContextWindowFallback = 8_000
 )
 
@@ -154,6 +227,12 @@ func ContextWindowForModel(modelID string) int {
 
 // LookupModel returns the ModelInfo for a model id, or a
 // synthesized info with the default flags if unknown.
+//
+// Unknown Anthropic-shaped ids (substring "claude") get the
+// Anthropic flags — prompt caching + extended thinking on by
+// assumption, since every Claude model Anthropic ships today
+// supports both. Unknown OpenAI/NIM-shaped ids get the original
+// conservative defaults.
 func LookupModel(modelID string) ModelInfo {
 	id := lower(modelID)
 	for _, m := range knownModels {
@@ -161,14 +240,23 @@ func LookupModel(modelID string) ModelInfo {
 			return m
 		}
 	}
-	// Synthesize a conservative ModelInfo for the unknown id.
+	// Synthesize conservative defaults for the unknown id.
+	// Pick the provider family from the id namespace.
+	provider := "openai"
+	supportsCache := false
+	supportsThinking := false
+	if contains(id, "claude") {
+		provider = "anthropic"
+		supportsCache = true
+		supportsThinking = true
+	}
 	return ModelInfo{
 		ID:                       modelID,
-		Provider:                 "openai",
+		Provider:                 provider,
 		ContextWindow:            ContextWindowForModel(modelID),
-		SupportsToolUse:          true, // assume yes — model is on a tool-call-capable endpoint
-		SupportsPromptCaching:    false,
-		SupportsExtendedThinking: false,
+		SupportsToolUse:          true, // assume yes — every modern chat model can call tools
+		SupportsPromptCaching:    supportsCache,
+		SupportsExtendedThinking: supportsThinking,
 	}
 }
 

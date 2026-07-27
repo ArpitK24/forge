@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/ArpitK24/forge/internal/api"
-	"github.com/ArpitK24/forge/internal/api/openai"
+	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/cli"
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/query"
@@ -53,15 +53,33 @@ func runHeadless(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
 	//      a) --api-base flag (added in Phase 2)
 	//      b) FORGE_API_BASE env
 	//      c) core.DefaultAPIBase (NIM)
-	apiBase := resolveAPIBase(a, cfg)
+	//
+	// We layer the resolved base onto cfg.APIBase before
+	// calling the selector so Phase 4 Step 3's URL-host
+	// detection (api.anthropic.com → Anthropic) sees the
+	// final value. After the selector runs, we restore the
+	// original cfg.APIBase to keep the layered-config
+	// semantics intact for any downstream consumer.
+	originalAPIBase := cfg.APIBase
+	if resolved := resolveAPIBase(a, cfg); resolved != "" {
+		cfg.APIBase = resolved
+	}
+	defer func() { cfg.APIBase = originalAPIBase }()
 
 	// 3. Build the system prompt.
 	cwd := resolveCwd(cfg.WorkingDir)
 	systemPrompt := core.BuildSystemPrompt(cfg, cwd)
 
-	// 4. Build the provider.
+	// 4. Build the provider via the Phase 4 Step 3 selector.
+	// The selector inspects cfg.APIBase to pick Anthropic vs
+	// OpenAI-compatible; the explicit Provider field on cfg
+	// (when set) overrides the URL heuristic.
 	model := cfg.EffectiveModel()
-	provider := openai.New(apiBase, apiKey, model)
+	provider, err := selector.Select(cfg, apiKey)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "forge:", err)
+		return exitError(2)
+	}
 
 	// 5. Build the tool list.
 	toolsList := tools.AllTools()
@@ -69,9 +87,9 @@ func runHeadless(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
 	// 6. Build the per-call ToolContext.
 	perm := &core.AutoPermissionHandler{Mode: cfg.PermissionMode}
 	tc := &tools.ToolContext{
-		WorkingDir: cwd,
-		Permission: perm,
-		Cfg:        cfg,
+		WorkingDir:     cwd,
+		Permission:     perm,
+		Cfg:            cfg,
 		NonInteractive: true,
 		CheckPermission: func(name, desc string, ro bool) core.PermissionDecision {
 			return perm.RequestPermission(core.PermissionRequest{
@@ -283,13 +301,13 @@ type jsonRenderer struct {
 }
 
 type jsonOutput struct {
-	Text     string                  `json:"text"`
-	ToolUses []jsonToolUse           `json:"tool_uses,omitempty"`
-	Usage    *core.UsageInfo         `json:"usage,omitempty"`
-	Turns    int                     `json:"turns"`
-	Outcome  string                  `json:"outcome"`
-	Error    string                  `json:"error,omitempty"`
-	Cost     string                  `json:"cost,omitempty"`
+	Text     string          `json:"text"`
+	ToolUses []jsonToolUse   `json:"tool_uses,omitempty"`
+	Usage    *core.UsageInfo `json:"usage,omitempty"`
+	Turns    int             `json:"turns"`
+	Outcome  string          `json:"outcome"`
+	Error    string          `json:"error,omitempty"`
+	Cost     string          `json:"cost,omitempty"`
 }
 
 type jsonToolUse struct {
@@ -301,8 +319,8 @@ type jsonToolUse struct {
 
 func (r *jsonRenderer) run(events <-chan query.Event) {
 	var (
-		text        strings.Builder
-		toolUses    []jsonToolUse
+		text     strings.Builder
+		toolUses []jsonToolUse
 		// outcome is filled in when the loop emits its
 		// terminal OutcomeEvent. Until then, we report a
 		// generic end_turn so the document is well-formed
@@ -375,10 +393,10 @@ func (r *streamJSONRenderer) run(events <-chan query.Event) {
 		switch e := ev.(type) {
 		case query.StreamEventForward:
 			_ = enc.Encode(struct {
-				Type string `json:"type"`
+				Type  string          `json:"type"`
 				Event api.StreamEvent `json:"event"`
 			}{
-				Type: "stream_event",
+				Type:  "stream_event",
 				Event: e.Event,
 			})
 		case query.ToolStartEvent:
@@ -403,16 +421,16 @@ func (r *streamJSONRenderer) run(events <-chan query.Event) {
 			}{Type: "status", StatusEvent: e})
 		case query.ErrorEvent:
 			_ = enc.Encode(struct {
-				Type string `json:"type"`
+				Type string      `json:"type"`
 				Err  *core.Error `json:"error"`
 			}{Type: "error", Err: e.Err})
 		case query.OutcomeEvent:
 			_ = enc.Encode(struct {
-				Type string `json:"type"`
-				Kind string `json:"kind"`
+				Type  string         `json:"type"`
+				Kind  string         `json:"kind"`
 				Usage core.UsageInfo `json:"usage"`
-				Turns int `json:"turns"`
-				Err  *core.Error `json:"error,omitempty"`
+				Turns int            `json:"turns"`
+				Err   *core.Error    `json:"error,omitempty"`
 			}{
 				Type:  "outcome",
 				Kind:  e.Kind.String(),
@@ -433,7 +451,7 @@ func (r *streamJSONRenderer) run(events <-chan query.Event) {
 	}
 	// Signal end of stream so consumers can know we're done.
 	_ = enc.Encode(struct {
-		Type string `json:"type"`
+		Type string    `json:"type"`
 		Time time.Time `json:"time"`
 	}{Type: "end", Time: time.Now()})
 }
@@ -494,7 +512,7 @@ func runWithRetry(
 		} else {
 			// 1<<attempt seconds + 0–250ms jitter
 			base := time.Duration(1<<attempt) * time.Second
-			jitter := time.Duration(time.Now().UnixNano() % 250) * time.Millisecond
+			jitter := time.Duration(time.Now().UnixNano()%250) * time.Millisecond
 			delay = base + jitter
 		}
 		logger.Warn("transient error, retrying",
