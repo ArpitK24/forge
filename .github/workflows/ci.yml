@@ -71,20 +71,23 @@ jobs:
         run: go test -count=1 ./...
 
       - name: Build static binary
-        # scripts/build.sh is a bash script. On Windows runners
-        # it's invoked via the bash that ships with the
-        # git-for-windows / GitHub Actions default image.
+        # Invoke via `bash` instead of `./scripts/build.sh` because
+        # actions/checkout does not preserve the executable bit on
+        # tracked files, and on the macOS / Linux runners the
+        # direct invocation would fail with "Permission denied".
+        # The shebang inside the script still selects bash.
         shell: bash
-        run: ./scripts/build.sh ${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
+        run: bash scripts/build.sh ${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: forge-${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
-          path: |
-            dist/forge-linux
-            dist/forge-darwin
-            dist/forge-darwin-arm64
-            dist/forge-windows.exe
+          # Glob dist/forge-* so the runner only uploads what it
+          # actually built. Each matrix leg produces only the
+          # binary matching its host OS, not all four targets —
+          # listing each path literally would trip
+          # if-no-files-found for the non-matching ones.
+          path: dist/forge-*
           if-no-files-found: error
           retention-days: 14
