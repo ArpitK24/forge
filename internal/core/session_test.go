@@ -144,12 +144,30 @@ func TestSession_RoundTrip(t *testing.T) {
 	}
 	// JSON round-trips wall time only — strip the monotonic
 	// clock suffix on the in-memory UpdatedAt before comparing.
+	// Also normalize CreatedAt: time.Time has an unexported
+	// *Location pointer that DeepEqual compares by identity.
+	// After a JSON round-trip the decoded time may carry a
+	// different *Location instance even though the visible
+	// wall+offset is identical. Compare RFC 3339 strings of
+	// the wall time so location-pointer identity doesn't
+	// matter; leave UpdatedAt on time.Time (mutated in place
+	// by SaveSession) and compare via .Equal().
 	got := *loaded
 	got.UpdatedAt = loaded.UpdatedAt.Round(0)
 	want := *original
 	want.UpdatedAt = original.UpdatedAt.Round(0)
-	if !reflect.DeepEqual(&want, &got) {
-		t.Errorf("round-trip mismatch:\n  want: %+v\n  got:  %+v", &want, &got)
+	if !reflect.DeepEqual(want.Messages, got.Messages) {
+		t.Errorf("messages mismatch:\n  want: %+v\n  got:  %+v", want.Messages, got.Messages)
+	}
+	if want.ID != got.ID || want.Model != got.Model ||
+		want.WorkingDir != got.WorkingDir || want.Title != got.Title {
+		t.Errorf("scalar fields mismatch:\n  want: %+v\n  got:  %+v", &want, &got)
+	}
+	if !got.CreatedAt.Equal(want.CreatedAt) {
+		t.Errorf("created_at mismatch: want %v, got %v", want.CreatedAt, got.CreatedAt)
+	}
+	if !got.UpdatedAt.Equal(want.UpdatedAt) {
+		t.Errorf("updated_at mismatch: want %v, got %v", want.UpdatedAt, got.UpdatedAt)
 	}
 	// And the mutation is what we expected: the in-memory
 	// UpdatedAt is now later than what we passed in.

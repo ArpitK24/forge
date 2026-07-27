@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -397,7 +398,7 @@ func TestExecuteCommand_InitCreatesForgeMD(t *testing.T) {
 		t.Errorf("/init should say 'Created', got: %s", res.Text)
 	}
 	// Verify the file actually exists.
-	exists, err := fileExists(dir + string([]byte{'\\'}) + core.MemoryFileName)
+	exists, err := fileExists(filepath.Join(dir, core.MemoryFileName))
 	if err != nil {
 		t.Fatalf("fileExists check: %v", err)
 	}
@@ -409,7 +410,7 @@ func TestExecuteCommand_InitCreatesForgeMD(t *testing.T) {
 func TestExecuteCommand_InitIdempotent(t *testing.T) {
 	dir := t.TempDir()
 	// Create the file first.
-	writeFile(dir+string([]byte{'\\'})+core.MemoryFileName, []byte("# existing"), 0o644)
+	writeFile(filepath.Join(dir, core.MemoryFileName), []byte("# existing"), 0o644)
 	res := ExecuteCommand(context.Background(), "/init", testCtx(func(c *CommandContext) {
 		c.WorkingDir = dir
 	}))
