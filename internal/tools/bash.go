@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
-	"syscall"
 	"time"
 
 	"github.com/ArpitK24/forge/internal/core"
@@ -135,30 +134,15 @@ func (b *BashTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 	// Spec §3.2 also lists PowerShell as a separate tool; Phase 3
 	// only ships Bash, and on Windows it uses cmd /c. PowerShell
 	// will land as a separate tool in Phase 3.1.
+	//
+	// The platform-specific SysProcAttr setup (CREATE_NEW_PROCESS_GROUP
+	// on Windows; Setpgid on Unix) lives behind the
+	// applyProcessGroupSetup function so this file stays
+	// platform-agnostic and cross-compiles cleanly.
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
 		cmd = exec.CommandContext(runCtx, "cmd", "/c", in.Command)
-		// CREATE_NEW_PROCESS_GROUP (0x00000200) makes cmd.exe
-		// the root of a new console process group. When we
-		// signal cancellation below, GenerateConsoleCtrlEvent
-		// with CTRL_BREAK_EVENT can target the whole group
-		// — which is how child processes spawned by cmd.exe
-		// (ping, timeout, anything started with start /wait)
-		// finally get killed. Without this, os.Process.Kill
-		// only kills cmd.exe, leaving the grandchild
-		// orphaned.
-		cmd.SysProcAttr = &syscall.SysProcAttr{
-			CreationFlags: 0x00000200, // CREATE_NEW_PROCESS_GROUP
-		}
-		// Cancel is called by os/exec when the context is
-		// cancelled. On Windows, it must be set to a non-nil
-		// func to opt out of the default Kill (which would
-		// only kill cmd.exe). We send Ctrl+Break first and
-		// then escalate to Kill after bashTimeoutGrace.
-		cmd.Cancel = func() error {
-			return sendCtrlBreakToProcessGroup(cmd.Process)
-		}
-		cmd.WaitDelay = bashTimeoutGrace
+		applyProcessGroupSetup(cmd)
 	} else {
 		cmd = exec.CommandContext(runCtx, "bash", "-c", in.Command)
 		// Unix: put the child in its own process group and
@@ -204,7 +188,7 @@ func (b *BashTool) Execute(ctx context.Context, input json.RawMessage, tc *ToolC
 		switch {
 		case runCtx.Err() == context.DeadlineExceeded:
 			return ToolResult{
-				Text: fmt.Sprintf("command timed out after %ds\n%s", timeoutSec, truncated),
+				Text:    fmt.Sprintf("command timed out after %ds\n%s", timeoutSec, truncated),
 				IsError: true,
 				Metadata: map[string]any{
 					"exit_code":   -1,

@@ -1,0 +1,90 @@
+# GitHub Actions CI for Forge.
+# Phase 4 Step 2: cross-platform guarantees.
+#
+# Triggers:
+#   - every push to main
+#   - every PR targeting main
+#   - manual dispatch (workflow_dispatch)
+#
+# Matrix:
+#   ubuntu-latest, macos-latest, windows-latest — proves the
+#   build works on all three supported platforms. The Windows
+#   runner catches GDI / signal-handling regressions; the Linux
+#   runner catches Unix-only build-tag / syscall regressions;
+#   the macOS runner catches Mach-O / fork(2) regressions.
+#
+# Each matrix leg runs:
+#   1. go vet ./...     — static analysis
+#   2. go test -count=1 ./... — full test suite (no cache)
+#   3. ./scripts/build.sh — produce the per-OS static binaries
+#      (Ubuntu-only; the binaries are produced for the matrix
+#      host, not for all targets — cross-compile to every target
+#      from every host is the script's job, but only the
+#      matching-target binary gets used as an artifact)
+#
+# Artifacts:
+#   - per-OS forge binary at the path matching the matrix OS
+#     (forge-linux, forge-darwin, forge-windows.exe). These
+#     become downloadable from the Actions run page.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: vet + test + build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Don't cancel other legs when one fails — every platform's
+      # signal is independently useful.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          # Pin to the version the project targets. AGENTS.md §1
+          # says Go 1.26.5; the action's `go-version` accepts a
+          # patch version.
+          go-version: "1.26.5"
+          cache: true
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test (no cache)
+        # -count=1 disables Go's test-result cache so a passing
+        # cached test isn't mistaken for a real pass.
+        run: go test -count=1 ./...
+
+      - name: Build static binary
+        # scripts/build.sh is a bash script. On Windows runners
+        # it's invoked via the bash that ships with the
+        # git-for-windows / GitHub Actions default image.
+        shell: bash
+        run: ./scripts/build.sh ${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: forge-${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
+          path: |
+            dist/forge-linux
+            dist/forge-darwin
+            dist/forge-darwin-arm64
+            dist/forge-windows.exe
+          if-no-files-found: error
+          retention-days: 14

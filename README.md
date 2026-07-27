@@ -18,7 +18,7 @@ Most agents treat context as an afterthought: a system prompt, a tool result, re
 - **Cost tracking.** Input / output / cache tokens + USD estimate, surfaced in every output format and in `/cost`.
 - **Resilient.** Exponential backoff with `Retry-After` honored on 429 / 529 / rate-limit responses.
 - **Sessions on disk.** Every graceful exit writes `~/.forge/conversations/<uuid>.json`. Phase 3.1 adds the `/resume` browser to load them.
-- **Single static binary.** No Go runtime, no DLLs, no installer. ~8.5 MB on Windows.
+- **Single static binary.** No Go runtime, no DLLs, no installer. ~8.5 MB on every platform — Windows, Linux, macOS (intel and Apple Silicon).
 
 ---
 
@@ -26,15 +26,33 @@ Most agents treat context as an afterthought: a system prompt, a tool result, re
 
 ### 1. Build
 
-```bash
-# Standard build (links the Go runtime dynamically)
-go build -o forge.exe ./cmd/forge
+Use the build script to produce static binaries for every
+supported platform in one go:
 
-# Fully static, stripped, smaller binary (recommended for distribution)
-CGO_ENABLED=0 go build -ldflags="-s -w" -o forge.exe ./cmd/forge
+```bash
+./scripts/build.sh
+ls dist/
+# forge-darwin  forge-darwin-arm64  forge-linux  forge-windows.exe
 ```
 
-The result is a single Windows binary with no external dependencies.
+Or build just the binary for your host:
+
+```bash
+# Windows
+go build -o forge.exe ./cmd/forge
+
+# Linux / macOS
+go build -o forge ./cmd/forge
+
+# Fully static, stripped, smaller binary (recommended for distribution)
+CGO_ENABLED=0 go build -ldflags="-s -w" -o forge(.exe) ./cmd/forge
+```
+
+The result is a single static binary with no external
+dependencies. Forge supports Windows, Linux, and macOS
+(intel and Apple Silicon); CI on every push to `main`
+re-runs `go vet`, `go test`, and `scripts/build.sh` on
+all three operating systems.
 
 ### 2. Set an API key
 
@@ -42,7 +60,8 @@ Forge reads the key from the first non-empty source:
 
 ```bash
 # 1. Command-line flag (wins everything)
-forge.exe -p "hi" --api-key "<key>"
+./forge -p "hi" --api-key "<key>"        # Linux / macOS
+forge.exe -p "hi" --api-key "<key>"      # Windows
 
 # 2. Environment variables (first non-empty)
 export FORGE_API_KEY="<key>"          # any provider
@@ -56,19 +75,21 @@ The key is never logged or echoed, even at `--verbose`.
 
 ```bash
 # Interactive REPL — multi-turn conversation with full TUI
-forge.exe
+./forge            # Linux / macOS
+forge.exe          # Windows
 
 # One-shot headless — pipe a prompt, get the answer
-forge.exe -p "what is the current directory?"
+./forge -p "what is the current directory?"          # Linux / macOS
+forge.exe -p "what is the current directory?"        # Windows
 
 # Let the model act on the repo (file edits + shell)
-forge.exe -p "list the Go files in this repo" --permission-mode=accept-edits
+./forge -p "list the Go files in this repo" --permission-mode=accept-edits
 
 # Stream every event as one NDJSON line (great for piping into other tools)
-forge.exe -p "what time is it?" --output-format=stream-json
+./forge -p "what time is it?" --output-format=stream-json
 
 # Inspect the system prompt the model will actually see
-forge.exe --dump-system-prompt
+./forge --dump-system-prompt
 ```
 
 > ⚠️ **Headless permissions.** In `-p` mode there is no UI to answer a permission prompt, so `--permission-mode=default` (the default) **denies any non-read-only tool call** and reports the denial back to the model as `is_error: true`. To actually run shell commands in a one-shot, pass `--permission-mode=accept-edits` or `--permission-mode=bypass-permissions` (shorthand: `--dangerously-skip-permissions`). The interactive TUI doesn't have this problem — it shows a real dialog.
@@ -77,7 +98,7 @@ forge.exe --dump-system-prompt
 
 ## The TUI
 
-Launch `forge.exe` with no args. The screen splits into a scrollable message pane, a multi-line input, and a status line. Type a question, hit `Enter`, watch the answer stream. Type `/help` to see the slash commands.
+Launch `forge` (or `forge.exe` on Windows) with no args. The screen splits into a scrollable message pane, a multi-line input, and a status line. Type a question, hit `Enter`, watch the answer stream. Type `/help` to see the slash commands.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
@@ -187,7 +208,7 @@ All three carry the loop's real terminal `outcome` (`end_turn`, `max_tokens`, `c
 | `--dump-system-prompt` | Print the assembled system prompt and exit | — |
 | `-v`, `--verbose` | Raise log level to DEBUG | WARN |
 
-`forge.exe --help` is the canonical, always-up-to-date reference.
+`forge --help` (or `forge.exe --help` on Windows) is the canonical, always-up-to-date reference.
 
 ---
 
@@ -240,18 +261,6 @@ Every component is unit-tested in isolation. The full NIM round-trip is covered 
 
 ---
 
-## Security
-
-> **Important:** During early planning, a real `nvapi-…` key was accidentally pasted into the chat. **That key is treated as compromised.** It must be rotated in the NIM console. **Do not commit that key to source, settings, or any file.** Use the `NVIDIA_API_KEY` env var (or `--api-key` on the command line) to provide the rotated key. The literal string `nvapi-…` must never appear in this repository again.
-
-Additional notes:
-
-- API keys are resolved from env vars or the `--api-key` flag; they are never logged, even at `--verbose`.
-- The `Bash` tool runs commands as the current user. Use `--permission-mode=bypass-permissions` only in trusted, scripted contexts.
-- Session files at `~/.forge/conversations/<id>.json` are written mode 0600. They contain the full conversation including any code the user pasted; treat them with the same care as shell history.
-
----
-
 ## Troubleshooting
 
 **`forge: no API key found.`**
@@ -263,8 +272,18 @@ In `-p` mode (headless), `--permission-mode=default` denies all non-read-only to
 **`stream-json` output looks like it has extra noise at the end.**
 The final lines are `cost` (your usage) and `end` (a heartbeat). They are always emitted so consumers can know the stream is complete.
 
-**`go build` fails on a Mac / Linux machine.**
-The binary is Windows-first. Use the standard `go build -o forge ./cmd/forge` (no `.exe` suffix) on non-Windows. Cross-platform binaries are on the roadmap.
+**`go build` produces a binary that won't run on the target OS.**
+Run `./scripts/build.sh` instead — it cross-compiles to Linux,
+macOS, and Windows from any host. If you need to build for the
+current host only, use `go build -o forge ./cmd/forge` on
+Linux/macOS and `go build -o forge.exe ./cmd/forge` on Windows.
+
+**The CI build is failing on one platform but not the others.**
+Open the failed run on GitHub Actions; the matrix runs
+`go vet`, `go test -count=1`, and `./scripts/build.sh` on
+ubuntu-latest / macos-latest / windows-latest independently.
+A failure on one leg doesn't cancel the others — every
+platform's signal is independently useful.
 
 ---
 
