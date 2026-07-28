@@ -108,8 +108,8 @@ func (k EventKind) String() string {
 }
 
 // Delta is the sub-type of a content-block delta event. The Kind
-// discriminator tells you which of Text / Thinking / ToolInputJSON
-// to read; the other fields are zero.
+// discriminator tells you which of Text / Thinking / ToolInputJSON /
+// Signature to read; the other fields are zero.
 type Delta struct {
 	// Kind is the delta-type discriminator.
 	Kind DeltaKind
@@ -122,6 +122,13 @@ type Delta struct {
 	// It's a JSON fragment that the consumer should append to
 	// the in-progress tool-input string for the same block.
 	PartialJSON string
+	// Signature is populated when Kind == DeltaSignature. It is
+	// an opaque blob the vendor emits on a thinking block; it
+	// MUST be passed back verbatim on the next request to
+	// preserve the reasoning thread. We carry it through to
+	// core.Thinking.Signature rather than to the visible text
+	// stream, so consumers don't surface it to the user.
+	Signature string
 }
 
 // DeltaKind enumerates delta sub-types.
@@ -135,6 +142,10 @@ const (
 	// DeltaToolInputJSON is a partial JSON fragment of a
 	// tool_use's input. NIM streams these.
 	DeltaToolInputJSON
+	// DeltaSignature is an opaque signature blob the model
+	// emits on a thinking block (Anthropic). Routed into
+	// core.Thinking.Signature, never the visible text stream.
+	DeltaSignature
 )
 
 // String returns the stable wire-format name.
@@ -146,6 +157,8 @@ func (k DeltaKind) String() string {
 		return "thinking_delta"
 	case DeltaToolInputJSON:
 		return "input_json_delta"
+	case DeltaSignature:
+		return "signature_delta"
 	default:
 		return fmt.Sprintf("delta-%d", int(k))
 	}
@@ -202,6 +215,14 @@ func ToolInputJSONDelta(partial string) Delta {
 	return Delta{Kind: DeltaToolInputJSON, PartialJSON: partial}
 }
 
+// SignatureDelta constructs a SignatureDelta — the opaque
+// signature blob emitted on a thinking block (Anthropic). The
+// query loop's accumulator routes this into the block's
+// core.Thinking.Signature, never the visible text stream.
+func SignatureDelta(sig string) Delta {
+	return Delta{Kind: DeltaSignature, Signature: sig}
+}
+
 // streamEventJSON is the NDJSON shape for StreamJson output mode
 // (spec §7.3). Each event renders as one line of JSON with the
 // "type" field set to the event's kind name and the kind-specific
@@ -214,16 +235,17 @@ func ToolInputJSONDelta(partial string) Delta {
 // union-with-pointer style, and the canonical NDJSON shape is
 // the public, stable API for downstream parsers.
 type streamEventJSON struct {
-	Type        string          `json:"type"`
-	Model       string          `json:"model,omitempty"`
-	Index       int             `json:"index,omitempty"`
-	StopReason  string          `json:"stop_reason,omitempty"`
-	Text        string          `json:"text,omitempty"`
-	Thinking    string          `json:"thinking,omitempty"`
-	PartialJSON string          `json:"partial_json,omitempty"`
+	Type        string             `json:"type"`
+	Model       string             `json:"model,omitempty"`
+	Index       int                `json:"index,omitempty"`
+	StopReason  string             `json:"stop_reason,omitempty"`
+	Text        string             `json:"text,omitempty"`
+	Thinking    string             `json:"thinking,omitempty"`
+	PartialJSON string             `json:"partial_json,omitempty"`
+	Signature   string             `json:"signature,omitempty"`
 	Block       *core.ContentBlock `json:"block,omitempty"`
-	Usage       *core.UsageInfo `json:"usage,omitempty"`
-	Error       *core.Error     `json:"error,omitempty"`
+	Usage       *core.UsageInfo    `json:"usage,omitempty"`
+	Error       *core.Error        `json:"error,omitempty"`
 }
 
 // JSON returns the event as one NDJSON-friendly JSON object. The
@@ -239,6 +261,7 @@ func (e StreamEvent) JSON() ([]byte, error) {
 		Text:        e.Delta.Text,
 		Thinking:    e.Delta.Thinking,
 		PartialJSON: e.Delta.PartialJSON,
+		Signature:   e.Delta.Signature,
 	}
 	if e.Block.Kind != 0 { // only populated on a content_block_start
 		b := e.Block

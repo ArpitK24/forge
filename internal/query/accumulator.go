@@ -136,6 +136,25 @@ func (a *accumulator) applyDelta(idx int, d api.Delta) {
 		block.Thinking.Text += d.Thinking
 		a.blocks[idx] = block
 
+	case api.DeltaSignature:
+		// Anthropic emits one signature_delta on the thinking
+		// block just before content_block_stop. It's an opaque
+		// blob we MUST pass back to preserve the reasoning
+		// thread — never visible to the user. Write it into
+		// the existing thinking block's Signature field;
+		// lazily create the block if the adapter ever emits a
+		// signature_delta before any thinking_delta (defensive
+		// — Anthropic doesn't do this in practice).
+		block, ok := a.blocks[idx]
+		if !ok || block.Kind != core.BlockThinking {
+			block = core.ThinkingBlock("", "")
+		}
+		if block.Thinking == nil {
+			block.Thinking = &core.Thinking{}
+		}
+		block.Thinking.Signature += d.Signature
+		a.blocks[idx] = block
+
 	case api.DeltaToolInputJSON:
 		// Append to the per-index partial-JSON buffer.
 		buf, ok := a.toolInputs[idx]

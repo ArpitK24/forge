@@ -69,6 +69,63 @@ func NewWithHTTP(httpClient *http.Client, apiBase, apiKey, modelID string) *Clie
 // Info implements api.Provider.
 func (c *Client) Info() api.ModelInfo { return c.info }
 
+// ListModels implements api.ModelLister. It GETs the
+// OpenAI-compatible /models endpoint with the same Authorization
+// header Stream uses, parses the JSON {data: [{id, ...}]} list,
+// and returns each entry as a ModelInfo with the ID and
+// Provider populated. Capability flags and ContextWindow are
+// intentionally left zero — the canonical MergeWithKnown in
+// internal/api/provider.go fills those from the bundled
+// knownModels overlay when the caller asks for an enriched view.
+//
+// Non-2xx responses are classified with classifyHTTPError so
+// 401/403/429/500 surface the same typed errors callers see
+// from Stream. ctx cancellation is respected via the request
+// context.
+func (c *Client) ListModels(ctx context.Context) ([]api.ModelInfo, error) {
+	url := c.apiBase + "/models"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, core.Newf(core.KindHTTP, "new request: %v", err)
+	}
+	httpReq.Header.Set("Authorization", "Bearer "+c.apiKey)
+	httpReq.Header.Set("Accept", "application/json")
+
+	resp, err := c.http.Do(httpReq)
+	if err != nil {
+		if ctx.Err() != nil {
+			return nil, core.Wrap(core.KindCancelled, ctx.Err(), "request cancelled")
+		}
+		return nil, core.Wrap(core.KindHTTP, err, "http do")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
+		return nil, classifyHTTPError(resp.StatusCode, resp.Header.Get("Retry-After"), string(bodyBytes))
+	}
+
+	var env struct {
+		Data []struct {
+			ID string `json:"id"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&env); err != nil {
+		return nil, core.Wrap(core.KindAPI, err, "decode /models")
+	}
+	out := make([]api.ModelInfo, 0, len(env.Data))
+	for _, m := range env.Data {
+		if m.ID == "" {
+			continue
+		}
+		out = append(out, api.ModelInfo{
+			ID:       m.ID,
+			Provider: core.ProviderOpenAI,
+		})
+	}
+	return out, nil
+}
+
 // Stream implements api.Provider. It POSTs a Chat Completions
 // request and forwards the SSE response as canonical events.
 // The two returned channels follow the api.Provider contract:
@@ -174,33 +231,33 @@ func buildRequestBody(req api.Request) ([]byte, error) {
 // wireRequest is the OpenAI Chat Completions wire shape. The
 // fields we omit are nil/empty on the wire.
 type wireRequest struct {
-	Model       string             `json:"model"`
-	Messages    []wireMessage      `json:"messages"`
-	Stream      bool               `json:"stream"`
-	MaxTokens   int                `json:"max_tokens,omitempty"`
-	Temperature *float64           `json:"temperature,omitempty"`
-	TopP        *float64           `json:"top_p,omitempty"`
-	Stop        []string           `json:"stop,omitempty"`
-	Tools       []wireTool         `json:"tools,omitempty"`
-	ToolChoice  any                `json:"tool_choice,omitempty"`
+	Model       string        `json:"model"`
+	Messages    []wireMessage `json:"messages"`
+	Stream      bool          `json:"stream"`
+	MaxTokens   int           `json:"max_tokens,omitempty"`
+	Temperature *float64      `json:"temperature,omitempty"`
+	TopP        *float64      `json:"top_p,omitempty"`
+	Stop        []string      `json:"stop,omitempty"`
+	Tools       []wireTool    `json:"tools,omitempty"`
+	ToolChoice  any           `json:"tool_choice,omitempty"`
 }
 
 // wireMessage is the per-message wire shape. The Content field
 // is a string for plain text and a list of parts for multimodal;
 // Phase 2 sends string only.
 type wireMessage struct {
-	Role       string          `json:"role"`
-	Content    string          `json:"content,omitempty"`
-	Name       string          `json:"name,omitempty"`
-	ToolCalls  []wireToolCall  `json:"tool_calls,omitempty"`
-	ToolCallID string          `json:"tool_call_id,omitempty"`
+	Role       string         `json:"role"`
+	Content    string         `json:"content,omitempty"`
+	Name       string         `json:"name,omitempty"`
+	ToolCalls  []wireToolCall `json:"tool_calls,omitempty"`
+	ToolCallID string         `json:"tool_call_id,omitempty"`
 }
 
 // wireTool is the OpenAI tool-definition shape. We pass
 // through the JSON Schema from core.ToolDefinition.
 type wireTool struct {
-	Type     string             `json:"type"`
-	Function wireToolFunction   `json:"function"`
+	Type     string           `json:"type"`
+	Function wireToolFunction `json:"function"`
 }
 
 // wireToolFunction is the function-calling part of a tool def.

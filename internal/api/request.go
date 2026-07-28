@@ -70,19 +70,18 @@ type SystemPrompt struct {
 // cache-control marker. The Anthropic adapter maps this to
 // its `system: [{type, text, cache_control}]` shape.
 type SystemBlock struct {
-	Text          string
-	CacheControl  *CacheControl
+	Text         string
+	CacheControl *CacheControl
 }
 
 // CacheControl is the spec-agnostic cacheability marker.
 // Providers that don't understand it (NIM, raw OpenAI) ignore
 // it; Anthropic maps it to its `ephemeral` cache control type.
-type CacheControl struct {
-	// Type is the cache-control kind. Most providers support
-	// only "ephemeral" today; we keep the field open for future
-	// types ("persistent", "long-lived", etc.).
-	Type string
-}
+//
+// Canonical home is internal/core; this is a thin alias kept
+// so existing call sites that imported api.CacheControl keep
+// working.
+type CacheControl = core.CacheControl
 
 // SystemString constructs a plain-text SystemPrompt.
 func SystemString(s string) SystemPrompt {

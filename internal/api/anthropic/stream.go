@@ -329,19 +329,14 @@ func (s *sseState) handleContentBlockDelta(data string, events chan<- api.Stream
 		events <- api.EventOfBlockDelta(ev.Index, api.ThinkingDelta(ev.Delta.Thinking))
 	case "signature_delta":
 		// Anthropic emits a signature_delta on the thinking
-		// block just before content_block_stop. Surface it as
-		// an opaque text delta tagged with a known prefix so
-		// the consumer can route it back into the Thinking
-		// block's Signature field. (In practice, the query
-		// loop's canonical Message-accumulator doesn't yet
-		// know to demux this from text — see note in the
-		// stream.go doc.)
-		//
-		// For Phase 4 Step 3 we keep it simple: emit a
-		// text_delta with a marker. A future refinement will
-		// route signature_delta into the canonical
-		// Delta.Signature field directly.
-		events <- api.EventOfBlockDelta(ev.Index, api.TextDelta("[signature]"))
+		// block just before content_block_stop. It's an opaque
+		// blob that MUST be passed back unchanged on the next
+		// request to preserve the reasoning thread — never
+		// user-visible. Route it as a SignatureDelta so the
+		// query loop's accumulator writes it into the
+		// Thinking.Signature field rather than the visible
+		// text stream.
+		events <- api.EventOfBlockDelta(ev.Index, api.SignatureDelta(ev.Delta.Signature))
 	default:
 		// Unknown delta type — ignored per Anthropic's
 		// versioning policy.

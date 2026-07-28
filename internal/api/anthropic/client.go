@@ -77,6 +77,65 @@ func NewWithHTTP(httpClient *http.Client, apiBase, apiKey, modelID string) *Clie
 // Info implements api.Provider.
 func (c *Client) Info() api.ModelInfo { return c.info }
 
+// ListModels implements api.ModelLister. It GETs Anthropic's
+// /v1/models endpoint with the same x-api-key + anthropic-version
+// headers Stream uses, parses the JSON {data: [{id, display_name,
+// ...}]} list, and returns each entry as a ModelInfo with ID and
+// Provider populated. Capability flags and ContextWindow are
+// intentionally left zero — the canonical MergeWithKnown in
+// internal/api/provider.go fills those from the bundled
+// knownModels overlay when the caller asks for an enriched view.
+//
+// Non-2xx responses are classified with classifyHTTPError so
+// 401/403/429/500 surface the same typed errors callers see
+// from Stream. ctx cancellation is respected via the request
+// context.
+func (c *Client) ListModels(ctx context.Context) ([]api.ModelInfo, error) {
+	url := c.apiBase + "/v1/models"
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, core.Newf(core.KindHTTP, "new request: %v", err)
+	}
+	httpReq.Header.Set("x-api-key", c.apiKey)
+	httpReq.Header.Set("anthropic-version", APIVersion)
+	httpReq.Header.Set("Accept", "application/json")
+
+	resp, err := c.http.Do(httpReq)
+	if err != nil {
+		if ctx.Err() != nil {
+			return nil, core.Wrap(core.KindCancelled, ctx.Err(), "request cancelled")
+		}
+		return nil, core.Wrap(core.KindHTTP, err, "http do")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
+		return nil, classifyHTTPError(resp.StatusCode, resp.Header.Get("Retry-After"), string(bodyBytes))
+	}
+
+	var env struct {
+		Data []struct {
+			ID          string `json:"id"`
+			DisplayName string `json:"display_name"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&env); err != nil {
+		return nil, core.Wrap(core.KindAPI, err, "decode /v1/models")
+	}
+	out := make([]api.ModelInfo, 0, len(env.Data))
+	for _, m := range env.Data {
+		if m.ID == "" {
+			continue
+		}
+		out = append(out, api.ModelInfo{
+			ID:       m.ID,
+			Provider: core.ProviderAnthropic,
+		})
+	}
+	return out, nil
+}
+
 // Stream implements api.Provider. POSTs a /v1/messages request
 // and forwards the SSE response as canonical events. Channel
 // contract matches the api.Provider documentation: events is
@@ -280,27 +339,31 @@ func convertMessages(in []core.Message) []wireMessage {
 			wm := wireMessage{Role: "assistant"}
 			var blocks []wireContentBlock
 			for _, b := range m.Content.Blocks {
+				wcb := wireContentBlock{}
+				if b.CacheControl != nil && b.CacheControl.Type != "" {
+					wcb.CacheControl = &wireCacheControl{Type: b.CacheControl.Type}
+				}
 				switch b.Kind {
 				case core.BlockText:
 					if b.Text != "" {
-						blocks = append(blocks, wireContentBlock{Type: "text", Text: b.Text})
+						wcb.Type = "text"
+						wcb.Text = b.Text
+						blocks = append(blocks, wcb)
 					}
 				case core.BlockToolUse:
 					if b.ToolUse != nil {
-						blocks = append(blocks, wireContentBlock{
-							Type:  "tool_use",
-							ID:    b.ToolUse.ID,
-							Name:  b.ToolUse.Name,
-							Input: b.ToolUse.Input,
-						})
+						wcb.Type = "tool_use"
+						wcb.ID = b.ToolUse.ID
+						wcb.Name = b.ToolUse.Name
+						wcb.Input = b.ToolUse.Input
+						blocks = append(blocks, wcb)
 					}
 				case core.BlockThinking:
 					if b.Thinking != nil {
-						blocks = append(blocks, wireContentBlock{
-							Type:      "thinking",
-							Thinking:  b.Thinking.Text,
-							Signature: b.Thinking.Signature,
-						})
+						wcb.Type = "thinking"
+						wcb.Thinking = b.Thinking.Text
+						wcb.Signature = b.Thinking.Signature
+						blocks = append(blocks, wcb)
 					}
 				}
 			}
@@ -351,15 +414,21 @@ func convertMessages(in []core.Message) []wireMessage {
 
 // convertTools walks the canonical ToolDefinition list and produces
 // Anthropic's flatter tool shape. The schema (input_schema) is
-// passed through as raw JSON.
+// passed through as raw JSON, and the canonical ToolDefinition's
+// CacheControl marker is forwarded as Anthropic's nested
+// `cache_control: {type: "ephemeral"}`.
 func convertTools(in []core.ToolDefinition) []wireTool {
 	out := make([]wireTool, 0, len(in))
 	for _, t := range in {
-		out = append(out, wireTool{
+		wt := wireTool{
 			Name:        t.Name,
 			Description: t.Description,
 			InputSchema: t.InputSchema,
-		})
+		}
+		if t.CacheControl != nil && t.CacheControl.Type != "" {
+			wt.CacheControl = &wireCacheControl{Type: t.CacheControl.Type}
+		}
+		out = append(out, wt)
 	}
 	return out
 }
@@ -501,6 +570,11 @@ type wireContentBlock struct {
 	// Thinking + Signature belong to a "thinking" block.
 	Thinking  string `json:"thinking,omitempty"`
 	Signature string `json:"signature,omitempty"`
+	// CacheControl is emitted only on blocks that Anthropic
+	// accepts cache markers on (assistant-side text and tool_use;
+	// not on tool_result or user-side blocks). When the canonical
+	// ContentBlock carries a non-nil CacheControl, we forward it.
+	CacheControl *wireCacheControl `json:"cache_control,omitempty"`
 }
 
 // wireSystemBlock is one entry in a list-of-blocks system prompt.
@@ -523,11 +597,16 @@ type wireCacheControl struct {
 }
 
 // wireTool is the Anthropic tool shape: flat
-// {name, description, input_schema}.
+// {name, description, input_schema}. When the canonical
+// ToolDefinition carries a CacheControl marker we forward it
+// as Anthropic's nested `cache_control: {type: "ephemeral"}`
+// — Anthropic accepts cache markers on tool definitions to
+// keep the tool catalog warm across turns.
 type wireTool struct {
-	Name        string          `json:"name"`
-	Description string          `json:"description,omitempty"`
-	InputSchema json.RawMessage `json:"input_schema,omitempty"`
+	Name         string            `json:"name"`
+	Description  string            `json:"description,omitempty"`
+	InputSchema  json.RawMessage   `json:"input_schema,omitempty"`
+	CacheControl *wireCacheControl `json:"cache_control,omitempty"`
 }
 
 // wireToolChoice is Anthropic's tool_choice envelope. We always

@@ -76,6 +76,14 @@ type ContentBlock struct {
 
 	// Document is populated when Kind == BlockDocument.
 	Document *Document `json:"document,omitempty"`
+
+	// CacheControl, when non-nil, marks this block as a prompt-
+	// cache boundary on the wire. Anthropic accepts cache_control
+	// on tool definitions and on assistant-side text/think
+	// content blocks (not on tool_result or user-side blocks).
+	// Providers that don't understand it (NIM, raw OpenAI)
+	// silently drop the marker.
+	CacheControl *CacheControl `json:"cache_control,omitempty"`
 }
 
 // BlockKind enumerates the content block types.
@@ -168,11 +176,26 @@ type Thinking struct {
 	Signature string `json:"signature,omitempty"`
 }
 
+// CacheControl is the spec-agnostic prompt-cache marker. Carried on
+// system blocks, tool definitions, and content blocks wherever the
+// canonical surface lets callers mark a region as cacheable.
+//
+// Providers that don't understand the marker (NIM, raw OpenAI)
+// ignore it; Anthropic maps it to its `cache_control: {type:
+// "ephemeral"}` shape; future providers can add their own types
+// without a Forge release.
+type CacheControl struct {
+	// Type is the cache-control kind. Most providers support
+	// only "ephemeral" today; we keep the field open for future
+	// types ("persistent", "long-lived", etc.).
+	Type string
+}
+
 // Document is a document attached to a user message (PDF, text file,
 // etc.) with optional citation config. Spec §2.2.
 type Document struct {
-	Source      ImageSource    `json:"source"`
-	Citations   *CitationConfig `json:"citations,omitempty"`
+	Source    ImageSource     `json:"source"`
+	Citations *CitationConfig `json:"citations,omitempty"`
 }
 
 // CitationConfig controls how the model should cite the document.
@@ -370,4 +393,8 @@ type ToolDefinition struct {
 	// Stored as raw JSON so we can use encoding/json's schema generation
 	// without a third-party JSON Schema library.
 	InputSchema json.RawMessage `json:"input_schema"`
+	// CacheControl, when non-nil, marks the tool definition as a
+	// prompt-cache boundary on the wire. Anthropic accepts it; NIM
+	// and raw OpenAI ignore it.
+	CacheControl *CacheControl `json:"cache_control,omitempty"`
 }

@@ -324,3 +324,80 @@ func TestParseRetryAfter(t *testing.T) {
 		}
 	}
 }
+
+// TestClientListModels drives ListModels against an httptest
+// server returning a realistic OpenAI /v1/models payload. Asserts
+// the Authorization header is set, the JSON is parsed, and the
+// returned ModelInfo entries carry only ID + Provider — capability
+// flags and ContextWindow are intentionally left zero (the
+// MergeWithKnown overlay fills them).
+func TestClientListModels(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("method = %s, want GET", r.Method)
+		}
+		if r.URL.Path != "/models" {
+			t.Errorf("path = %s, want /models", r.URL.Path)
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer test-key" {
+			t.Errorf("Authorization = %q, want 'Bearer test-key'", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{
+  "object": "list",
+  "data": [
+    {"id": "gpt-4o", "object": "model", "created": 1, "owned_by": "openai"},
+    {"id": "gpt-4o-mini", "object": "model", "created": 1, "owned_by": "openai"},
+    {"id": "meta/llama-3.3-70b-instruct", "object": "model", "created": 1, "owned_by": "nvidia"}
+  ]
+}`)
+	}))
+	defer srv.Close()
+
+	c := NewWithHTTP(srv.Client(), srv.URL, "test-key", "gpt-4o")
+	models, err := c.ListModels(context.Background())
+	if err != nil {
+		t.Fatalf("ListModels: %v", err)
+	}
+	if len(models) != 3 {
+		t.Fatalf("ListModels returned %d models, want 3; %+v", len(models), models)
+	}
+	wantIDs := []string{"gpt-4o", "gpt-4o-mini", "meta/llama-3.3-70b-instruct"}
+	for i, m := range models {
+		if m.ID != wantIDs[i] {
+			t.Errorf("models[%d].ID = %q, want %q", i, m.ID, wantIDs[i])
+		}
+		if m.Provider != core.ProviderOpenAI {
+			t.Errorf("models[%d].Provider = %q, want %q", i, m.Provider, core.ProviderOpenAI)
+		}
+		// Capability flags must be zero — overlay fills them.
+		if m.SupportsPromptCaching || m.SupportsExtendedThinking {
+			t.Errorf("models[%d] has capability flags set on raw listing; overlay should be the source", i)
+		}
+	}
+}
+
+// TestClientListModelsAuthError asserts ListModels classifies
+// non-2xx with the same typed error Stream surfaces — 401 here
+// is KindAuth.
+func TestClientListModelsAuthError(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = io.WriteString(w, `{"error":{"message":"bad key","type":"auth_error"}}`)
+	}))
+	defer srv.Close()
+
+	c := NewWithHTTP(srv.Client(), srv.URL, "bad-key", "gpt-4o")
+	_, err := c.ListModels(context.Background())
+	if err == nil {
+		t.Fatal("ListModels: expected error on 401, got nil")
+	}
+	ce, ok := err.(*core.Error)
+	if !ok {
+		t.Fatalf("err type = %T, want *core.Error", err)
+	}
+	if ce.Kind != core.KindAuth {
+		t.Errorf("err kind = %v, want KindAuth", ce.Kind)
+	}
+}

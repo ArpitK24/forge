@@ -88,8 +88,19 @@ const (
 	// ProviderAnthropic is the first-party Anthropic Messages API.
 	ProviderAnthropic = "anthropic"
 	// ProviderOpenAI is the OpenAI Chat Completions API (also used for
-	// any OpenAI-compatible endpoint).
+	// any OpenAI-compatible endpoint on the wire).
 	ProviderOpenAI = "openai"
+	// ProviderNIM is the NVIDIA NIM-hosted OpenAI-compatible endpoint.
+	// On the wire it speaks the OpenAI Chat Completions shape; its
+	// distinct identity here is the backend that runs the model
+	// (NVIDIA's hosted Llama / gpt-oss models rather than a
+	// first-party OpenAI deployment). When a real direct-OpenAI
+	// adapter lands, ModelInfo from the live listing will tag
+	// itself ProviderOpenAI while curated entries from NIM stay
+	// ProviderNIM — wire-surface vs backend-identity is a
+	// deliberate split until a second OpenAI-compatible adapter
+	// arrives.
+	ProviderNIM = "nim"
 	// ProviderGoogle is the Google Gemini API.
 	ProviderGoogle = "google"
 	// ProviderCopilot is the GitHub Copilot / IDE-subscription adapter.
