@@ -41,7 +41,10 @@ type Tool interface {
 type ToolResult struct {
 	// Text is the result body the model will read. For success
 	// cases this is plain text; for errors it's a human-readable
-	// description of what went wrong.
+	// description of what went wrong. For multi-block MCP
+	// results (text + image + embedded resource), Text is the
+	// concatenation of all text blocks and the verbatim array
+	// is preserved in Blocks.
 	Text string
 	// IsError marks this result as a tool-execution failure
 	// rather than a successful response.
@@ -51,6 +54,21 @@ type ToolResult struct {
 	// The Bash tool sets {"exit_code": N, "duration_ms": M};
 	// other tools can set their own.
 	Metadata map[string]any
+	// Blocks carries the verbatim MCP-style `content[]` array
+	// for tools that return multi-block results (text + image
+	// + audio + embedded resource). When non-nil, the query
+	// loop's serializer uses it INSTEAD of Text — the model
+	// sees the full block array, not just the concatenated
+	// text. nil for plain-text tools, which keeps the JSON
+	// wire shape byte-identical to the pre-Blocks world
+	// (the field has `omitempty` and existing tools never
+	// set it).
+	//
+	// Phase 4 step 5 introduces this field. Phase 4.1+ may
+	// extend it to non-MCP tools (e.g. a future "read image"
+	// tool) — the contract is "verbatim content array, model
+	// sees it as-is".
+	Blocks json.RawMessage `json:"content,omitempty"`
 }
 
 // ToolContext is the per-call context passed to Execute. It

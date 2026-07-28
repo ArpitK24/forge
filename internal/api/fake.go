@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/ArpitK24/forge/internal/core"
 )
@@ -32,6 +33,13 @@ type FakeProvider struct {
 	Scripts [][]StreamEvent
 	// Calls counts how many times Stream has been called.
 	Calls int
+	// mu guards RecordedMessages.
+	mu sync.Mutex
+	// RecordedMessages is the ordered list of message slices
+	// the loop passed to Stream — one entry per call. Tests
+	// inspect this to assert on the wire-side conversation
+	// history (e.g. the loop's tool-result serialization).
+	RecordedMessages [][]core.Message
 }
 
 // NewFakeProvider returns a FakeProvider whose Info is set to a
@@ -57,6 +65,26 @@ func (f *FakeProvider) Info() ModelInfo {
 	return f.InfoValue
 }
 
+// AllMessages returns a copy of the message slices passed to
+// each Stream call, in call order. Each entry is one call's
+// message history. Tests inspect this to assert on the
+// conversation shape (tool-result serialization, message
+// ordering, etc.) without poking at a real provider.
+//
+// Safe to call before Stream has been called — returns nil.
+func (f *FakeProvider) AllMessages() [][]core.Message {
+	if f == nil {
+		return nil
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	out := make([][]core.Message, len(f.RecordedMessages))
+	for i, m := range f.RecordedMessages {
+		out[i] = append([]core.Message(nil), m...)
+	}
+	return out
+}
+
 // Stream implements Provider. The behavior:
 //
 //   - If the call index exceeds the script count, repeat the
@@ -72,7 +100,7 @@ func (f *FakeProvider) Info() ModelInfo {
 // We use a small helper goroutine that listens for ctx.Done()
 // so the test still respects cancellation without needing a
 // real network round-trip.
-func (f *FakeProvider) Stream(ctx context.Context, _ Request) (<-chan StreamEvent, <-chan error) {
+func (f *FakeProvider) Stream(ctx context.Context, req Request) (<-chan StreamEvent, <-chan error) {
 	events := make(chan StreamEvent, 16)
 	errs := make(chan error, 1)
 
@@ -83,6 +111,12 @@ func (f *FakeProvider) Stream(ctx context.Context, _ Request) (<-chan StreamEven
 		close(errs)
 		return events, errs
 	}
+
+	// Record the messages the caller passed. Tests inspect
+	// this to assert on the conversation history.
+	f.mu.Lock()
+	f.RecordedMessages = append(f.RecordedMessages, append([]core.Message(nil), req.Messages...))
+	f.mu.Unlock()
 
 	idx := f.Calls
 	f.Calls++

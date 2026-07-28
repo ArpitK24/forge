@@ -551,13 +551,27 @@ func executeToolCalls(
 			IsError: result.IsError,
 		})
 
-		// Serialize the result content. If the tool already
-		// produced JSON, pass it through; otherwise wrap the
-		// text as a JSON string.
+		// Serialize the result content. Three branches, in
+		// priority order:
+		//
+		//   1. result.Blocks > 0 → verbatim multi-block
+		//      array. MCP tools that returned image/audio/
+		//      embedded-resource blocks land here, and the
+		//      model sees the full structure.
+		//   2. result.Text is JSON-valid → pass through. The
+		//      Bash tool and other structured-text tools
+		//      benefit from this — they produce JSON output
+		//      and the loop should not double-encode it.
+		//   3. Otherwise → jsonOrText. Plain text wrapped
+		//      as a JSON string so the wire shape is always
+		//      valid JSON.
 		var content json.RawMessage
-		if len(result.Text) > 0 && json.Valid([]byte(result.Text)) {
+		switch {
+		case len(result.Blocks) > 0:
+			content = result.Blocks
+		case len(result.Text) > 0 && json.Valid([]byte(result.Text)):
 			content = json.RawMessage(result.Text)
-		} else {
+		default:
 			content = jsonOrText(result.Text)
 		}
 		blocks = append(blocks, core.ContentBlock{

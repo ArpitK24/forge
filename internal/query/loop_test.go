@@ -319,6 +319,207 @@ func TestRunQueryLoopToolPanicRecovery(t *testing.T) {
 	}
 }
 
+// TestRunQueryLoopToolResultBlocksWinsOverText pins the
+// three-branch serializer priority: when a tool returns
+// ToolResult.Blocks (multi-block MCP content), the loop
+// passes the verbatim array to the model instead of the
+// concatenated Text field. A regression that drops the
+// Blocks branch (e.g. a refactor that re-merges with the
+// pre-step-5 two-branch logic) would silently lose image
+// data for tools that return [text, image] arrays.
+//
+// We can't observe the wire bytes directly (the loop talks
+// to a fake provider), so we drive a Bash tool that
+// returns a ToolResult with Blocks + Text set, then inspect
+// the messages the fake provider receives — the SECOND
+// message (the tool_result message) carries the result
+// content, and we check the content's Content field
+// matches the Blocks bytes.
+func TestRunQueryLoopToolResultBlocksWinsOverText(t *testing.T) {
+	wantBlocks := json.RawMessage(`[{"type":"text","text":"first"},{"type":"image","data":"abc","mimeType":"image/png"},{"type":"text","text":"second"}]`)
+
+	blocksTool := &recordingTool{
+		name: "Bash",
+		// Text would normally be concatenated
+		// "first\nsecond" — but with Blocks set, the
+		// model gets the verbatim 3-element array.
+		result: tools.ToolResult{
+			Text:   "first\nsecond",
+			Blocks: wantBlocks,
+		},
+	}
+	fp := api.NewFakeProvider(api.ScriptToolCallThenText("Bash", []byte(`{}`), "after-blocks")...)
+	out := RunQueryLoop(
+		context.Background(),
+		fp,
+		[]core.Message{core.NewUserText("trigger blocks")},
+		[]tools.Tool{blocksTool},
+		testTC(t, core.PermissionBypassPermissions, &core.Config{}),
+		Config{Model: "fake-model", MaxTurns: 5},
+		nil,
+		newEventSink(),
+	)
+	if out.Kind != OutcomeEndTurn {
+		t.Fatalf("Kind = %v, want OutcomeEndTurn", out.Kind)
+	}
+
+	// Pull the tool_result message off the fake provider.
+	// The provider records every Messages() call; we
+	// inspect the second call's messages and find the
+	// tool_result block.
+	msgs := fp.AllMessages()
+	if len(msgs) < 2 {
+		t.Fatalf("fake provider recorded %d messages, want at least 2", len(msgs))
+	}
+	// The second call's messages are: [original user msg,
+	// assistant (tool_use), user (tool_result)]. The
+	// tool_result is the last entry.
+	var toolResultMsg core.Message
+	for _, m := range msgs[1] {
+		if m.Role == core.RoleUser && len(m.Content.Blocks) > 0 {
+			toolResultMsg = m
+			break
+		}
+	}
+	if toolResultMsg.Role != core.RoleUser {
+		t.Fatalf("no user message with content blocks in msgs[1]")
+	}
+	blocks := toolResultMsg.Content.Blocks
+	if len(blocks) != 1 {
+		t.Fatalf("tool_result message has %d blocks, want 1", len(blocks))
+	}
+	got := blocks[0]
+	if got.Kind != core.BlockToolResult {
+		t.Fatalf("block kind = %v, want BlockToolResult", got.Kind)
+	}
+	if got.ToolResult == nil {
+		t.Fatalf("ToolResult nil")
+	}
+	gotContent := string(got.ToolResult.Content)
+	wantContent := string(wantBlocks)
+	if gotContent != wantContent {
+		t.Errorf("ToolResult.Content = %s\nwant %s", gotContent, wantContent)
+	}
+	// Defensive: verify the loop did NOT just emit the
+	// concatenated Text. If a regression drops the Blocks
+	// branch, this assertion fails.
+	if gotContent == `"first\nsecond"` {
+		t.Errorf("ToolResult.Content = %q, want verbatim Blocks array (not concatenated Text)", gotContent)
+	}
+}
+
+// TestRunQueryLoopToolResultTextJSONIsPassthrough pins
+// branch 2: when a tool's Text is already JSON, the loop
+// passes it through unchanged. A regression that wraps
+// valid JSON in jsonOrText (i.e. always escapes it as a
+// quoted string) would break tools whose Text is structured.
+func TestRunQueryLoopToolResultTextJSONIsPassthrough(t *testing.T) {
+	jsonTool := &recordingTool{
+		name: "Bash",
+		result: tools.ToolResult{
+			Text: `{"exit_code":0,"stdout":"hello"}`,
+		},
+	}
+	fp := api.NewFakeProvider(api.ScriptToolCallThenText("Bash", []byte(`{}`), "after")...)
+	_ = RunQueryLoop(
+		context.Background(),
+		fp,
+		[]core.Message{core.NewUserText("trigger json text")},
+		[]tools.Tool{jsonTool},
+		testTC(t, core.PermissionBypassPermissions, &core.Config{}),
+		Config{Model: "fake-model", MaxTurns: 5},
+		nil,
+		newEventSink(),
+	)
+
+	msgs := fp.AllMessages()
+	if len(msgs) < 2 {
+		t.Fatalf("fake provider recorded %d messages, want at least 2", len(msgs))
+	}
+	// Find the tool_result user message (the one with
+	// tool_result content blocks).
+	var found bool
+	for _, m := range msgs[1] {
+		if m.Role != core.RoleUser || len(m.Content.Blocks) == 0 {
+			continue
+		}
+		blocks := m.Content.Blocks
+		if len(blocks) != 1 {
+			t.Fatalf("expected 1 block in tool_result, got %d", len(blocks))
+		}
+		got := string(blocks[0].ToolResult.Content)
+		// The raw JSON from Text should pass through.
+		// jsonOrText would have produced
+		// `"{\"exit_code\":0,\"stdout\":\"hello\"}"`
+		// (a quoted string) — a regression that
+		// re-merges the branches would emit this
+		// instead of the raw object.
+		if contains(got, `\"exit_code\"`) {
+			t.Errorf("JSON Text was double-encoded; got %s", got)
+		}
+		if !contains(got, `"exit_code":0`) {
+			t.Errorf("JSON Text did not pass through; got %s", got)
+		}
+		found = true
+		break
+	}
+	if !found {
+		t.Fatalf("no tool_result user message in second Stream call")
+	}
+}
+
+// TestRunQueryLoopToolResultPlainTextIsJSONEncoded pins
+// branch 3: a plain-text result (no Blocks, Text is not
+// JSON) gets wrapped as a JSON-quoted string so the wire
+// shape is always valid JSON. A regression that drops
+// jsonOrText entirely (e.g. emits Text bytes directly)
+// would surface as unparseable wire content.
+func TestRunQueryLoopToolResultPlainTextIsJSONEncoded(t *testing.T) {
+	plainTool := &recordingTool{
+		name: "Bash",
+		result: tools.ToolResult{
+			Text: "plain output with no special encoding",
+		},
+	}
+	fp := api.NewFakeProvider(api.ScriptToolCallThenText("Bash", []byte(`{}`), "after")...)
+	_ = RunQueryLoop(
+		context.Background(),
+		fp,
+		[]core.Message{core.NewUserText("trigger plain text")},
+		[]tools.Tool{plainTool},
+		testTC(t, core.PermissionBypassPermissions, &core.Config{}),
+		Config{Model: "fake-model", MaxTurns: 5},
+		nil,
+		newEventSink(),
+	)
+
+	msgs := fp.AllMessages()
+	if len(msgs) < 2 {
+		t.Fatalf("fake provider recorded %d messages, want at least 2", len(msgs))
+	}
+	// Find the tool_result user message.
+	var found bool
+	for _, m := range msgs[1] {
+		if m.Role != core.RoleUser || len(m.Content.Blocks) == 0 {
+			continue
+		}
+		blocks := m.Content.Blocks
+		if len(blocks) != 1 {
+			t.Fatalf("expected 1 block in tool_result, got %d", len(blocks))
+		}
+		got := string(blocks[0].ToolResult.Content)
+		want := `"plain output with no special encoding"`
+		if got != want {
+			t.Errorf("ToolResult.Content = %s\nwant %s", got, want)
+		}
+		found = true
+		break
+	}
+	if !found {
+		t.Fatalf("no tool_result user message in second Stream call")
+	}
+}
+
 func TestRunQueryLoopUsageAccumulates(t *testing.T) {
 	// First turn: a tool call (so the loop continues) with
 	// InputTokens=100, OutputTokens=50. Second turn: a text
