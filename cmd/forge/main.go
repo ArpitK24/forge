@@ -81,7 +81,17 @@ func run(program string, args []string) error {
 	// overrides. CLI flags still win; settings.json is the
 	// fallback. Failures here are non-fatal: we warn on stderr
 	// and continue with the CLI-only config.
-	cfg := parsed.ToConfig()
+	cfg, err := parsed.ToConfig()
+	if err != nil {
+		// --mcp-config (or any future flag that opens files) is
+		// a hard error: the user explicitly asked for a file, and
+		// if we can't honor that request silently we'd rather
+		// exit than run with an empty config. Exit code 2
+		// signals "user-supplied flag failed" so shell wrappers
+		// can distinguish from generic internal failures.
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(2)
+	}
 	settings, err := cli.LoadLayeredSettings(resolveCwd(parsed.Cwd))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "warning: could not load settings:", err)

@@ -81,6 +81,49 @@ func TestApplySettingsPermissionModeDefaultDoesNotOverride(t *testing.T) {
 	}
 }
 
+// TestApplySettingsMcpServersFillsEmpty covers the
+// settings-layers behavior for MCP: when the user didn't
+// pass --mcp-config (cfg.McpServers is nil), settings
+// .McpServers fills the gap.
+func TestApplySettingsMcpServersFillsEmpty(t *testing.T) {
+	cfg := &core.Config{}
+	settings := core.Settings{
+		McpServers: []core.McpServerConfig{
+			{Name: "fs", Command: "fs", ServerType: "stdio"},
+		},
+	}
+	got := ApplySettings(cfg, settings)
+	if len(got.McpServers) != 1 {
+		t.Fatalf("McpServers len = %d, want 1", len(got.McpServers))
+	}
+	if got.McpServers[0].Name != "fs" {
+		t.Errorf("McpServers[0].Name = %q", got.McpServers[0].Name)
+	}
+}
+
+// TestApplySettingsMcpServersCLIWins covers the
+// CLI-flag-wins behavior: when --mcp-config populated
+// cfg.McpServers, settings.McpServers must NOT overwrite.
+func TestApplySettingsMcpServersCLIWins(t *testing.T) {
+	cfg := &core.Config{
+		McpServers: []core.McpServerConfig{
+			{Name: "from-cli", Command: "cli"},
+		},
+	}
+	settings := core.Settings{
+		McpServers: []core.McpServerConfig{
+			{Name: "from-settings", Command: "settings"},
+		},
+	}
+	got := ApplySettings(cfg, settings)
+	if len(got.McpServers) != 1 {
+		t.Fatalf("McpServers len = %d, want 1", len(got.McpServers))
+	}
+	if got.McpServers[0].Name != "from-cli" {
+		t.Errorf("McpServers[0].Name = %q, want from-cli", got.McpServers[0].Name)
+	}
+}
+
 func TestApplySettingsNilCfg(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {

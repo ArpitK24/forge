@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -106,7 +107,10 @@ func TestToConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
-	c := a.ToConfig()
+	c, err := a.ToConfig()
+	if err != nil {
+		t.Fatalf("ToConfig: %v", err)
+	}
 	if c.Model != "claude-haiku-4-5" {
 		t.Errorf("Config.Model = %q", c.Model)
 	}
@@ -140,7 +144,10 @@ func TestToConfigDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
-	c := a.ToConfig()
+	c, err := a.ToConfig()
+	if err != nil {
+		t.Fatalf("ToConfig: %v", err)
+	}
 	if c.PermissionMode != core.PermissionDefault {
 		t.Errorf("default PermissionMode = %v, want %v", c.PermissionMode, core.PermissionDefault)
 	}
@@ -152,6 +159,125 @@ func TestToConfigDefaults(t *testing.T) {
 	}
 	if c.SkipProjectMemoryFile {
 		t.Errorf("default SkipProjectMemoryFile = true, want false")
+	}
+}
+
+// TestToConfig_NoMCPConfigFlag covers the default path: no
+// --mcp-config was passed, so McpServers stays nil. The
+// settings-layers in ApplySettings is what fills the gap
+// when the user has Settings.McpServers.
+func TestToConfig_NoMCPConfigFlag(t *testing.T) {
+	p := NewParser("forge", []string{"-p", "hi"})
+	a, err := p.Parse()
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	c, err := a.ToConfig()
+	if err != nil {
+		t.Fatalf("ToConfig: %v", err)
+	}
+	if len(c.McpServers) != 0 {
+		t.Errorf("McpServers = %v, want nil", c.McpServers)
+	}
+}
+
+// TestToConfig_MCPConfigObjectForm covers the canonical
+// file shape: a top-level object with an "mcp_servers" array.
+// This matches what core.Settings serializes.
+func TestToConfig_MCPConfigObjectForm(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "mcp.json")
+	body := `{"mcp_servers": [
+		{"name": "filesystem", "command": "npx", "args": ["-y", "fs"], "server_type": "stdio"},
+		{"name": "github", "url": "https://example/mcp", "server_type": "http"}
+	]}`
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatalf("write fixture: %v", err)
+	}
+	p := NewParser("forge", []string{"--mcp-config", path, "-p", "hi"})
+	a, err := p.Parse()
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	c, err := a.ToConfig()
+	if err != nil {
+		t.Fatalf("ToConfig: %v", err)
+	}
+	if len(c.McpServers) != 2 {
+		t.Fatalf("McpServers = %v, want 2 entries", c.McpServers)
+	}
+	if c.McpServers[0].Name != "filesystem" {
+		t.Errorf("McpServers[0].Name = %q", c.McpServers[0].Name)
+	}
+	if c.McpServers[0].Command != "npx" {
+		t.Errorf("McpServers[0].Command = %q", c.McpServers[0].Command)
+	}
+	if c.McpServers[1].URL != "https://example/mcp" {
+		t.Errorf("McpServers[1].URL = %q", c.McpServers[1].URL)
+	}
+	if c.McpServers[1].ServerType != "http" {
+		t.Errorf("McpServers[1].ServerType = %q", c.McpServers[1].ServerType)
+	}
+}
+
+// TestToConfig_MCPConfigBareArray covers the convenience
+// form: a bare array, no wrapper object. Lets users avoid
+// typing "mcp_servers": [...] for ad-hoc configs.
+func TestToConfig_MCPConfigBareArray(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "mcp.json")
+	body := `[
+		{"name": "fs", "command": "fs", "server_type": "stdio"}
+	]`
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		t.Fatalf("write fixture: %v", err)
+	}
+	p := NewParser("forge", []string{"--mcp-config", path, "-p", "x"})
+	a, err := p.Parse()
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	c, err := a.ToConfig()
+	if err != nil {
+		t.Fatalf("ToConfig: %v", err)
+	}
+	if len(c.McpServers) != 1 || c.McpServers[0].Name != "fs" {
+		t.Errorf("McpServers = %v, want one entry named 'fs'", c.McpServers)
+	}
+}
+
+// TestToConfig_MCPConfigMissingFile verifies that a missing
+// --mcp-config file is a hard error (the user explicitly
+// asked for it — silent fallback would mask the bug).
+func TestToConfig_MCPConfigMissingFile(t *testing.T) {
+	p := NewParser("forge", []string{"--mcp-config", "/no/such/file.json"})
+	a, err := p.Parse()
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	_, err = a.ToConfig()
+	if err == nil {
+		t.Errorf("ToConfig on missing --mcp-config returned nil err; want error")
+	}
+}
+
+// TestToConfig_MCPConfigMalformed verifies that a file
+// that isn't valid JSON (and isn't a wrapped object with
+// mcp_servers) returns a parse error.
+func TestToConfig_MCPConfigMalformed(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "mcp.json")
+	if err := os.WriteFile(path, []byte("not json at all"), 0o644); err != nil {
+		t.Fatalf("write fixture: %v", err)
+	}
+	p := NewParser("forge", []string{"--mcp-config", path})
+	a, err := p.Parse()
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	_, err = a.ToConfig()
+	if err == nil {
+		t.Errorf("ToConfig on malformed --mcp-config returned nil err; want error")
 	}
 }
 

@@ -8,6 +8,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -240,11 +241,54 @@ func (p *Parser) Parse() (*Args, error) {
 	return a, nil
 }
 
+// loadMCPConfig reads the JSON file at a.MCPConfig and returns the
+// list of MCP server configs it describes. A missing a.MCPConfig is
+// a no-op (returns nil, nil); a malformed file or unreadable file
+// surfaces as an error so main.go can exit with status 2.
+//
+// The file shape is the same as core.Settings.McpServers:
+// a top-level object with an "mcp_servers" array. We accept either
+// that shape or a bare array — the bare-array form is convenient for
+// ad-hoc configs that don't want to wrap a single list in an object.
+func (a *Args) loadMCPConfig() ([]core.McpServerConfig, error) {
+	if a.MCPConfig == "" {
+		return nil, nil
+	}
+	b, err := os.ReadFile(a.MCPConfig)
+	if err != nil {
+		return nil, fmt.Errorf("read --mcp-config %q: %w", a.MCPConfig, err)
+	}
+	// Try the object form first (matches core.Settings). We use a
+	// struct with a *[]McpServerConfig pointer so we can distinguish
+	// "key absent" from "key present with empty array" — the former
+	// means we should fall back to bare-array parsing, the latter
+	// means the user explicitly wrote `"mcp_servers": []`.
+	var obj struct {
+		McpServers *[]core.McpServerConfig `json:"mcp_servers"`
+	}
+	if err := json.Unmarshal(b, &obj); err == nil && obj.McpServers != nil {
+		return *obj.McpServers, nil
+	}
+	// Fall back to a bare array.
+	var arr []core.McpServerConfig
+	if err := json.Unmarshal(b, &arr); err != nil {
+		return nil, fmt.Errorf("parse --mcp-config %q: %w", a.MCPConfig, err)
+	}
+	return arr, nil
+}
+
 // ToConfig converts parsed Args into a *core.Config. It does NOT load
 // settings.json (that's a later phase) — it just maps the parsed flags
 // into the Config fields. Callers should layer settings on top of
 // this result before handing it to the query loop.
-func (a *Args) ToConfig() *core.Config {
+//
+// Returns an error if --mcp-config was passed and the file failed to
+// read or parse. A missing path is not an error.
+func (a *Args) ToConfig() (*core.Config, error) {
+	mcpServers, err := a.loadMCPConfig()
+	if err != nil {
+		return nil, err
+	}
 	c := &core.Config{
 		Provider:              "", // empty = "use default" (Anthropic in Phase 2)
 		APIKey:                a.APIKey,
@@ -258,6 +302,7 @@ func (a *Args) ToConfig() *core.Config {
 		Verbose:               a.Verbose,
 		WorkingDir:            a.Cwd,
 		AutoCompact:           !a.NoAutoCompact,
+		McpServers:            mcpServers,
 	}
 	if a.PermissionModeSet {
 		c.PermissionMode = a.PermissionMode
@@ -269,7 +314,7 @@ func (a *Args) ToConfig() *core.Config {
 	} else {
 		c.OutputFormat = core.OutputText
 	}
-	return c
+	return c, nil
 }
 
 // Usage returns the help text shown for --help. Exposed as a function

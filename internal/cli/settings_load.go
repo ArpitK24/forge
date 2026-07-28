@@ -139,5 +139,15 @@ func ApplySettings(cfg *core.Config, settings core.Settings) *core.Config {
 	if !cfg.AutoCompact && settings.AutoCompact != nil && *settings.AutoCompact {
 		cfg.AutoCompact = true
 	}
+	// McpServers: ToConfig fills cfg.McpServers when --mcp-config
+	// was passed; settings.McpServers fills the gap when the CLI
+	// flag is absent. The CLI flag always wins — if the user
+	// already passed --mcp-config, we leave cfg alone. Per spec
+	// §2.3 the layered order is "CLI flag > settings.json > no
+	// servers", so this branch only fires when cfg.McpServers is
+	// nil.
+	if len(cfg.McpServers) == 0 && len(settings.McpServers) > 0 {
+		cfg.McpServers = settings.McpServers
+	}
 	return cfg
 }
