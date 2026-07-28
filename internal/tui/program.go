@@ -6,12 +6,14 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/ArpitK24/forge/internal/api"
 	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/core"
+	"github.com/ArpitK24/forge/internal/mcp"
 	"github.com/ArpitK24/forge/internal/query"
 	"github.com/ArpitK24/forge/internal/tools"
 )
@@ -39,6 +41,13 @@ type programState struct {
 	// permissionRequestMsg and posts the user's decision back.
 	// Closed by the loop goroutine on exit.
 	PermReqCh chan permRequest
+	// McpManager holds the connected MCP servers (Phase 4 step 8).
+	// Constructed in RunProgram and connected synchronously
+	// BEFORE tea.NewProgram so the first query loop sees the
+	// full tool list. Closed on TUI exit via defer. Nil when
+	// the user passed no --mcp-config and settings.json has no
+	// McpServers.
+	McpManager *mcp.Manager
 }
 
 // RunProgram is the TUI entry point. It sets up the terminal,
@@ -64,19 +73,45 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 	// rebuild it.
 	systemPrompt := core.BuildSystemPrompt(cfg, cfg.WorkingDir)
 
-	// 3. Set up raw mode + alt screen. The restore func is
+	// 3. Connect MCP servers (Phase 4 step 8). Constructed
+	// synchronously and BEFORE tea.NewProgram so the first
+	// query-loop turn sees the full tool list. We treat connect
+	// failures as soft: per-server failures are recorded on the
+	// manager's Errors() map, the rest of the tools still
+	// register, and the user sees a clear message in the
+	// transcript. A nil manager (no --mcp-config and no
+	// settings.McpServers) is fine — tools list stays as AllTools().
+	mcpMgr := mcp.NewManager(cfg.McpServers, logger)
+	if len(cfg.McpServers) > 0 {
+		connectCtx, cancelConnect := context.WithTimeout(context.Background(), 30*time.Second)
+		if err := mcpMgr.Connect(connectCtx); err != nil {
+			// Partial connect — record but don't crash.
+			logger.Warn("mcp: partial connect", "err", err)
+		}
+		cancelConnect()
+	}
+	defer func() {
+		closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := mcpMgr.Close(closeCtx); err != nil {
+			logger.Warn("mcp: close", "err", err)
+		}
+	}()
+
+	// 4. Set up raw mode + alt screen. The restore func is
 	// called on every exit path.
 	restore, err := setupRawMode()
 	if err != nil {
 		return fmt.Errorf("tui: %w", err)
 	}
 
-	// 4. Construct the model with the bridge state.
+	// 5. Construct the model with the bridge state.
 	m := InitialModel(cfg, cost)
 	m.bridge = &programState{
 		Provider:     provider,
 		SystemPrompt: systemPrompt,
 		Logger:       logger,
+		McpManager:   mcpMgr,
 	}
 	// Expose the provider to slash commands that issue their own
 	// model calls (currently /compact). The provider is fixed
@@ -90,8 +125,18 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 			Text: fmt.Sprintf("API provider unavailable: %v (set NVIDIA_API_KEY / FORGE_API_KEY / OPENAI_API_KEY or pass --api-key)", providerErr),
 		})
 	}
+	// Surface MCP connection failures inline so the user
+	// knows which servers didn't come up. (Successful
+	// connects are silent — the model will start calling
+	// their tools.)
+	for name, err := range mcpMgr.Errors() {
+		m.Messages = append(m.Messages, renderedMessage{
+			Role: "error",
+			Text: fmt.Sprintf("MCP server %q failed to connect: %v", name, err),
+		})
+	}
 
-	// 5. Run the bubbletea program. Wrap in panic-recovery so a
+	// 6. Run the bubbletea program. Wrap in panic-recovery so a
 	// crash in Update still restores the terminal.
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	var finalModel tea.Model
@@ -208,7 +253,15 @@ func (m Model) startQueryLoop() tea.Cmd {
 	go func() {
 		defer close(eventCh)
 		defer close(permReqCh)
+		// toolsList is the union of the built-in tools (Read,
+		// Glob, Grep, Write, Edit, Bash) and any tools exposed
+		// by connected MCP servers (Phase 4 step 8). When no
+		// MCP servers were configured, mcpMgr is nil and
+		// Tools() returns nil — append is a no-op for nil.
 		toolsList := tools.AllTools()
+		if mcpMgr := m.bridge.McpManager; mcpMgr != nil {
+			toolsList = append(toolsList, mcpMgr.Tools()...)
+		}
 		tc := &tools.ToolContext{
 			WorkingDir:  cfg.WorkingDir,
 			CostTracker: cost,

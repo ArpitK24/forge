@@ -16,6 +16,7 @@ import (
 	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/cli"
 	"github.com/ArpitK24/forge/internal/core"
+	"github.com/ArpitK24/forge/internal/mcp"
 	"github.com/ArpitK24/forge/internal/query"
 	"github.com/ArpitK24/forge/internal/tools"
 )
@@ -81,8 +82,32 @@ func runHeadless(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
 		return exitError(2)
 	}
 
-	// 5. Build the tool list.
+	// 5. Build the tool list. Built-in tools first, then any
+	// tools exposed by connected MCP servers (Phase 4 step 8).
+	// Constructed synchronously before the loop runs so the
+	// model's first turn sees the full tool list. Per-server
+	// connect failures are recorded on mcpMgr.Errors() and
+	// printed to stderr; the rest of the servers still
+	// register their tools. defer-Close on exit cleans up
+	// the subprocess pipes.
 	toolsList := tools.AllTools()
+	mcpMgr := mcp.NewManager(cfg.McpServers, logger)
+	if len(cfg.McpServers) > 0 {
+		connectCtx, cancelConnect := context.WithTimeout(context.Background(), 30*time.Second)
+		if err := mcpMgr.Connect(connectCtx); err != nil {
+			fmt.Fprintf(os.Stderr, "warning: mcp partial connect: %v\n", err)
+		}
+		cancelConnect()
+		for name, e := range mcpMgr.Errors() {
+			fmt.Fprintf(os.Stderr, "warning: mcp server %q failed: %v\n", name, e)
+		}
+		toolsList = append(toolsList, mcpMgr.Tools()...)
+	}
+	defer func() {
+		closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = mcpMgr.Close(closeCtx)
+	}()
 
 	// 6. Build the per-call ToolContext.
 	perm := &core.AutoPermissionHandler{Mode: cfg.PermissionMode}
