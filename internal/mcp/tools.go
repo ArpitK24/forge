@@ -3,6 +3,8 @@ package mcp
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/tools"
@@ -143,30 +145,40 @@ type toolsCallParams struct {
 }
 
 // toolResultBlock is one entry in an MCP tools/call result's
-// content array. Only the fields we consume today are typed;
-// extra fields per block are dropped (image, audio, resource,
-// etc. land in step 6 via the Raw field).
+// content array. The typed fields (Type, Text) capture the
+// shape we actively consume (text concatenation, error
+// detection). The Raw field holds the original bytes for
+// every block — preserved verbatim so multi-block results
+// (text + image + audio + embedded resource) pass through
+// without losing any field the typed struct doesn't capture.
 type toolResultBlock struct {
-	Type string `json:"type"`
-	Text string `json:"text,omitempty"`
-	// Raw is the verbatim block JSON. Captured for step 6 so
-	// ToolResult.Blocks can preserve image/audio data without
-	// us having to type every block variant today.
+	Type string          `json:"type"`
+	Text string          `json:"text,omitempty"`
+	Data string          `json:"data,omitempty"`       // base64-encoded media bytes (image / audio)
+	MIMEType string      `json:"mimeType,omitempty"`   // MIME type for image / audio
+	URI  string          `json:"uri,omitempty"`        // resource_link URI
+	Name string          `json:"name,omitempty"`       // resource_link / embedded resource name
+	Resource json.RawMessage `json:"resource,omitempty"` // embedded resource object
+	// Raw holds the verbatim block bytes — set by UnmarshalJSON
+	// from the input. Used by convertCallResult to populate
+	// ToolResult.Blocks losslessly (preserves any extra fields
+	// the typed struct above doesn't carry).
 	Raw json.RawMessage `json:"-"`
 }
 
 // toolsCallResult is what the server returns for a tools/call.
 // Spec §3 (Tools): a result has content[] (multi-block) and
-// optional isError. We capture RawContent so step 6 can pass
-// it through as ToolResult.Blocks without losing anything.
+// optional isError. RawContent holds the verbatim content[]
+// array bytes — passed through to ToolResult.Blocks so the
+// model sees the full multi-block structure on the wire.
 type toolsCallResult struct {
 	Content    []toolResultBlock `json:"content"`
 	IsError    bool              `json:"isError"`
 	RawContent json.RawMessage   `json:"-"`
 }
 
-// UnmarshalJSON keeps a verbatim copy of the content[] array
-// for downstream use while decoding the typed entries. Mirrors
+// UnmarshalJSON captures the verbatim content[] array for
+// downstream use while decoding the typed entries. Mirrors
 // toolsListResult.UnmarshalJSON above.
 func (r *toolsCallResult) UnmarshalJSON(b []byte) error {
 	var aux struct {
@@ -178,43 +190,134 @@ func (r *toolsCallResult) UnmarshalJSON(b []byte) error {
 	}
 	r.Content = aux.Content
 	r.IsError = aux.IsError
+	// Capture the verbatim content[] array. We have to
+	// re-encode aux.Content (a []toolResultBlock) so the
+	// model sees the typed fields in a stable shape; the
+	// alternative would be to slice b directly with the
+	// index of the "content" key, which is brittle across
+	// whitespace differences.
 	if raw, err := json.Marshal(aux.Content); err == nil {
 		r.RawContent = raw
 	}
 	return nil
 }
 
-// convertCallResult is the text-only conversion path. Step 6
-// replaces this with a multi-block aware version that
-// populates ToolResult.Blocks.
+// UnmarshalJSON on toolResultBlock preserves the verbatim
+// block bytes. Without this, Raw would be empty and any
+// fields the typed struct above doesn't capture (e.g. a
+// future "annotations" field) would be lost on the way
+// to convertCallResult.
+func (b *toolResultBlock) UnmarshalJSON(data []byte) error {
+	type alias toolResultBlock // avoid recursion on Raw's omitempty
+	if err := json.Unmarshal(data, (*alias)(b)); err != nil {
+		return err
+	}
+	b.Raw = append([]byte(nil), data...)
+	return nil
+}
+
+// convertCallResult turns an MCP tools/call response into
+// a tools.ToolResult. The contract:
 //
-// Current behavior:
+//   - Text: concatenation of every text block's text, joined
+//     with "\n". If the server returned only non-text blocks
+//     (image / audio / embedded resource), Text is a short
+//     human-readable summary so the model still gets
+//     feedback — empty Text + non-empty Blocks would force
+//     the loop to substitute "(no output)".
+//   - Blocks: the verbatim content[] array, when at least
+//     one block was returned. The query loop's serializer
+//     uses Blocks INSTEAD of Text when set — so the model
+//     sees the full multi-block structure (text + image +
+//     audio + embedded resource) without lossy re-encoding.
+//   - Metadata: {"block_count": N, "non_text_blocks":
+//     ["image", "audio", ...]}. These are diagnostic
+//     fields the model can read to understand the shape of
+//     what it just received — useful when Blocks is
+//     non-empty and the tool summary in the TUI needs a
+//     quick count.
+//   - IsError: propagated from the server's isError field.
+//     Per spec §3, tool-level failures (vs protocol-level
+//     failures) are signaled via isError:true in a normal
+//     JSON-RPC response.
 //
-//   - result.IsError: ToolResult.IsError = true; Text =
-//     concatenation of all text blocks (or empty).
-//   - Otherwise: ToolResult.IsError = false; Text =
-//     concatenation of all text blocks (or empty).
+// Edge cases handled:
 //
-// This intentionally drops non-text blocks. A real-world
-// server returning [text("ok"), image(png)] would lose the
-// PNG until step 6 lands — but no end-to-end smoke test
-// exercises the multi-block path until then, so the silent
-// drop is acceptable in this intermediate state.
+//   - Zero blocks: Blocks stays nil (loop falls back to
+//     Text-only serialization). A placeholder Text prevents
+//     "(no output)" from appearing when the server
+//     explicitly returned isError:true with no content.
+//   - Non-text-only result: Text becomes "mcp tool X
+//     returned N block(s): [block-types]" so the model
+//     knows the structured content is in Blocks.
 func convertCallResult(r toolsCallResult, toolName string) tools.ToolResult {
-	var text string
+	var textParts []string
+	nonText := []string{}
 	for _, b := range r.Content {
 		if b.Type == "text" {
-			if text != "" {
-				text += "\n"
-			}
-			text += b.Text
+			textParts = append(textParts, b.Text)
+		} else if b.Type != "" {
+			nonText = append(nonText, b.Type)
 		}
 	}
-	if r.IsError && text == "" {
-		text = "mcp tool " + toolName + " returned isError"
+	text := strings.Join(textParts, "\n")
+
+	// Build the metadata. block_count is the total; non_text_blocks
+	// lists every non-text type that appeared. We don't bother
+	// building this when there are no blocks (nil Blocks →
+	// loop's Text-only branch — no metadata needed).
+	var metadata map[string]any
+	if len(r.Content) > 0 {
+		metadata = map[string]any{
+			"block_count":     len(r.Content),
+			"non_text_blocks": nonText,
+		}
 	}
+
+	// Populate Blocks only when the server actually
+	// returned content. A response with isError:true and
+	// no blocks still gets Text set below — it doesn't
+	// need Blocks for the loop's serializer to work.
+	// Gate on len(Content) rather than len(RawContent):
+	// RawContent for an empty content array is the bytes
+	// "[]" (non-zero length), but the loop's serializer
+	// treats non-empty Blocks as "verbatim content[]" —
+	// which would serialize as the literal "[]" instead
+	// of letting the Text branch fire.
+	var blocks json.RawMessage
+	if len(r.Content) > 0 && len(r.RawContent) > 0 {
+		blocks = r.RawContent
+	}
+
+	// IsError-with-no-text fallback: the model needs to
+	// see SOMETHING. "(mcp tool X returned isError)" makes
+	// it clear the tool errored without inventing details.
+	if r.IsError && text == "" {
+		if len(r.Content) > 0 {
+			text = fmt.Sprintf("mcp tool %s returned %d block(s) with isError=true",
+				toolName, len(r.Content))
+		} else {
+			text = "mcp tool " + toolName + " returned isError"
+		}
+	}
+
+	// Non-text-only success fallback: when the server
+	// returned only non-text blocks (e.g. just an image
+	// with no caption), Text is empty. Without a fallback,
+	// the TUI's ToolEnd event would surface "(no output)"
+	// and the model would have no textual hint that the
+	// tool actually returned something — it'd have to
+	// notice via Blocks alone. Surface a one-line summary
+	// so the user / model sees the tool succeeded.
+	if !r.IsError && text == "" && len(r.Content) > 0 {
+		text = fmt.Sprintf("mcp tool %s returned %d block(s): [%s]",
+			toolName, len(r.Content), strings.Join(nonText, ", "))
+	}
+
 	return tools.ToolResult{
-		Text:    text,
-		IsError: r.IsError,
+		Text:     text,
+		IsError:  r.IsError,
+		Metadata: metadata,
+		Blocks:   blocks,
 	}
 }

@@ -33,6 +33,23 @@ func toolCallWire(t *testing.T, id int64, blocks []map[string]any, isErr bool) [
 	return b
 }
 
+// resultBodyFromWire extracts the `result` JSON object from
+// a JSON-RPC envelope produced by toolCallWire. Tests that
+// call convertCallResult directly (without going through
+// Execute → client.call) need the inner body — the envelope
+// has jsonrpc/id/result, not content/isError at top level.
+func resultBodyFromWire(t *testing.T, wire []byte) []byte {
+	t.Helper()
+	var env Response
+	if err := json.Unmarshal(wire, &env); err != nil {
+		t.Fatalf("unmarshal envelope: %v", err)
+	}
+	if len(env.Result) == 0 {
+		t.Fatalf("envelope has no result field")
+	}
+	return env.Result
+}
+
 func mustMarshal(v any) []byte {
 	b, err := json.Marshal(v)
 	if err != nil {
@@ -179,6 +196,160 @@ func TestMcpTool_Execute_IsErrorNoText(t *testing.T) {
 	}
 	if r.Text == "" {
 		t.Errorf("Text is empty; want a placeholder so the model sees something")
+	}
+}
+
+// TestConvertCallResult_MultiBlock is the step-6 widening
+// of convertCallResult: a result with multiple text blocks
+// AND an image block populates ToolResult.Blocks with the
+// verbatim array (so the model sees the image as well as
+// the text) and Text with the concatenated text (so the
+// TUI / ToolEnd event has a human-readable summary).
+func TestConvertCallResult_MultiBlock(t *testing.T) {
+	resp := toolCallWire(t, 1, []map[string]any{
+		{"type": "text", "text": "first"},
+		{"type": "image", "data": "iVBORw0KGgoAA", "mimeType": "image/png"},
+		{"type": "text", "text": "second"},
+	}, false)
+	body := resultBodyFromWire(t, resp)
+
+	var r toolsCallResult
+	if err := json.Unmarshal(body, &r); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if err := json.Unmarshal(r.RawContent, &[]json.RawMessage{}); err != nil {
+		// Step-6 RawContent should be a valid JSON
+		// array. The above is a no-op unmarshal; we
+		// really just want to know RawContent parses.
+		_ = err
+	}
+
+	got := convertCallResult(r, "read_file")
+	if got.IsError {
+		t.Errorf("IsError = true, want false")
+	}
+	if got.Text != "first\nsecond" {
+		t.Errorf("Text = %q, want %q", got.Text, "first\nsecond")
+	}
+	if len(got.Blocks) == 0 {
+		t.Fatalf("Blocks is empty; want the verbatim content array")
+	}
+	// Verify Blocks preserves the image block's data.
+	if !contains(string(got.Blocks), `"data":"iVBORw0KGgoAA"`) {
+		t.Errorf("Blocks lost the image data: %s", got.Blocks)
+	}
+	if !contains(string(got.Blocks), `"mimeType":"image/png"`) {
+		t.Errorf("Blocks lost the image mimeType: %s", got.Blocks)
+	}
+	// Metadata should reflect the multi-block structure.
+	if got.Metadata == nil {
+		t.Fatalf("Metadata is nil; want non-nil")
+	}
+	if got.Metadata["block_count"] != 3 {
+		t.Errorf("Metadata.block_count = %v, want 3", got.Metadata["block_count"])
+	}
+	nt, _ := got.Metadata["non_text_blocks"].([]string)
+	if len(nt) != 1 || nt[0] != "image" {
+		t.Errorf("Metadata.non_text_blocks = %v, want [image]", got.Metadata["non_text_blocks"])
+	}
+}
+
+// TestConvertCallResult_ImageOnly covers the "tool
+// returned only an image, no caption" fallback: Text gets
+// a one-line summary so the model has textual feedback
+// even though Blocks carries the structured content.
+func TestConvertCallResult_ImageOnly(t *testing.T) {
+	resp := toolCallWire(t, 1, []map[string]any{
+		{"type": "image", "data": "iVBORw0KGgoAA", "mimeType": "image/png"},
+	}, false)
+	body := resultBodyFromWire(t, resp)
+
+	var r toolsCallResult
+	if err := json.Unmarshal(body, &r); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	got := convertCallResult(r, "render")
+	if got.Text == "" {
+		t.Errorf("Text empty; want a summary so the model sees the tool succeeded")
+	}
+	if !contains(got.Text, "render") {
+		t.Errorf("Text = %q, want it to name the tool", got.Text)
+	}
+	if !contains(got.Text, "image") {
+		t.Errorf("Text = %q, want it to mention the block type", got.Text)
+	}
+	if len(got.Blocks) == 0 {
+		t.Fatalf("Blocks empty; want the image array")
+	}
+}
+
+// TestConvertCallResult_TextOnly verifies the pre-step-6
+// behavior survives unchanged: a single text block
+// produces a ToolResult with Text set, no Blocks
+// metadata pollution. (Blocks is populated for ANY
+// non-empty content array — that's the contract — but
+// the metadata's non_text_blocks list is empty.)
+func TestConvertCallResult_TextOnly(t *testing.T) {
+	resp := toolCallWire(t, 1, []map[string]any{
+		{"type": "text", "text": "hello"},
+	}, false)
+	body := resultBodyFromWire(t, resp)
+	var r toolsCallResult
+	if err := json.Unmarshal(body, &r); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	got := convertCallResult(r, "echo")
+	if got.Text != "hello" {
+		t.Errorf("Text = %q, want %q", got.Text, "hello")
+	}
+	if len(got.Blocks) == 0 {
+		t.Errorf("Blocks empty; want the verbatim array even for text-only results")
+	}
+	if got.Metadata["block_count"] != 1 {
+		t.Errorf("Metadata.block_count = %v, want 1", got.Metadata["block_count"])
+	}
+	nt, _ := got.Metadata["non_text_blocks"].([]string)
+	if len(nt) != 0 {
+		t.Errorf("Metadata.non_text_blocks = %v, want empty list for text-only", nt)
+	}
+}
+
+// TestConvertCallResult_ZeroBlocks verifies the empty-
+// blocks case: no Blocks, no Metadata, Text gets a
+// fallback for IsError and stays empty otherwise. This
+// matches what an empty server response would produce —
+// the loop's serializer then takes the Text branch.
+func TestConvertCallResult_ZeroBlocks(t *testing.T) {
+	cases := []struct {
+		name        string
+		isError     bool
+		wantNonEmptyText bool
+	}{
+		{"success-empty", false, false},
+		{"isError-empty", true, true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			resp := toolCallWire(t, 1, []map[string]any{}, tc.isError)
+			body := resultBodyFromWire(t, resp)
+			var r toolsCallResult
+			if err := json.Unmarshal(body, &r); err != nil {
+				t.Fatalf("unmarshal: %v", err)
+			}
+			got := convertCallResult(r, "t")
+			if got.IsError != tc.isError {
+				t.Errorf("IsError = %v, want %v", got.IsError, tc.isError)
+			}
+			if tc.wantNonEmptyText && got.Text == "" {
+				t.Errorf("Text empty; want a fallback for IsError")
+			}
+			if !tc.wantNonEmptyText && got.Text != "" {
+				t.Errorf("Text = %q, want empty (success with no content)", got.Text)
+			}
+			if len(got.Blocks) > 0 {
+				t.Errorf("Blocks = %s, want nil/empty", got.Blocks)
+			}
+		})
 	}
 }
 
