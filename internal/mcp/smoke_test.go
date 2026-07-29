@@ -74,7 +74,10 @@ func requireNpx(t *testing.T) {
 //
 // We use this to pre-flight the test environment: a working
 // install of @modelcontextprotocol/server-filesystem is a
-// prerequisite for the rest of the suite.
+// prerequisite for the rest of the suite. The server takes
+// one or more directory paths as positional args (NOT --help)
+// and waits on stdin for JSON-RPC; if it's alive after 3s the
+// install is good.
 func runMcpCmd(t *testing.T, args ...string) error {
 	t.Helper()
 	cmd := exec.Command("npx", args...)
@@ -121,8 +124,11 @@ func TestMcpFilesystemLifecycle(t *testing.T) {
 	// Pre-flight: ensure the server can actually be invoked.
 	// A failure here usually means a bad npm cache or no
 	// network — same root cause as a flake in the test
-	// below, so failing fast here is clearer.
-	if err := runMcpCmd(t, "-y", "@modelcontextprotocol/server-filesystem", "--help"); err != nil && !strings.Contains(err.Error(), "exit status") {
+	// below, so failing fast here is clearer. We use a
+	// throwaway directory as the server's allowed-root and
+	// rely on the 3s liveness check (server should be
+	// waiting on stdin at that point).
+	if err := runMcpCmd(t, "-y", "@modelcontextprotocol/server-filesystem", t.TempDir()); err != nil {
 		t.Skipf("pre-flight failed: %v", err)
 	}
 

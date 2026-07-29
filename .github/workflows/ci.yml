@@ -95,12 +95,29 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           set -euo pipefail
-          # Pre-flight: ensure the package is fetchable.
-          # A failure here is a CI-environment problem,
-          # not a code regression — but failing fast
-          # distinguishes it from a downstream test
-          # timeout.
-          npx -y @modelcontextprotocol/server-filesystem --help >/dev/null
+          # Pre-flight: ensure the package is fetchable and
+          # the binary actually starts. The server takes
+          # one or more directory paths as positional args
+          # and waits on stdin — there's no --help. We spawn
+          # it with a dummy dir under a 5s timeout; if it's
+          # still alive at 5s, the install works and we can
+          # run the tests. If it died early (bad npm cache,
+          # no network), the diagnostic is distinct from a
+          # downstream test failure.
+          dummy=$(mktemp -d)
+          npx -y @modelcontextprotocol/server-filesystem "$dummy" &
+          pid=$!
+          sleep 5
+          if kill -0 "$pid" 2>/dev/null; then
+            kill "$pid" 2>/dev/null || true
+            wait "$pid" 2>/dev/null || true
+            echo "pre-flight: server alive after 5s, install OK"
+          else
+            wait "$pid" 2>/dev/null || true
+            echo "pre-flight: server exited before 5s, install may be broken" >&2
+            exit 1
+          fi
+          rm -rf "$dummy"
           go test -count=1 -tags mcp_smoke -run TestMcpFilesystem ./internal/mcp/...
 
       - name: Upload artifact
