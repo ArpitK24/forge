@@ -1,5 +1,6 @@
 # GitHub Actions CI for Forge.
 # Phase 4 Step 2: cross-platform guarantees.
+# Phase 4 Step 10: MCP real-server smoke test on ubuntu-only.
 #
 # Triggers:
 #   - every push to main
@@ -21,6 +22,9 @@
 #      host, not for all targets — cross-compile to every target
 #      from every host is the script's job, but only the
 #      matching-target binary gets used as an artifact)
+#   4. (ubuntu-only) MCP smoke test: spawns
+#      @modelcontextprotocol/server-filesystem via npx and
+#      exercises the full Manager → mcpTool → Client pipeline.
 #
 # Artifacts:
 #   - per-OS forge binary at the path matching the matrix OS
@@ -78,6 +82,26 @@ jobs:
         # The shebang inside the script still selects bash.
         shell: bash
         run: bash scripts/build.sh ${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
+
+      - name: MCP smoke test (real server, ubuntu only)
+        # Phase 4 step 10. The smoke suite spawns
+        # `@modelcontextprotocol/server-filesystem` (Node)
+        # and exercises the full Manager → mcpTool → Client
+        # pipeline against it. Gated by the `mcp_smoke`
+        # build tag so it never runs in default `go test
+        # ./...`. ubuntu-only because npx + npm registry
+        # access is most reliable there; macOS / Windows
+        # runners get the standard unit test suite.
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -euo pipefail
+          # Pre-flight: ensure the package is fetchable.
+          # A failure here is a CI-environment problem,
+          # not a code regression — but failing fast
+          # distinguishes it from a downstream test
+          # timeout.
+          npx -y @modelcontextprotocol/server-filesystem --help >/dev/null
+          go test -count=1 -tags mcp_smoke -run TestMcpFilesystem ./internal/mcp/...
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
