@@ -28,10 +28,17 @@ const (
 
 // connectTimeout caps how long Connect waits per server.
 // Spec §4 (Timeouts): receivers SHOULD enforce a maximum
-// timeout regardless of progress notifications. 10s is the
-// H8 risk called out in the plan — enough headroom for a slow
-// spawn but tight enough to surface a wedged server quickly.
-const connectTimeout = 10 * time.Second
+// timeout regardless of progress notifications. Sized at
+// 30s to cover a cold npx install of an MCP server (npm
+// registry fetch + tarball extract can take 20s on a fresh
+// CI runner); subsequent calls hit the npm cache and start
+// in <1s, so the cap is rarely the binding constraint in
+// practice. The H8 risk in the plan flagged 10s as too
+// tight for cold-cache scenarios; 30s leaves headroom
+// while still surfacing a truly wedged server within the
+// CI step timeout (default 360m, but realistically we want
+// to fail fast).
+const connectTimeout = 30 * time.Second
 
 // serverTool captures one tool descriptor returned by a
 // server's tools/list. Stored on the Manager so future steps

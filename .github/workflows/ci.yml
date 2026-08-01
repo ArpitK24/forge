@@ -83,42 +83,31 @@ jobs:
         shell: bash
         run: bash scripts/build.sh ${{ matrix.os == 'windows-latest' && 'windows' || (matrix.os == 'macos-latest' && 'darwin' || 'linux') }}
 
-      - name: MCP smoke test (real server, ubuntu only)
-        # Phase 4 step 10. The smoke suite spawns
-        # `@modelcontextprotocol/server-filesystem` (Node)
-        # and exercises the full Manager → mcpTool → Client
-        # pipeline against it. Gated by the `mcp_smoke`
-        # build tag so it never runs in default `go test
-        # ./...`. ubuntu-only because npx + npm registry
-        # access is most reliable there; macOS / Windows
-        # runners get the standard unit test suite.
+      - name: MCP smoke test (mock server, ubuntu only)
+        # Phase 4 step 10. The smoke suite uses an in-process
+        # Node.js mock MCP server embedded as a string constant
+        # in smoke_test.go — no npm install, no network, no
+        # upstream server dependency. It exercises the full
+        # Manager → mcpTool → Client → StdioTransport pipeline
+        # against the same JSON-RPC 2.0 / LSP Content-Length
+        # framing a real server uses. Gated by the `mcp_smoke`
+        # build tag so it never runs in default `go test ./...`.
+        # ubuntu-only because the Windows runner's npx/Node
+        # stdin-pipe plumbing has issues that we sidestep with
+        # a direct `node mock-mcp-server.js` invocation.
         if: matrix.os == 'ubuntu-latest'
         run: |
           set -euo pipefail
-          # Pre-flight: ensure the package is fetchable and
-          # the binary actually starts. The server takes
-          # one or more directory paths as positional args
-          # and waits on stdin — there's no --help. We spawn
-          # it with a dummy dir under a 5s timeout; if it's
-          # still alive at 5s, the install works and we can
-          # run the tests. If it died early (bad npm cache,
-          # no network), the diagnostic is distinct from a
-          # downstream test failure.
-          dummy=$(mktemp -d)
-          npx -y @modelcontextprotocol/server-filesystem "$dummy" &
-          pid=$!
-          sleep 5
-          if kill -0 "$pid" 2>/dev/null; then
-            kill "$pid" 2>/dev/null || true
-            wait "$pid" 2>/dev/null || true
-            echo "pre-flight: server alive after 5s, install OK"
-          else
-            wait "$pid" 2>/dev/null || true
-            echo "pre-flight: server exited before 5s, install may be broken" >&2
-            exit 1
+          # The mock script is written to t.TempDir() by the
+          # test itself; we only need `node` on PATH. ubuntu-latest
+          # ships Node preinstalled. If a future runner drops Node,
+          # the test suite's requireNode() helper skips with a
+          # clear message rather than failing the build.
+          if ! command -v node >/dev/null 2>&1; then
+            echo "node not on PATH; skipping MCP smoke suite" >&2
+            exit 0
           fi
-          rm -rf "$dummy"
-          go test -count=1 -tags mcp_smoke -run TestMcpFilesystem ./internal/mcp/...
+          go test -count=1 -tags mcp_smoke -run TestMcpMock -timeout 5m ./internal/mcp/...
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -105,14 +105,19 @@ func newClient(name string, t Transport, log *slog.Logger) *client {
 }
 
 // start launches the transport and starts the read goroutine.
-// ctx is the transport's lifecycle context — cancellation
-// aborts in-flight Recv calls but does not (by itself) close
-// the client; the caller must call close().
+// ctx is the transport's lifecycle context — used for Start
+// (spawning the subprocess) but NOT for the read goroutine;
+// the read goroutine uses context.Background() and exits when
+// Recv fails (which happens when the transport is closed via
+// close()). Passing the caller's ctx to the read goroutine
+// would tie its lifetime to Connect's deadline — Connect
+// returns once tools/list completes, but the goroutine still
+// needs to demux responses to subsequent tools/call requests.
 func (c *client) start(ctx context.Context) error {
 	if err := c.t.Start(ctx); err != nil {
 		return err
 	}
-	go c.readLoop(ctx)
+	go c.readLoop(context.Background())
 	return nil
 }
 
