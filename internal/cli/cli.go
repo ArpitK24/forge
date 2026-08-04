@@ -303,6 +303,7 @@ func (a *Args) ToConfig() (*core.Config, error) {
 		WorkingDir:            a.Cwd,
 		AutoCompact:           !a.NoAutoCompact,
 		McpServers:            mcpServers,
+		ResumeID:              a.Resume,
 	}
 	if a.PermissionModeSet {
 		c.PermissionMode = a.PermissionMode

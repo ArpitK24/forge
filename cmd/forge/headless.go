@@ -136,8 +136,19 @@ func runHeadless(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
 		return fmt.Errorf("no prompt provided; pass one as a positional argument or pipe via stdin")
 	}
 
-	// 9. Build the message history and start the loop.
+	// 9. Build the message history. With --resume <id>, load
+	// the saved session first and append the new prompt; the
+	// loop then sees the prior conversation as context and
+	// answers the new question in its light. A missing id is
+	// a hard error — better than silently starting fresh.
 	messages := []core.Message{core.NewUserText(prompt)}
+	if cfg.ResumeID != "" {
+		loaded, err := core.LoadSession(cfg.ResumeID)
+		if err != nil {
+			return fmt.Errorf("--resume %q: %w", cfg.ResumeID, err)
+		}
+		messages = append(loaded.Messages, messages...)
+	}
 	cost := core.NewCostTracker()
 	events := make(chan query.Event, 256)
 

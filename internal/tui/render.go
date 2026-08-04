@@ -60,15 +60,20 @@ func (m Model) View() string {
 
 	base := b.String()
 
-	// 5. Overlay the help or permission dialog if visible. The
-	// permission dialog takes priority: if both are up (which
-	// shouldn't happen in practice, but is possible if a help
-	// overlay was open when a tool call needed permission), the
-	// dialog wins because it's the time-sensitive surface.
+	// 5. Overlay the help / sessions picker / permission dialog
+	// if visible. Priority order: permission dialog > picker
+	// > help. The permission dialog wins because it's the
+	// time-sensitive surface; the picker wins over help
+	// because it's a task the user is mid-way through.
 	if m.PermissionDialog != nil {
 		return lipgloss.Place(m.Width, m.Height,
 			lipgloss.Center, lipgloss.Center,
 			m.renderPermissionDialog())
+	}
+	if m.SessionPicker != nil {
+		return lipgloss.Place(m.Width, m.Height,
+			lipgloss.Center, lipgloss.Center,
+			m.renderResumePicker())
 	}
 	if m.HelpVisible {
 		return lipgloss.Place(m.Width, m.Height,

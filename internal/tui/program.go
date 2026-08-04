@@ -119,6 +119,34 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 	// is enough; commands read it from m.CmdCtx.Client via the
 	// dispatchCommand path.
 	m.CmdCtx.Client = provider
+
+	// 5b. --resume <id> pre-load: when the CLI resolved a
+	// ResumeID, fetch that session's history BEFORE bubbletea
+	// starts so the first render shows the previous
+	// conversation. The picker's re-dispatch path skips this
+	// branch (no ResumeID set) and so never re-enters here on
+	// mid-session /resume — pickers fork a fresh id, see H3.
+	if cfg.ResumeID != "" {
+		loaded, loadErr := core.LoadSession(cfg.ResumeID)
+		if loadErr != nil {
+			m.Messages = append(m.Messages, renderedMessage{
+				Role: "error",
+				Text: fmt.Sprintf("--resume %q: %v", cfg.ResumeID, loadErr),
+			})
+		} else {
+			m.shared.messages = loaded.Messages
+			m.CmdCtx.Messages = loaded.Messages
+			for _, msg := range loaded.Messages {
+				m.Messages = append(m.Messages, renderedMessage{
+					Role: msg.Role.String(),
+					Text: msg.AllText(),
+				})
+			}
+			m.LoadedSessionID = cfg.ResumeID
+			m.GotoBottom()
+		}
+	}
+
 	if providerErr != nil {
 		m.Messages = append(m.Messages, renderedMessage{
 			Role: "error",
@@ -151,7 +179,21 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 	// recover the final *Model from p.Run()'s return value;
 	// bubbletea passes the last value Update produced, which
 	// is the most up-to-date snapshot of the conversation.
-	saveSessionOnExit(cfg, logger, finalModel)
+	//
+	// If the TUI was opened via --resume <id>, the model's
+	// LoadedSessionID is non-empty and we route through
+	// saveResumedSessionOnExit to overwrite the on-disk record
+	// in place. Otherwise we mint a fresh id via
+	// saveSessionOnExit. Both helpers honor the same nil/empty
+	// guards; finalModel can legitimately be nil after a
+	// pre-Init panic.
+	if finalModel != nil {
+		if fm, ok := finalModel.(*Model); ok && fm.LoadedSessionID != "" {
+			saveResumedSessionOnExit(cfg, logger, finalModel)
+		} else {
+			saveSessionOnExit(cfg, logger, finalModel)
+		}
+	}
 	restore()
 	return nil
 }

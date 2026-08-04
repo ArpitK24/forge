@@ -160,6 +160,35 @@ func TestToConfigDefaults(t *testing.T) {
 	if c.SkipProjectMemoryFile {
 		t.Errorf("default SkipProjectMemoryFile = true, want false")
 	}
+	// No --resume: ResumeID must stay empty so the TUI opens a
+	// fresh session rather than pre-loading history.
+	if c.ResumeID != "" {
+		t.Errorf("default ResumeID = %q, want \"\"", c.ResumeID)
+	}
+}
+
+// TestToConfig_ResumeID covers the CLI plumbing for --resume:
+// the value flows through Args.Resume into Config.ResumeID,
+// which is what the TUI's pre-load hook (program.go) and the
+// headless path read to decide which saved session to load.
+//
+// This is the only --resume behavior tested at the CLI layer;
+// LoadSession / ListSessions themselves are tested in
+// internal/core/session_test.go.
+func TestToConfig_ResumeID(t *testing.T) {
+	const id = "01234567-89ab-4cde-9012-3456789abcde"
+	p := NewParser("forge", []string{"--resume", id, "-p", "hi"})
+	a, err := p.Parse()
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	c, err := a.ToConfig()
+	if err != nil {
+		t.Fatalf("ToConfig: %v", err)
+	}
+	if c.ResumeID != id {
+		t.Errorf("Config.ResumeID = %q, want %q", c.ResumeID, id)
+	}
 }
 
 // TestToConfig_NoMCPConfigFlag covers the default path: no

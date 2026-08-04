@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textarea"
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -100,6 +102,27 @@ type Model struct {
 	// is posted back on the channel. Placeholder for now;
 	// Step 5 wires it.
 	PermissionDialog *PermissionDialogState
+
+	// --- Sessions picker (Phase 4 step) ---
+	// When non-nil, the picker owns all input — see the
+	// top-of-Update short-circuit in update.go. The picker
+	// resolves to a session id; the TUI re-dispatches
+	// `/resume <id>` via dispatchCommand, which lands in
+	// the existing ResultSetMessages handler. Pointer-typed
+	// so the embedded bubbles (list.Model, textinput.Model)
+	// stay shared across Model copies (bubbletea copies
+	// Model on every Update — value-typed state would lose
+	// filter text and selection on the first keystroke).
+	SessionPicker *SessionPickerState
+
+	// LoadedSessionID is the id of the saved session that
+	// was loaded into this TUI run via --resume <id> at the
+	// CLI layer. Empty on fresh sessions, and empty on
+	// mid-session /resume (which forks a fresh id). On
+	// graceful exit, saveResumedSessionOnExit reads this
+	// value to decide whether to overwrite the on-disk
+	// record or write a brand-new file.
+	LoadedSessionID string
 
 	// --- Commands context ---
 	CmdCtx *commands.CommandContext
@@ -269,6 +292,27 @@ func (m *Model) GotoBottom() {
 func (m Model) setModelStatus(format string, args ...any) (Model, tea.Cmd) {
 	m.Status = fmt.Sprintf(format, args...)
 	return m, nil
+}
+
+// SessionPickerState is the in-TUI sessions browser overlay
+// state. Held as a pointer on Model (SessionPicker *SessionPickerState)
+// so the embedded bubbles (list.Model, textinput.Model) stay
+// shared across bubbletea's per-Update Model copies. The full
+// type is defined in resume_picker.go (Phase 4 step 6); this
+// forward declaration keeps the Model struct compilable while
+// the picker is wired up.
+type SessionPickerState struct {
+	// Entries is the saved-session cache loaded by
+	// openResumePicker from core.ListSessions. Order matches
+	// the picker UI top-to-bottom (most-recent first).
+	Entries []core.ConversationSession
+	// FilterInput is the live-typeahead input field. Empty
+	// filter shows every entry.
+	FilterInput textinput.Model
+	// List is the scrollable picker view. Indexes are 0-based
+	// into Entries; we don't store an additional cursor — the
+	// bubbles list owns selection.
+	List list.Model
 }
 
 // effectiveModel returns the model id to use. Falls back to

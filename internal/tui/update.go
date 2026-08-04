@@ -28,6 +28,22 @@ import (
 // denies the call (does NOT quit the TUI), Tab/Shift+Tab cycle
 // focus, Enter activates the focused button.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// If the sessions picker is open, it owns all input. The
+	// picker is a modal overlay (matches the "Esc leaves the
+	// modal" decision in H2): every key press goes to the
+	// picker, and only key presses produce a response — other
+	// messages (window resize, loop events) fall through so
+	// the layout still updates and streaming keeps flowing.
+	if m.SessionPicker != nil {
+		if k, ok := msg.(tea.KeyMsg); ok {
+			return m.handlePickerKey(k)
+		}
+		// Non-key messages are dropped while the picker is up,
+		// matching the permission dialog's freeze-everything
+		// contract.
+		return m, nil
+	}
+
 	// If the permission dialog is open, it owns all input until
 	// the user decides. This branch is reached on EVERY message
 	// type — key presses, loop events, window resizes — and
@@ -372,6 +388,17 @@ func (m Model) dispatchCommand(raw string) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case commands.ResultSilent:
+		return m, nil
+
+	case commands.ResultOpenPicker:
+		// Mount the picker overlay. Today's only discriminator
+		// is "session-resume"; future pickers (model picker,
+		// permission-template picker) get their own cases or a
+		// switch on res.PickerKind here.
+		if res.PickerKind == "session-resume" {
+			m.SessionPicker = openResumePicker()
+			m.computeLayout()
+		}
 		return m, nil
 
 	default:

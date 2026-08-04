@@ -251,6 +251,14 @@ type Config struct {
 	// is the one the active session consults. Disk persistence of
 	// new rules is Phase 3.1.
 	PermissionRules []PermissionRule `json:"permission_rules,omitempty"`
+
+	// ResumeID is the session id passed via --resume on the
+	// command line. When non-empty, the TUI and headless paths
+	// pre-load that saved session's history before the first
+	// render. CLI-only: never round-tripped to settings.json,
+	// never persisted. The TUI's LoadedSessionID tracks this
+	// value so saveSessionOnExit can preserve it on re-exits.
+	ResumeID string `json:"resume_id,omitempty"`
 }
 
 // EffectiveModel returns the model to use, falling back to the default

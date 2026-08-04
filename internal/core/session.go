@@ -105,6 +105,65 @@ func NewSessionID() (string, error) {
 		b[0:4], b[4:6], b[6:8], b[8:10], b[10:16]), nil
 }
 
+// DeriveTitle returns a short human-readable label for a
+// conversation, taken from the first user message. Whitespace is
+// collapsed and the result is capped at 60 runes; overlong inputs
+// are truncated with a trailing ellipsis. Returns "" when there
+// is nothing usable (no user messages, or only a whitespace/
+// empty first user message).
+//
+// Pure function — does not read or mutate disk. Used by
+// saveSessionOnExit to populate ConversationSession.Title, and
+// by ListSessions to backfill old sessions written before this
+// step landed.
+func DeriveTitle(msgs []Message) string {
+	for _, m := range msgs {
+		if m.Role != RoleUser {
+			continue
+		}
+		text := strings.TrimSpace(m.GetFirstText())
+		if text == "" {
+			// Empty or whitespace-only user message; fall
+			// through to the next user message rather than
+			// giving up.
+			continue
+		}
+		// Collapse internal whitespace (newlines, tabs, runs
+		// of spaces) into single spaces.
+		text = strings.Join(strings.Fields(text), " ")
+		return truncateTitle(text, 60)
+	}
+	return ""
+}
+
+// titleRuneCap is the max length of a derived title. 60 runes
+// fits comfortably in a picker's one-line layout on a typical
+// terminal; longer titles get truncated with an ellipsis.
+const titleRuneCap = 60
+
+// truncateTitle caps s at runeCap runes, appending "…" when
+// truncation occurs. Exposed (lowercase, package-private) for
+// direct test access. Truncates on rune boundaries so multi-byte
+// UTF-8 sequences are not split.
+//
+// The result is at most runeCap runes INCLUDING the ellipsis
+// (so we slice to runeCap-1 then append). Rune-counting, not
+// byte-counting, so emoji and CJK count as 1 each.
+func truncateTitle(s string, runeCap int) string {
+	if runeCap <= 0 {
+		return ""
+	}
+	runes := []rune(s)
+	if len(runes) <= runeCap {
+		return s
+	}
+	const ellipsis = "…"
+	if runeCap == 1 {
+		return ellipsis
+	}
+	return string(runes[:runeCap-1]) + ellipsis
+}
+
 // SaveSession writes the session to <dir>/<id>.json with mode
 // 0600. UpdatedAt is set to time.Now() on every call;
 // CreatedAt is set on the first save and preserved across
@@ -215,6 +274,17 @@ func ListSessions() ([]ConversationSession, error) {
 	sort.Slice(out, func(i, j int) bool {
 		return out[i].UpdatedAt.After(out[j].UpdatedAt)
 	})
+	// Lazy backfill: any session written before DeriveTitle
+	// landed will have Title == "". Compute the title on the
+	// returned copy so the picker can render meaningful labels;
+	// do NOT rewrite the disk file here — the next save
+	// (saveSessionOnExit, saveResumedSessionOnExit) does that.
+	// Sessions with non-empty titles on disk are left untouched.
+	for i := range out {
+		if out[i].Title == "" {
+			out[i].Title = DeriveTitle(out[i].Messages)
+		}
+	}
 	return out, nil
 }
 

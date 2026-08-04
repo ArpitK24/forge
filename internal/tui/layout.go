@@ -147,4 +147,9 @@ func (m *Model) computeLayout() {
 	m.Viewport.Height = messageH
 	m.Input.SetWidth(m.Width - 4) // inside the border
 	m.Input.SetHeight(inputH)
+
+	// Picker overlay sizing — only runs when the sessions
+	// picker is open. Cheap to call repeatedly because the
+	// bubbles components short-circuit no-op SetSize calls.
+	m.recomputePickerSize()
 }

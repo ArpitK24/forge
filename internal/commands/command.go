@@ -97,7 +97,7 @@ const (
 	ResultClearConversation
 	// ResultSetMessages replaces the conversation history with the
 	// supplied slice. Used by /compact (which produces a summarized
-	// replacement) and /resume (Phase 3.1).
+	// replacement) and /resume (Phase 4 step — sessions browser).
 	ResultSetMessages
 	// ResultExit asks the TUI to tear down cleanly. Used by /exit
 	// and /quit.
@@ -106,6 +106,19 @@ const (
 	// visible output." Used by commands whose effect is purely a
 	// side effect (e.g. a future /permissions grant).
 	ResultSilent
+	// ResultOpenPicker asks the TUI to switch into an interactive
+	// picker UI. The PickerKind field on CommandResult carries a
+	// stable string discriminator — "session-resume" today; future
+	// pickers (e.g. a model picker) get their own discriminator.
+	//
+	// The TUI takes all input while the picker is open; selection
+	// comes back as a tea.Msg that resolves to a session id (or
+	// empty string for Esc). The command that returned
+	// ResultOpenPicker never produces a follow-up CommandResult
+	// directly — the picker dispatches the canonical command for
+	// the picked id, which goes through the normal
+	// dispatchCommand path (today: /resume <id>).
+	ResultOpenPicker
 	// ResultError is a recoverable error shown to the user. The
 	// session continues; the user can retype. Distinct from a panic,
 	// which never happens.
@@ -128,6 +141,8 @@ func (k ResultKind) String() string {
 		return "exit"
 	case ResultSilent:
 		return "silent"
+	case ResultOpenPicker:
+		return "open-picker"
 	case ResultError:
 		return "error"
 	default:
@@ -150,6 +165,12 @@ type CommandResult struct {
 	Config *core.Config
 	// Messages is the payload for ResultSetMessages.
 	Messages []core.Message
+	// PickerKind is the payload for ResultOpenPicker. Stable
+	// string identifiers — today only "session-resume"; future
+	// pickers (e.g. "model-picker", "permission-template") get
+	// their own strings. The TUI's ResultOpenPicker handler
+	// switches on this value.
+	PickerKind string
 }
 
 // --- Constructors ---------------------------------------------------
@@ -190,6 +211,13 @@ func ExitResult() CommandResult {
 // SilentResult returns a ResultSilent.
 func SilentResult() CommandResult {
 	return CommandResult{Kind: ResultSilent}
+}
+
+// OpenPickerResult returns a ResultOpenPicker with the supplied
+// PickerKind discriminator. The TUI's ResultOpenPicker handler
+// switches on this value to open the right picker UI.
+func OpenPickerResult(kind string) CommandResult {
+	return CommandResult{Kind: ResultOpenPicker, PickerKind: kind}
 }
 
 // ErrorResult returns a ResultError with the given message.

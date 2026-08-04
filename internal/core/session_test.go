@@ -430,3 +430,168 @@ func TestSession_JSONShape(t *testing.T) {
 		}
 	}
 }
+
+// ---------------------------------------------------------------------------
+// DeriveTitle / truncateTitle
+// ---------------------------------------------------------------------------
+
+// TestDeriveTitle_Short: a short first user message is
+// returned unchanged (after whitespace collapse).
+func TestDeriveTitle_Short(t *testing.T) {
+	got := DeriveTitle([]Message{
+		NewUserText("hello"),
+		NewAssistantText("hi there"),
+	})
+	if got != "hello" {
+		t.Errorf("DeriveTitle = %q, want %q", got, "hello")
+	}
+}
+
+// TestDeriveTitle_WhitespaceCollapse: tabs and newlines and
+// runs of spaces collapse into single spaces.
+func TestDeriveTitle_WhitespaceCollapse(t *testing.T) {
+	got := DeriveTitle([]Message{
+		NewUserText("hello\n\n   world\t\tfoo  bar"),
+	})
+	if got != "hello world foo bar" {
+		t.Errorf("DeriveTitle = %q, want %q", got, "hello world foo bar")
+	}
+}
+
+// TestDeriveTitle_TruncatesAt60: a long first user message
+// truncates to 59 runes + "…".
+func TestDeriveTitle_TruncatesAt60(t *testing.T) {
+	long := strings.Repeat("a", 200)
+	got := DeriveTitle([]Message{NewUserText(long)})
+	if want := strings.Repeat("a", 59) + "…"; got != want {
+		t.Errorf("len(DeriveTitle) = %d, want %d runes; got %q", len([]rune(got)), 60, got)
+	}
+}
+
+// TestDeriveTitle_Exactly60: at the cap, no ellipsis.
+func TestDeriveTitle_Exactly60(t *testing.T) {
+	exact := strings.Repeat("b", 60)
+	got := DeriveTitle([]Message{NewUserText(exact)})
+	if got != exact {
+		t.Errorf("DeriveTitle at cap = %q, want %q (no ellipsis)", got, exact)
+	}
+}
+
+// TestDeriveTitle_NoUserMessages: an assistant-only session
+// has no title.
+func TestDeriveTitle_NoUserMessages(t *testing.T) {
+	got := DeriveTitle([]Message{
+		NewAssistantText("hello"),
+	})
+	if got != "" {
+		t.Errorf("DeriveTitle = %q, want \"\"", got)
+	}
+}
+
+// TestDeriveTitle_OnlyWhitespaceFirstUserMsg: a whitespace-
+// only first user message returns "".
+func TestDeriveTitle_OnlyWhitespaceFirstUserMsg(t *testing.T) {
+	got := DeriveTitle([]Message{
+		NewUserText("   \n\t  "),
+	})
+	if got != "" {
+		t.Errorf("DeriveTitle = %q, want \"\"", got)
+	}
+}
+
+// TestDeriveTitle_FirstEmptyUserThenNonEmpty: if the first
+// user message is empty/whitespace, the next non-empty one is
+// used.
+func TestDeriveTitle_FirstEmptyUserThenNonEmpty(t *testing.T) {
+	got := DeriveTitle([]Message{
+		NewUserText(""),
+		NewUserText("   "),
+		NewUserText("real prompt"),
+	})
+	if got != "real prompt" {
+		t.Errorf("DeriveTitle = %q, want %q", got, "real prompt")
+	}
+}
+
+// TestDeriveTitle_MultiByteUTF8: rune-counted; emoji and
+// CJK characters count as 1, no broken sequences.
+func TestDeriveTitle_MultiByteUTF8(t *testing.T) {
+	// 61 runes total. emoji "🎉" is one rune (4 bytes).
+	emojis := strings.Repeat("🎉", 61)
+	got := truncateTitle(emojis, 60)
+	want := strings.Repeat("🎉", 59) + "…"
+	if got != want {
+		t.Errorf("truncateTitle multi-byte: got %q, want %q", got, want)
+	}
+	// Verify the result really is <= 60 runes.
+	if n := len([]rune(got)); n != 60 {
+		t.Errorf("truncateTitle rune count = %d, want 60", n)
+	}
+}
+
+// TestTruncateTitle_Boundaries: under-cap unchanged, at-cap
+// unchanged, over-cap truncated with ellipsis.
+func TestTruncateTitle_Boundaries(t *testing.T) {
+	if got := truncateTitle("hello", 60); got != "hello" {
+		t.Errorf("under-cap: got %q, want %q", got, "hello")
+	}
+	if got := truncateTitle(strings.Repeat("x", 60), 60); got != strings.Repeat("x", 60) {
+		t.Errorf("at-cap: should be unchanged")
+	}
+	if got := truncateTitle(strings.Repeat("x", 100), 60); got != strings.Repeat("x", 59)+"…" {
+		t.Errorf("over-cap: should be 59 runes + ellipsis, got %q", got)
+	}
+	// runeCap=1 returns just the ellipsis; we don't truncate
+	// to zero runes (would be a useless empty string).
+	if got := truncateTitle("anything", 1); got != "…" {
+		t.Errorf("runeCap=1: got %q, want \"…\"", got)
+	}
+	// runeCap<=0 returns empty. Defensive; shouldn't happen
+	// in practice because DeriveTitle uses 60.
+	if got := truncateTitle("anything", 0); got != "" {
+		t.Errorf("runeCap<=0: got %q, want \"\"", got)
+	}
+}
+
+// TestListSessions_BackfillsEmptyTitle: a session saved with
+// Title == "" gets a derived title when ListSessions runs.
+// Disk file is NOT rewritten until the next save.
+func TestListSessions_BackfillsEmptyTitle(t *testing.T) {
+	withTempHome(t)
+	s := &ConversationSession{
+		ID:    "backfill-test",
+		Title: "", // intentionally empty
+		Model: DefaultModel,
+		Messages: []Message{
+			NewUserText("derive me"),
+		},
+	}
+	if err := SaveSession(s); err != nil {
+		t.Fatalf("save: %v", err)
+	}
+	// Sanity: disk file does NOT contain a "title" key (the
+	// field uses `omitempty` so an empty Title is omitted from
+	// the JSON — not encoded as "title": "").
+	dir, _ := ConversationsPath()
+	data, _ := os.ReadFile(filepath.Join(dir, "backfill-test.json"))
+	if strings.Contains(string(data), `"title"`) {
+		t.Fatalf("disk should not contain \"title\" key (omitempty); got: %s", data)
+	}
+
+	list, err := ListSessions()
+	if err != nil {
+		t.Fatalf("list: %v", err)
+	}
+	if len(list) != 1 {
+		t.Fatalf("list len = %d, want 1", len(list))
+	}
+	if list[0].Title != "derive me" {
+		t.Errorf("backfilled title = %q, want %q", list[0].Title, "derive me")
+	}
+
+	// Disk file still has no "title" key — backfill is virtual.
+	data2, _ := os.ReadFile(filepath.Join(dir, "backfill-test.json"))
+	if strings.Contains(string(data2), `"title"`) {
+		t.Errorf("disk should still have no title key (no rewrite), got: %s", data2)
+	}
+}

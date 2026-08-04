@@ -27,6 +27,7 @@ func baselineCommands() []Command {
 		&helpCmd{},
 		&clearCmd{},
 		&compactCmd{},
+		&resumeCmd{},
 		&exitCmd{}, // alias: quit
 		&statusCmd{},
 
