@@ -200,6 +200,16 @@ func TestStdioTransport_CloseWhileSendInFlight(t *testing.T) {
 // twice without an intervening Close returns a clear error.
 // A user doing manager.Reload in a future hot-reload feature
 // would need to know they're misusing the lifecycle.
+//
+// The test uses `echo` as the dummy subprocess — that command
+// exists on every POSIX system and on Windows runners that
+// ship with bash on PATH, but NOT on bare Windows where Go's
+// exec looks up `echo` against cmd.exe's PATH and finds
+// nothing. We follow the same t.Skipf convention as
+// TestStdioTransport_SendSerializesWrites (line ~178) and
+// TestStdioTransport_CloseWhileSendInFlight (line ~249) so
+// the test runs the contract on platforms where it can and
+// skips with a clear message where it can't.
 func TestStdioTransport_DoubleStart(t *testing.T) {
 	tr := NewStdioTransport(core.McpServerConfig{
 		Name:    "x",
@@ -207,7 +217,7 @@ func TestStdioTransport_DoubleStart(t *testing.T) {
 		Args:    []string{"hi"},
 	})
 	if err := tr.Start(context.Background()); err != nil {
-		t.Fatalf("first Start: %v", err)
+		t.Skipf("echo not available on this platform: %v", err)
 	}
 	defer tr.Close()
 
