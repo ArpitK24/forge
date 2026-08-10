@@ -25,6 +25,11 @@
 #   4. (ubuntu-only) MCP smoke test: spawns
 #      @modelcontextprotocol/server-filesystem via npx and
 #      exercises the full Manager → mcpTool → Client pipeline.
+#   5. (ubuntu-only) TUI flake check: go test -count=5
+#      ./internal/tui/... — catches timing-sensitive regressions
+#      in the picker / resume / save paths before they ship.
+#      Cross-platform coverage of the TUI happy path is still
+#      provided by step 2 on every matrix leg.
 #
 # Artifacts:
 #   - per-OS forge binary at the path matching the matrix OS
@@ -108,6 +113,22 @@ jobs:
             exit 0
           fi
           go test -count=1 -tags mcp_smoke -run TestMcpMock -timeout 5m ./internal/mcp/...
+
+      - name: TUI flake check (-count=5, ubuntu only)
+        # Phase 4 step 11 added the sessions browser overlay,
+        # /resume dispatch, and the resumed-save path. Several
+        # tests use small time.Sleep gaps to space UpdatedAt
+        # timestamps across SaveSession calls — fast clocks can
+        # round those and turn the test flaky. Running the TUI
+        # suite 5x in a row surfaces that class of bug before
+        # it ships. ubuntu-only to keep CI minutes cheap; the
+        # developer verifies macOS / Windows by hand on the
+        # laptop. The broad `go test -count=1 ./...` step
+        # above still runs the TUI tests once on every OS,
+        # so we never lose cross-platform coverage of the
+        # happy path.
+        if: matrix.os == 'ubuntu-latest'
+        run: go test -count=5 ./internal/tui/...
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
