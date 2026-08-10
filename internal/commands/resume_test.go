@@ -160,11 +160,17 @@ func TestResume_ByID_CorruptReturnsError(t *testing.T) {
 // TestResume_ByIndex_Success resolves a 1-based index against
 // ListSessions and swaps in the loaded conversation. The save
 // order (with staggered UpdatedAt) is what makes "1" point at
-// "alpha": ListSessions sorts by UpdatedAt descending.
+// "beta": ListSessions sorts by UpdatedAt descending.
 func TestResume_ByIndex_Success(t *testing.T) {
 	withTempHome(t)
 	saveStub(t, "alpha")
-	time.Sleep(2 * time.Millisecond)
+	// Windows system-clock granularity defaults to ~15.6ms, so
+	// a 2ms gap can produce two SaveSession calls with equal
+	// time.Now() — and sort.Slice with `After` on equal times
+	// is unstable, scrambling the order on slow runners. 50ms
+	// is well above any clock resolution concern and adds
+	// roughly 50ms to a test that already touches disk.
+	time.Sleep(50 * time.Millisecond)
 	saveStub(t, "beta")
 	// beta is the most recent → index 1.
 	res := ExecuteCommand(context.Background(), "/resume 1", testCtx())
@@ -175,10 +181,6 @@ func TestResume_ByIndex_Success(t *testing.T) {
 	// We verify that by loading index 1 and 2 and ensuring the
 	// message slices come from distinct sessions.
 	first := res.Messages
-	// Tiny gap so the next SaveSession's UpdatedAt is strictly
-	// later — without it, fast clocks can produce equal
-	// timestamps and ListSessions' sort is unstable.
-	time.Sleep(20 * time.Millisecond)
 	res = ExecuteCommand(context.Background(), "/resume 2", testCtx())
 	if res == nil || res.Kind != ResultSetMessages {
 		t.Fatalf("/resume 2: kind = %v, want ResultSetMessages", res.Kind)

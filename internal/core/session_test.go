@@ -197,8 +197,11 @@ func TestSession_SaveUpdatesUpdatedAt(t *testing.T) {
 		t.Fatalf("first SaveSession: %v", err)
 	}
 	firstUpdated := s.UpdatedAt
-	// Sleep just enough that the second UpdatedAt is strictly later.
-	time.Sleep(2 * time.Millisecond)
+	// Windows system-clock granularity defaults to ~15.6ms; a
+	// 2ms gap can produce two SaveSession calls with equal
+	// time.Now() values, failing the .After() check on slow
+	// runners. 50ms is well above any clock resolution concern.
+	time.Sleep(50 * time.Millisecond)
 	if err := SaveSession(s); err != nil {
 		t.Fatalf("second SaveSession: %v", err)
 	}
@@ -302,11 +305,15 @@ func TestListSessions_SortedByUpdatedAtDesc(t *testing.T) {
 	if err := SaveSession(a); err != nil {
 		t.Fatalf("save a: %v", err)
 	}
-	time.Sleep(2 * time.Millisecond)
+	// Windows system-clock granularity defaults to ~15.6ms; a
+	// 2ms gap can produce two SaveSession calls with equal
+	// time.Now() values, scrambling the sort order. 50ms is
+	// well above any clock resolution concern.
+	time.Sleep(50 * time.Millisecond)
 	if err := SaveSession(b); err != nil {
 		t.Fatalf("save b: %v", err)
 	}
-	time.Sleep(2 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 	if err := SaveSession(c); err != nil {
 		t.Fatalf("save c: %v", err)
 	}
