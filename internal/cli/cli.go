@@ -100,6 +100,9 @@ type Args struct {
 	// MCPConfig is the path to an MCP config JSON file.
 	MCPConfig string
 
+	// PluginDirs is the list of --plugin-dir directories.
+	PluginDirs []string
+
 	// NoAutoCompact disables §5.2's auto-compaction.
 	NoAutoCompact bool
 
@@ -164,6 +167,11 @@ func (p *Parser) Parse() (*Args, error) {
 	p.fs.StringVar(&a.Cwd, "cwd", "", "working directory override")
 	p.fs.StringVar(&a.MCPConfig, "mcp-config", "",
 		"path to a JSON file of MCP server configs to connect at startup")
+	p.fs.Func("plugin-dir", "directory to scan for plugins (repeatable)",
+		func(s string) error {
+			a.PluginDirs = append(a.PluginDirs, s)
+			return nil
+		})
 
 	// Int flags. We use a string intermediate so we can detect
 	// "user passed a value" vs "user didn't pass anything" and only
@@ -304,6 +312,7 @@ func (a *Args) ToConfig() (*core.Config, error) {
 		AutoCompact:           !a.NoAutoCompact,
 		McpServers:            mcpServers,
 		ResumeID:              a.Resume,
+		PluginDirs:            a.PluginDirs,
 	}
 	if a.PermissionModeSet {
 		c.PermissionMode = a.PermissionMode
@@ -346,6 +355,7 @@ func Usage(program string) string {
 	b.WriteString("                                   shortcut for --permission-mode=bypass-permissions\n")
 	b.WriteString("      --dump-system-prompt         print the assembled system prompt and exit\n")
 	b.WriteString("      --mcp-config <path>          MCP server config JSON file\n")
+	b.WriteString("      --plugin-dir <path>          directory to scan for plugins (repeatable)\n")
 	b.WriteString("      --no-auto-compact            disable automatic context compaction\n")
 	b.WriteString("  -h, --help                       print this help and exit\n")
 	b.WriteString("      --version                    print version and exit\n")

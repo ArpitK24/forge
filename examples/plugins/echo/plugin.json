@@ -1,0 +1,8 @@
+{
+  "name": "echo",
+  "version": "1.0.0",
+  "description": "Simple echo plugin that returns the input text",
+  "entrypoint": "echo-plugin.exe",
+  "args": [],
+  "env": {}
+}
