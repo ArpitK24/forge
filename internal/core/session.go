@@ -271,7 +271,11 @@ func ListSessions() ([]ConversationSession, error) {
 		}
 		out = append(out, *s)
 	}
-	sort.Slice(out, func(i, j int) bool {
+	sort.SliceStable(out, func(i, j int) bool {
+		if out[i].UpdatedAt.Equal(out[j].UpdatedAt) {
+			// Deterministic tie-breaker across filesystems/clock granularity.
+			return out[i].ID < out[j].ID
+		}
 		return out[i].UpdatedAt.After(out[j].UpdatedAt)
 	})
 	// Lazy backfill: any session written before DeriveTitle
