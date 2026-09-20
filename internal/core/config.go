@@ -236,6 +236,11 @@ type Config struct {
 	// startup. CLI: --mcp-config (path to a JSON file with this list).
 	McpServers []McpServerConfig `json:"mcp_servers,omitempty"`
 
+	// PluginDirs is the list of directories to scan for plugins.
+	// If empty, defaults to <config-dir>/plugins. CLI: --plugin-dir
+	// (can be repeated). Never round-tripped to settings.json.
+	PluginDirs []string `json:"plugin_dirs,omitempty"`
+
 	// Hooks maps each event to its list of hook entries.
 	Hooks map[HookEvent][]HookEntry `json:"hooks,omitempty"`
 

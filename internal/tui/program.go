@@ -14,6 +14,7 @@ import (
 	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/mcp"
+	"github.com/ArpitK24/forge/internal/plugins"
 	"github.com/ArpitK24/forge/internal/query"
 	"github.com/ArpitK24/forge/internal/tools"
 )
@@ -48,6 +49,10 @@ type programState struct {
 	// the user passed no --mcp-config and settings.json has no
 	// McpServers.
 	McpManager *mcp.Manager
+	// PluginTools holds the loaded plugin tools. Constructed in
+	// RunProgram and closed on TUI exit. Nil when no plugins
+	// were loaded.
+	PluginTools []tools.Tool
 }
 
 // RunProgram is the TUI entry point. It sets up the terminal,
@@ -98,20 +103,41 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 		}
 	}()
 
-	// 4. Set up raw mode + alt screen. The restore func is
+	// 4. Load plugins (Phase 4 step). Discover and start plugin
+	// subprocesses BEFORE tea.NewProgram so the first query loop
+	// sees the full tool list. Plugin failures are logged but
+	// don't block startup — the rest of the tools still register.
+	pluginTools, err := plugins.LoadPlugins(context.Background(), cfg, logger)
+	if err != nil {
+		logger.Warn("plugins: load failed", "err", err)
+	}
+	defer func() {
+		// Plugin tools wrap clients that hold transports.
+		// Closing the client closes the transport.
+		for _, t := range pluginTools {
+			if pt, ok := t.(*plugins.PluginTool); ok {
+				if cli := pt.Client(); cli != nil {
+					_ = cli.Close()
+				}
+			}
+		}
+	}()
+
+	// 5. Set up raw mode + alt screen. The restore func is
 	// called on every exit path.
 	restore, err := setupRawMode()
 	if err != nil {
 		return fmt.Errorf("tui: %w", err)
 	}
 
-	// 5. Construct the model with the bridge state.
+	// 6. Construct the model with the bridge state.
 	m := InitialModel(cfg, cost)
 	m.bridge = &programState{
 		Provider:     provider,
 		SystemPrompt: systemPrompt,
 		Logger:       logger,
 		McpManager:   mcpMgr,
+		PluginTools:  pluginTools,
 	}
 	// Expose the provider to slash commands that issue their own
 	// model calls (currently /compact). The provider is fixed
@@ -296,13 +322,16 @@ func (m Model) startQueryLoop() tea.Cmd {
 		defer close(eventCh)
 		defer close(permReqCh)
 		// toolsList is the union of the built-in tools (Read,
-		// Glob, Grep, Write, Edit, Bash) and any tools exposed
-		// by connected MCP servers (Phase 4 step 8). When no
-		// MCP servers were configured, mcpMgr is nil and
-		// Tools() returns nil — append is a no-op for nil.
+		// Glob, Grep, Write, Edit, Bash), any tools exposed
+		// by connected MCP servers (Phase 4 step 8), and any
+		// plugin tools (Phase 4 step). When no plugins were
+		// loaded, PluginTools is nil — append is a no-op for nil.
 		toolsList := tools.AllTools()
 		if mcpMgr := m.bridge.McpManager; mcpMgr != nil {
 			toolsList = append(toolsList, mcpMgr.Tools()...)
+		}
+		if len(m.bridge.PluginTools) > 0 {
+			toolsList = append(toolsList, m.bridge.PluginTools...)
 		}
 		tc := &tools.ToolContext{
 			WorkingDir:  cfg.WorkingDir,

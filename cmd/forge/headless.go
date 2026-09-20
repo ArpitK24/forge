@@ -17,6 +17,7 @@ import (
 	"github.com/ArpitK24/forge/internal/cli"
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/mcp"
+	"github.com/ArpitK24/forge/internal/plugins"
 	"github.com/ArpitK24/forge/internal/query"
 	"github.com/ArpitK24/forge/internal/tools"
 )
@@ -103,6 +104,26 @@ func runHeadless(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
 		}
 		toolsList = append(toolsList, mcpMgr.Tools()...)
 	}
+
+	// 5b. Load plugins (Phase 4 step). Discover and start plugin
+	// subprocesses before the loop runs so the model's first turn sees
+	// the full tool list. Plugin failures are logged but don't block
+	// startup — the rest of the tools still register.
+	pluginTools, err := plugins.LoadPlugins(context.Background(), cfg, logger)
+	if err != nil {
+		logger.Warn("plugins: load failed", "err", err)
+	}
+	defer func() {
+		for _, t := range pluginTools {
+			if pt, ok := t.(*plugins.PluginTool); ok {
+				if cli := pt.Client(); cli != nil {
+					_ = cli.Close()
+				}
+			}
+		}
+	}()
+	toolsList = append(toolsList, pluginTools...)
+
 	defer func() {
 		closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
