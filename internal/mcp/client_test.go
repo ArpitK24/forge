@@ -57,7 +57,8 @@ type fakeTransport struct {
 	sent    [][]byte      // recorded Send() calls
 	pending [][]byte      // bytes waiting to be returned by Recv
 	hold    bool          // when true, Recv blocks until release
-	gate    chan struct{} // closed by release() to unblock Recv
+	gate    chan struct{} // buffered(1) wake-up signal for Recv; wake-ups coalesce and are never lost
+	done    chan struct{} // closed by Close
 	closed  atomic.Bool
 
 	// sendErr is consulted on every Send. Tests set this to
@@ -73,7 +74,8 @@ type fakeTransport struct {
 
 func newFakeTransport() *fakeTransport {
 	return &fakeTransport{
-		gate: make(chan struct{}),
+		gate: make(chan struct{}, 1),
+		done: make(chan struct{}),
 	}
 }
 
@@ -128,6 +130,8 @@ func (f *fakeTransport) Recv(ctx context.Context) ([]byte, error) {
 		select {
 		case <-f.gate:
 			// Loop around to re-check.
+		case <-f.done:
+			return nil, core.Newf(core.KindMCP, "fakeTransport: recv on closed")
 		case <-ctx.Done():
 			return nil, core.Wrap(core.KindCancelled, ctx.Err(), "fakeTransport: recv cancelled")
 		}
@@ -139,7 +143,7 @@ func (f *fakeTransport) Recv(ctx context.Context) ([]byte, error) {
 // "closed" error.
 func (f *fakeTransport) Close() error {
 	if f.closed.CompareAndSwap(false, true) {
-		close(f.gate)
+		close(f.done)
 	}
 	return nil
 }
@@ -223,6 +227,11 @@ func silentLogger() *slog.Logger {
 // suspect.
 func TestClient_InitializeRoundTrip(t *testing.T) {
 	tr := newFakeTransport()
+	// Hold the response until call() has registered its pending
+	// entry and sent the request. Without this the readLoop can
+	// consume the canned response first and treat it as an
+	// orphan (seen under -race).
+	tr.setHold(true)
 	cli := newClient("test", tr, silentLogger())
 
 	// Queue the canned initialize response BEFORE start so
@@ -247,6 +256,14 @@ func TestClient_InitializeRoundTrip(t *testing.T) {
 		t.Fatalf("start: %v", err)
 	}
 	defer cli.close(context.Background())
+
+	go func() {
+		deadline := time.Now().Add(2 * time.Second)
+		for time.Now().Before(deadline) && len(tr.allSent()) == 0 {
+			time.Sleep(time.Millisecond)
+		}
+		tr.release()
+	}()
 
 	var result initializeResult
 	if err := cli.call(context.Background(), MethodInitialize,

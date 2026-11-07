@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -187,6 +188,7 @@ type pipeTransport struct {
 	fromServer *bufio.Reader
 	closers    []io.Closer
 	done       chan error
+	sendMu     sync.Mutex
 }
 
 func newPipeTransport(s *PluginServer) *pipeTransport {
@@ -203,6 +205,10 @@ func newPipeTransport(s *PluginServer) *pipeTransport {
 
 func (p *pipeTransport) Start(ctx context.Context) error { return nil }
 func (p *pipeTransport) Send(b []byte) error {
+	// Mirror StdioTransport: writes are serialized so concurrent
+	// calls never interleave frames on the pipe.
+	p.sendMu.Lock()
+	defer p.sendMu.Unlock()
 	_, err := writeFrame(p.toServer, b)
 	return err
 }
