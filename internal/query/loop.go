@@ -420,15 +420,13 @@ func RunQueryLoop(
 
 		case api.StopToolUse:
 			// 8. Execute the tool calls. Spec §5.3.
-			results, anyExecuted := executeToolCalls(ctx, toolCtx, toolsList, assistantMsg, eventCh)
-			// Append the results as a single new user message
-			// carrying all of this turn's tool_result blocks.
-			if anyExecuted {
-				messages = append(messages, results)
-			} else {
-				// No tool calls were executed (e.g. all denied
-				// by permissions). Return end_turn to avoid an
-				// infinite loop.
+			// Denied and unknown tools come back as is_error
+			// tool_results so the model can recover; MaxTurns
+			// bounds a model that keeps retrying them.
+			results, ok := executeToolCalls(ctx, toolCtx, toolsList, assistantMsg, eventCh)
+			if !ok {
+				// stop_reason was tool_use but the message
+				// carried no tool calls: nothing to answer.
 				return finalize(Outcome{
 					Kind:    OutcomeEndTurn,
 					Message: assistantMsg,
@@ -436,6 +434,9 @@ func RunQueryLoop(
 					Turns:   turns,
 				})
 			}
+			// Append the results as a single new user message
+			// carrying all of this turn's tool_result blocks.
+			messages = append(messages, results)
 			// Loop back to step 1.
 
 		case api.StopMaxTokens:
@@ -478,10 +479,9 @@ func RunQueryLoop(
 // executeToolCalls runs every ToolUse block in the assistant's
 // message in order, with permission check and panic recovery.
 // Returns the assembled user message (one core.Message carrying
-// all of the ToolResult blocks) and a bool indicating whether
-// at least one tool was actually invoked (as opposed to all
-// being permission-denied or unknown — in which case the
-// caller should not loop back to the model).
+// one ToolResult block per call, including is_error results for
+// permission-denied and unknown tools) and false only when the
+// assistant message carried no tool calls at all.
 func executeToolCalls(
 	ctx context.Context,
 	tc *tools.ToolContext,
@@ -494,7 +494,6 @@ func executeToolCalls(
 		return core.Message{}, false
 	}
 	blocks := make([]core.ContentBlock, 0, len(uses))
-	anyExecuted := false
 	for _, tu := range uses {
 		// Permission check. Use the tool's declared permission
 		// level: PermReadOnly passes auto, others ask. The
@@ -599,13 +598,12 @@ func executeToolCalls(
 				IsError:   result.IsError,
 			},
 		})
-		anyExecuted = true
 	}
 
 	return core.Message{
 		Role:    core.RoleUser,
 		Content: core.BlocksContent(blocks...),
-	}, anyExecuted
+	}, true
 }
 
 // safeExecute wraps tool.Execute in a recover() so a tool

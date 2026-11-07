@@ -39,6 +39,10 @@ All notable changes to Forge are documented here. The format follows
 - Compaction no longer splits a tool call from its result: the head/tail
   cut moves earlier when the tail would start with a `tool_result`, which
   providers reject once its `tool_use` has been summarized.
+- Denied and unknown tool calls are reported back to the model as
+  `is_error` tool results ("permission denied" / "unknown tool") and the
+  loop continues, as the README describes, instead of ending the session
+  silently. `MaxTurns` still bounds a model that keeps retrying.
 
 ### Added
 - CI quality job: gofmt check, golangci-lint, race detector, coverage
