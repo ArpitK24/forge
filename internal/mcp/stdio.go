@@ -21,9 +21,9 @@ import (
 const shutdownGrace = 2 * time.Second
 
 // StdioTransport spawns a subprocess and communicates with
-// it over its stdio using Content-Length-framed JSON-RPC
-// (the LSP/MCP convention). It is the only production
-// transport in Phase 4 step 5.
+// it over its stdio using newline-delimited JSON-RPC, as
+// the MCP stdio transport spec requires (see framing.go).
+// It is the only production transport in Phase 4 step 5.
 //
 // Concurrency: Send is mutex-protected (one write per frame
 // must be atomic at the OS level for framing correctness).
