@@ -201,3 +201,55 @@ func TestLayerSettingsZeroPermissionModeIsTreatedAsUnset(t *testing.T) {
 			"(zero-value local should not overwrite project)", got.PermissionMode)
 	}
 }
+
+func TestReadSettingsFile(t *testing.T) {
+	dir := t.TempDir()
+	missing := filepath.Join(dir, "nope", "settings.json")
+	s, found, err := ReadSettingsFile(missing)
+	if err != nil || found || s.Model != "" || s.AutoCompact != nil {
+		t.Errorf("missing file: s=%+v found=%v err=%v, want zero/false/nil", s, found, err)
+	}
+	if _, err := os.Stat(filepath.Dir(missing)); !os.IsNotExist(err) {
+		t.Errorf("ReadSettingsFile created the parent dir")
+	}
+
+	empty := filepath.Join(dir, "empty.json")
+	if err := os.WriteFile(empty, nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	s, found, err = ReadSettingsFile(empty)
+	if err != nil || !found || s.Model != "" {
+		t.Errorf("empty file: s=%+v found=%v err=%v, want zero/true/nil", s, found, err)
+	}
+
+	bad := filepath.Join(dir, "bad.json")
+	if err := os.WriteFile(bad, []byte("{"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err = ReadSettingsFile(bad); err == nil {
+		t.Errorf("malformed file: want error")
+	} else {
+		var ferr *Error
+		if !errors.As(err, &ferr) || ferr.Kind != KindConfig {
+			t.Errorf("malformed file: err = %v, want KindConfig", err)
+		}
+	}
+
+	good := filepath.Join(dir, "good.json")
+	if err := os.WriteFile(good, []byte(`{"model":"x","trusted_projects":["/a"]}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	s, found, err = ReadSettingsFile(good)
+	if err != nil || !found || s.Model != "x" || len(s.TrustedProjects) != 1 {
+		t.Errorf("good file: s=%+v found=%v err=%v", s, found, err)
+	}
+}
+
+func TestLayerSettingsNeverOverlaysTrustedProjects(t *testing.T) {
+	global := Settings{TrustedProjects: []string{"/home/me/work"}}
+	project := Settings{TrustedProjects: []string{"/evil"}}
+	got := LayerSettings(Settings{}, project, project, global)
+	if len(got.TrustedProjects) != 1 || got.TrustedProjects[0] != "/home/me/work" {
+		t.Errorf("TrustedProjects = %v, want only the global entry", got.TrustedProjects)
+	}
+}

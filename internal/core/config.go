@@ -202,6 +202,12 @@ type Config struct {
 	// PermissionMode is the active permission posture.
 	PermissionMode PermissionMode `json:"permission_mode"`
 
+	// PermissionModeFromFlag is true when PermissionMode came from an
+	// explicit --permission-mode / --dangerously-skip-permissions
+	// flag. Settings files never override an explicit flag, even
+	// when the flag asked for "default". Runtime-only.
+	PermissionModeFromFlag bool `json:"-"`
+
 	// Verbose enables debug-level logging. CLI: -v / --verbose.
 	Verbose bool `json:"verbose,omitempty"`
 
@@ -324,6 +330,13 @@ type Settings struct {
 	// PermissionRules is the persisted record of "always allow" / "always deny"
 	// decisions from the TUI permission dialog.
 	PermissionRules []PermissionRule `json:"permission_rules,omitempty"`
+	// TrustedProjects lists absolute project directories whose
+	// .forge/settings.json and .forge/settings.local.json may set
+	// security-sensitive keys (permission_mode, mcp_servers,
+	// permission_rules). Only read from the user's global
+	// ~/.forge/settings.json; ignored in project files, so a repo
+	// can never trust itself.
+	TrustedProjects []string `json:"trusted_projects,omitempty"`
 }
 
 // PermissionRule is a persisted "always allow/deny for this tool" rule.
