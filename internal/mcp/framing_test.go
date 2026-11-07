@@ -3,182 +3,230 @@ package mcp
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"errors"
+	"io"
 	"strings"
 	"testing"
 
 	"github.com/ArpitK24/forge/internal/core"
 )
 
-// TestWriteReadRoundTrip is the basic sanity check: a body of N
-// bytes written via writeFrame is recovered exactly by readFrame.
-// Tests four sizes spanning the small/medium/large range so the
-// body-read loop is exercised at multiple lengths.
+// These tests pin the MCP stdio wire format: newline-delimited
+// JSON-RPC, one message per line, no embedded newlines, no
+// Content-Length headers.
+// https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio
+
+// TestWriteFrame_SpecWireFormat checks the exact bytes on the wire:
+// the JSON body followed by a single "\n", and nothing else.
+func TestWriteFrame_SpecWireFormat(t *testing.T) {
+	body := []byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}`)
+	var buf bytes.Buffer
+	n, err := writeFrame(&buf, body)
+	if err != nil {
+		t.Fatalf("writeFrame: %v", err)
+	}
+	want := string(body) + "\n"
+	if got := buf.String(); got != want {
+		t.Fatalf("wire bytes = %q, want %q", got, want)
+	}
+	if n != len(want) {
+		t.Errorf("n = %d, want %d", n, len(want))
+	}
+	if strings.Contains(buf.String(), "Content-Length") {
+		t.Errorf("wire bytes contain a Content-Length header: %q", buf.String())
+	}
+}
+
+// TestWriteFrame_CompactsEmbeddedNewlines: a pretty-printed body
+// must still go out as exactly one line, with its string contents
+// (including escaped newlines) intact.
+func TestWriteFrame_CompactsEmbeddedNewlines(t *testing.T) {
+	body := []byte("{\n  \"jsonrpc\": \"2.0\",\r\n  \"method\": \"x\",\n  \"params\": {\"text\": \"a\\nb\"}\n}")
+	var buf bytes.Buffer
+	if _, err := writeFrame(&buf, body); err != nil {
+		t.Fatalf("writeFrame: %v", err)
+	}
+	wire := buf.String()
+	if strings.Count(wire, "\n") != 1 || !strings.HasSuffix(wire, "\n") {
+		t.Fatalf("wire = %q, want exactly one trailing newline", wire)
+	}
+	if strings.Contains(wire, "\r") {
+		t.Fatalf("wire = %q, contains a carriage return", wire)
+	}
+	var got struct {
+		Params struct {
+			Text string `json:"text"`
+		} `json:"params"`
+	}
+	if err := json.Unmarshal([]byte(wire), &got); err != nil {
+		t.Fatalf("wire is not valid JSON: %v", err)
+	}
+	if got.Params.Text != "a\nb" {
+		t.Errorf("text = %q, want %q", got.Params.Text, "a\nb")
+	}
+}
+
+// TestWriteFrame_RejectsUnframeableBody: a body with a raw newline
+// that is not valid JSON cannot be put on one line, so it must not
+// be written at all.
+func TestWriteFrame_RejectsUnframeableBody(t *testing.T) {
+	for _, body := range []string{"not json\n", "", "  "} {
+		var buf bytes.Buffer
+		_, err := writeFrame(&buf, []byte(body))
+		if err == nil {
+			t.Errorf("writeFrame(%q) succeeded; want error", body)
+			continue
+		}
+		var ce *core.Error
+		if !errors.As(err, &ce) || ce.Kind != core.KindMCP {
+			t.Errorf("writeFrame(%q) err = %v, want KindMCP", body, err)
+		}
+		if buf.Len() != 0 {
+			t.Errorf("writeFrame(%q) wrote %q; want nothing", body, buf.String())
+		}
+	}
+}
+
+// TestWriteReadRoundTrip: a body written via writeFrame is
+// recovered exactly by readFrame, across sizes that cross the
+// bufio buffer boundary (64 KiB in StdioTransport) several times.
 func TestWriteReadRoundTrip(t *testing.T) {
-	sizes := []int{1, 1024, 65536, 1 << 20} // 1B, 1KiB, 64KiB, 1MiB
+	sizes := []int{1, 1024, 65535, 65536, 65537, 1 << 20, 8 << 20}
 	for _, n := range sizes {
-		t.Run("", func(t *testing.T) {
-			body := bytes.Repeat([]byte("x"), n)
+		t.Run(itoa(n), func(t *testing.T) {
+			body := []byte(`{"s":"` + strings.Repeat("x", n) + `"}`)
 			var buf bytes.Buffer
 			if _, err := writeFrame(&buf, body); err != nil {
 				t.Fatalf("writeFrame: %v", err)
 			}
-			got, err := readFrame(bufio.NewReader(&buf))
+			got, err := readFrame(bufio.NewReaderSize(&buf, 64*1024))
 			if err != nil {
 				t.Fatalf("readFrame: %v", err)
 			}
 			if !bytes.Equal(got, body) {
-				t.Fatalf("body mismatch: got %d bytes, want %d", len(got), n)
+				t.Fatalf("body mismatch: got %d bytes, want %d", len(got), len(body))
 			}
 		})
 	}
 }
 
-// TestReadFrame_EOFBeforeHeader covers the "peer disconnected
+// TestReadFrame_SpecPeerStream reads what a spec-conformant server
+// writes: several messages back to back, one per line, with UTF-8
+// payloads, CRLF endings and blank lines tolerated.
+func TestReadFrame_SpecPeerStream(t *testing.T) {
+	raw := `{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18"}}` + "\n" +
+		"\n" +
+		`{"jsonrpc":"2.0","method":"notifications/message","params":{"data":"héllo 世界 🚀"}}` + "\r\n" +
+		"   \r\n" +
+		`{"jsonrpc":"2.0","id":2,"result":{}}` + "\n"
+	r := bufio.NewReader(strings.NewReader(raw))
+	want := []string{
+		`{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18"}}`,
+		`{"jsonrpc":"2.0","method":"notifications/message","params":{"data":"héllo 世界 🚀"}}`,
+		`{"jsonrpc":"2.0","id":2,"result":{}}`,
+	}
+	for i, w := range want {
+		got, err := readFrame(r)
+		if err != nil {
+			t.Fatalf("message %d: readFrame: %v", i, err)
+		}
+		if string(got) != w {
+			t.Fatalf("message %d = %q, want %q", i, got, w)
+		}
+	}
+	// Stream is exhausted: a clean EOF between messages.
+	_, err := readFrame(r)
+	var ce *core.Error
+	if !errors.As(err, &ce) || ce.Kind != core.KindIO {
+		t.Fatalf("after last message err = %v, want KindIO EOF", err)
+	}
+}
+
+// TestReadFrame_EOFBeforeMessage covers the "peer disconnected
 // cleanly before sending anything" case. Should classify as
 // KindIO (transport-level EOF), not KindMCP (protocol bug).
-func TestReadFrame_EOFBeforeHeader(t *testing.T) {
-	_, err := readFrame(bufio.NewReader(bytes.NewReader(nil)))
-	if err == nil {
-		t.Fatalf("expected EOF error")
-	}
-	var ce *core.Error
-	if !errors.As(err, &ce) {
-		t.Fatalf("err type = %T, want *core.Error", err)
-	}
-	if ce.Kind != core.KindIO {
-		t.Errorf("kind = %v, want KindIO", ce.Kind)
-	}
-}
-
-// TestReadFrame_ShortBody covers the "peer sent header but hung
-// up partway through body" case. Should classify as KindIO
-// (transport failure mid-message).
-func TestReadFrame_ShortBody(t *testing.T) {
-	// Header says 100 bytes; we only send 10.
-	raw := "Content-Length: 100\r\n\r\nxxxxxxxxxx"
-	_, err := readFrame(bufio.NewReader(strings.NewReader(raw)))
-	if err == nil {
-		t.Fatalf("expected short-body error")
-	}
-	var ce *core.Error
-	if !errors.As(err, &ce) {
-		t.Fatalf("err type = %T, want *core.Error", err)
-	}
-	if ce.Kind != core.KindIO {
-		t.Errorf("kind = %v, want KindIO", ce.Kind)
+func TestReadFrame_EOFBeforeMessage(t *testing.T) {
+	for _, raw := range []string{"", "\n\n", "\r\n  "} {
+		_, err := readFrame(bufio.NewReader(strings.NewReader(raw)))
+		if err == nil {
+			t.Fatalf("readFrame(%q): expected EOF error", raw)
+		}
+		var ce *core.Error
+		if !errors.As(err, &ce) {
+			t.Fatalf("err type = %T, want *core.Error", err)
+		}
+		if ce.Kind != core.KindIO {
+			t.Errorf("readFrame(%q) kind = %v, want KindIO", raw, ce.Kind)
+		}
 	}
 }
 
-// TestReadFrame_BodyLengthMismatch covers the "peer claimed 50
-// bytes but only sent 30" case via a manufactured body that's
-// truncated. readFrame's loop bails with KindIO.
-func TestReadFrame_BodyLengthMismatch(t *testing.T) {
-	raw := "Content-Length: 50\r\n\r\n0123456789"
-	_, err := readFrame(bufio.NewReader(strings.NewReader(raw)))
+// TestReadFrame_UnterminatedMessage covers a peer that hangs up
+// partway through a message (no trailing newline). KindIO.
+func TestReadFrame_UnterminatedMessage(t *testing.T) {
+	_, err := readFrame(bufio.NewReader(strings.NewReader(`{"jsonrpc":"2.0","id":1,"res`)))
 	if err == nil {
-		t.Fatalf("expected mismatch error")
+		t.Fatalf("expected error for unterminated message")
 	}
 	var ce *core.Error
-	if !errors.As(err, &ce) {
-		t.Fatalf("err type = %T, want *core.Error", err)
-	}
-	if ce.Kind != core.KindIO {
-		t.Errorf("kind = %v, want KindIO", ce.Kind)
+	if !errors.As(err, &ce) || ce.Kind != core.KindIO {
+		t.Fatalf("err = %v, want KindIO", err)
 	}
 }
 
-// TestReadFrame_InvalidContentLength covers a malformed
-// Content-Length value (letters instead of digits). Should
-// classify as KindMCP.
-func TestReadFrame_InvalidContentLength(t *testing.T) {
-	raw := "Content-Length: abc\r\n\r\n"
-	_, err := readFrame(bufio.NewReader(strings.NewReader(raw)))
-	if err == nil {
-		t.Fatalf("expected parse error")
-	}
-	var ce *core.Error
-	if !errors.As(err, &ce) {
-		t.Fatalf("err type = %T, want *core.Error", err)
-	}
-	if ce.Kind != core.KindMCP {
-		t.Errorf("kind = %v, want KindMCP", ce.Kind)
-	}
-}
-
-// TestReadFrame_OversizeFrame covers a Content-Length above the
-// 1 MiB cap. Defends against a buggy or hostile peer sending
-// a giant Content-Length that would otherwise exhaust memory.
+// TestReadFrame_OversizeFrame: a line longer than maxFrameBytes is
+// rejected with KindMCP instead of being buffered without bound.
 func TestReadFrame_OversizeFrame(t *testing.T) {
-	raw := "Content-Length: 99999999\r\n\r\n"
-	_, err := readFrame(bufio.NewReader(strings.NewReader(raw)))
+	r := io.MultiReader(
+		strings.NewReader(`{"s":"`),
+		io.LimitReader(repeatReader('x'), maxFrameBytes+1024),
+		strings.NewReader("\"}\n"),
+	)
+	_, err := readFrame(bufio.NewReaderSize(r, 64*1024))
 	if err == nil {
-		t.Fatalf("expected oversize error")
+		t.Fatalf("expected frame-too-large error")
 	}
 	var ce *core.Error
-	if !errors.As(err, &ce) {
-		t.Fatalf("err type = %T, want *core.Error", err)
+	if !errors.As(err, &ce) || ce.Kind != core.KindMCP {
+		t.Fatalf("err = %v, want KindMCP", err)
 	}
-	if ce.Kind != core.KindMCP {
-		t.Errorf("kind = %v, want KindMCP", ce.Kind)
+	if !strings.Contains(ce.Error(), "too large") {
+		t.Errorf("err = %q, want it to mention 'too large'", ce.Error())
 	}
 }
 
-// TestReadFrame_IgnoresUnknownHeaders covers the LSP-derived
-// behavior: Content-Type and other non-Content-Length header
-// lines are tolerated and ignored. The MCP stdio framing only
-// requires Content-Length.
-func TestReadFrame_IgnoresUnknownHeaders(t *testing.T) {
-	body := []byte(`{"jsonrpc":"2.0"}`)
-	var buf bytes.Buffer
-	buf.WriteString("Content-Type: application/vscode-jsonrpc; charset=utf-8\r\n")
-	buf.WriteString("Content-Length: ")
-	buf.WriteString(itoa(len(body)))
-	buf.WriteString("\r\n\r\n")
-	buf.Write(body)
-
-	got, err := readFrame(bufio.NewReader(&buf))
+// TestReadFrame_MessageSpansMultipleReads: a message that arrives
+// one byte at a time (a slow pipe) is reassembled into one line.
+func TestReadFrame_MessageSpansMultipleReads(t *testing.T) {
+	body := `{"jsonrpc":"2.0","id":7,"result":{"ok":true}}`
+	got, err := readFrame(bufio.NewReader(&oneByteReader{r: strings.NewReader(body + "\n")}))
 	if err != nil {
 		t.Fatalf("readFrame: %v", err)
 	}
-	if !bytes.Equal(got, body) {
+	if string(got) != body {
 		t.Errorf("body = %q, want %q", got, body)
 	}
 }
 
-// TestReadFrame_EmptyBody covers the legitimate "zero-length
-// body" case (e.g. a notification with empty params). Should
-// round-trip cleanly with no error and an empty []byte.
-func TestReadFrame_EmptyBody(t *testing.T) {
-	raw := "Content-Length: 0\r\n\r\n"
-	got, err := readFrame(bufio.NewReader(strings.NewReader(raw)))
-	if err != nil {
-		t.Fatalf("readFrame: %v", err)
+// repeatReader yields an endless stream of b.
+type repeatReader byte
+
+func (b repeatReader) Read(p []byte) (int, error) {
+	for i := range p {
+		p[i] = byte(b)
 	}
-	if len(got) != 0 {
-		t.Errorf("body = %q, want empty", got)
-	}
+	return len(p), nil
 }
 
-// TestReadFrame_BodySpansMultipleReads covers the case where
-// the body arrives in chunks smaller than the bufio.Reader's
-// internal buffer. The body-read loop must keep collecting
-// bytes until it has the full Content-Length.
-func TestReadFrame_BodySpansMultipleReads(t *testing.T) {
-	body := []byte("abcdefghijklmnopqrstuvwxyz")
-	var buf bytes.Buffer
-	buf.WriteString("Content-Length: 26\r\n\r\n")
-	// Write one byte at a time — extremely small chunks.
-	for _, b := range body {
-		buf.WriteByte(b)
+// oneByteReader returns at most one byte per Read call.
+type oneByteReader struct{ r io.Reader }
+
+func (o *oneByteReader) Read(p []byte) (int, error) {
+	if len(p) == 0 {
+		return 0, nil
 	}
-	got, err := readFrame(bufio.NewReader(&buf))
-	if err != nil {
-		t.Fatalf("readFrame: %v", err)
-	}
-	if !bytes.Equal(got, body) {
-		t.Errorf("body = %q, want %q", got, body)
-	}
+	return o.r.Read(p[:1])
 }
 
 // itoa is a tiny helper so the test file doesn't need to import
