@@ -1,0 +1,60 @@
+# GoReleaser config: https://goreleaser.com
+# A release is cut by pushing a tag like v0.1.0 (see .github/workflows/release.yml).
+version: 2
+
+project_name: forge
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: forge
+    main: ./cmd/forge
+    binary: forge
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/ArpitK24/forge/internal/core.AppVersion={{ .Version }}
+      - -X github.com/ArpitK24/forge/internal/core.AppCommit={{ .ShortCommit }}
+      - -X github.com/ArpitK24/forge/internal/core.AppBuildDate={{ .Date }}
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - NOTICE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  use: github
+  sort: asc
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\(.+\))??!?:.+$'
+      order: 0
+    - title: Bug fixes
+      regexp: '^.*?fix(\(.+\))??!?:.+$'
+      order: 1
+    - title: Other
+      order: 999
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore\(deps\):'
+
+release:
+  prerelease: auto

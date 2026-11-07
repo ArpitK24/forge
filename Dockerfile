@@ -11,9 +11,10 @@ RUN go mod download
 COPY . .
 ARG TARGETOS
 ARG TARGETARCH
+ARG VERSION
 # Static, stripped binary, matching scripts/build.sh.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} \
-    go build -trimpath -ldflags="-s -w" -o /out/forge ./cmd/forge
+    go build -trimpath -ldflags="-s -w -X github.com/ArpitK24/forge/internal/core.AppVersion=${VERSION:-docker}" -o /out/forge ./cmd/forge
 
 # ---- runtime stage -----------------------------------------------
 # Alpine rather than distroless: Forge's bash tool needs a shell,
@@ -25,6 +26,6 @@ COPY --from=build /out/forge /usr/local/bin/forge
 
 USER forge
 # Mount the project you want Forge to work on here:
-#   docker run -it --rm -v "$PWD":/workspace -e ANTHROPIC_API_KEY forge
+#   docker run -it --rm -v "$PWD":/workspace -e FORGE_API_KEY forge
 WORKDIR /workspace
 ENTRYPOINT ["forge"]
