@@ -201,24 +201,14 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 		}
 	})
 	// Save the session BEFORE restoring the terminal — any
-	// stderr output we produce will still be readable. We
-	// recover the final *Model from p.Run()'s return value;
-	// bubbletea passes the last value Update produced, which
-	// is the most up-to-date snapshot of the conversation.
-	//
-	// If the TUI was opened via --resume <id>, the model's
-	// LoadedSessionID is non-empty and we route through
-	// saveResumedSessionOnExit to overwrite the on-disk record
-	// in place. Otherwise we mint a fresh id via
-	// saveSessionOnExit. Both helpers honor the same nil/empty
-	// guards; finalModel can legitimately be nil after a
-	// pre-Init panic.
+	// stderr output we produce will still be readable.
+	// bubbletea returns the last Model VALUE Update produced
+	// (not a *Model), which is the most up-to-date snapshot of
+	// the conversation. A --resume run overwrites its loaded
+	// record in place; otherwise a fresh id is minted.
+	// finalModel can legitimately be nil after a pre-Init panic.
 	if finalModel != nil {
-		if fm, ok := finalModel.(*Model); ok && fm.LoadedSessionID != "" {
-			saveResumedSessionOnExit(cfg, logger, finalModel)
-		} else {
-			saveSessionOnExit(cfg, logger, finalModel)
-		}
+		saveFinalModel(cfg, logger, finalModel)
 	}
 	restore()
 	return nil

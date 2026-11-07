@@ -73,18 +73,15 @@ func TestSaveSessionOnExit_PopulatedModel(t *testing.T) {
 	m.Width = 80
 	m.Height = 24
 	m.computeLayout()
-	// Populate the shared message history. The save hook
-	// reads from m.shared, not from m.Messages.
+	// Populate the live message history. The save hook reads
+	// CmdCtx.Messages, not the rendered m.Messages.
 	m.shared.mu.Lock()
-	m.shared.messages = []core.Message{
+	m.CmdCtx.Messages = []core.Message{
 		core.NewUserText("hello forge"),
 		core.NewAssistantText("hi, how can I help?"),
 	}
 	m.shared.mu.Unlock()
 
-	// The helper's type assertion is to *Model. In production
-	// bubbletea stores our *Model on the program and hands it
-	// back from p.Run(), so this is the canonical case.
 	saveSessionOnExit(cfg, nil, &m)
 
 	dir, _ := core.ConversationsPath()
@@ -203,7 +200,7 @@ func TestSaveResumedSessionOnExit_PreservesID(t *testing.T) {
 	}
 
 	// Build the TUI Model the way RunProgram does on the
-	// --resume path: LoadedSessionID set, shared.messages
+	// --resume path: LoadedSessionID set, live history
 	// pre-populated.
 	m := InitialModel(cfg, core.NewCostTracker())
 	m.LoadedSessionID = id
@@ -211,7 +208,7 @@ func TestSaveResumedSessionOnExit_PreservesID(t *testing.T) {
 	m.Height = 24
 	m.computeLayout()
 	m.shared.mu.Lock()
-	m.shared.messages = []core.Message{
+	m.CmdCtx.Messages = []core.Message{
 		core.NewUserText("original first prompt"),
 		core.NewAssistantText("original first reply"),
 		core.NewUserText("second prompt added during resumed run"),
@@ -276,5 +273,123 @@ func TestSaveResumedSessionOnExit_EmptyMessages(t *testing.T) {
 		if filepath.Ext(e.Name()) == ".json" {
 			t.Errorf("empty history should not save a file, found %s", e.Name())
 		}
+	}
+}
+
+// TestSaveSessionOnExit_AcceptsModelValue: bubbletea's p.Run()
+// returns the Model VALUE that Update produced, not a *Model.
+// Before the fix the save helpers only accepted *Model, so every
+// real TUI exit skipped the save.
+func TestSaveSessionOnExit_AcceptsModelValue(t *testing.T) {
+	withTempHome(t)
+	cfg := &core.Config{Model: core.DefaultModel}
+	m := InitialModel(cfg, core.NewCostTracker())
+	history := []core.Message{
+		core.NewUserText("hello"),
+		core.NewAssistantText("hi"),
+	}
+	m.shared.messages = history
+	m.CmdCtx.Messages = history
+
+	var final tea.Model = m // what p.Run() hands back
+	saveSessionOnExit(cfg, nil, final)
+
+	dir, _ := core.ConversationsPath()
+	entries, _ := os.ReadDir(dir)
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 session file from a Model value, got %d", len(entries))
+	}
+}
+
+// TestSaveSessionOnExit_SavesLiveHistory: the live conversation
+// is CmdCtx.Messages (submitInput and handleLoopFinished write
+// it). shared.messages is only set by --resume, so saving it
+// dropped every fresh session.
+func TestSaveSessionOnExit_SavesLiveHistory(t *testing.T) {
+	withTempHome(t)
+	cfg := &core.Config{Model: core.DefaultModel}
+	m := InitialModel(cfg, core.NewCostTracker())
+	m.CmdCtx.Messages = []core.Message{
+		core.NewUserText("live prompt"),
+		core.NewAssistantText("live reply"),
+	}
+
+	saveSessionOnExit(cfg, nil, &m)
+
+	dir, _ := core.ConversationsPath()
+	entries, _ := os.ReadDir(dir)
+	if len(entries) != 1 {
+		t.Fatalf("expected 1 session file for the live history, got %d", len(entries))
+	}
+	id := entries[0].Name()
+	loaded, err := core.LoadSession(id[:len(id)-len(".json")])
+	if err != nil {
+		t.Fatalf("LoadSession: %v", err)
+	}
+	if len(loaded.Messages) != 2 || loaded.Messages[0].GetFirstText() != "live prompt" {
+		t.Errorf("saved messages = %d (first %q), want the 2 live messages",
+			len(loaded.Messages), loaded.Messages[0].GetFirstText())
+	}
+}
+
+// TestSaveResumedSessionOnExit_MissingFileDoesNotPanic: if the
+// resumed session file is gone by exit time, LoadSession returns
+// (nil, err). Before the fix the helper read loaded.CreatedAt
+// before checking err and panicked.
+func TestSaveResumedSessionOnExit_MissingFileDoesNotPanic(t *testing.T) {
+	withTempHome(t)
+	const id = "resume-gone-1"
+	cfg := &core.Config{Model: core.DefaultModel}
+	m := InitialModel(cfg, core.NewCostTracker())
+	m.LoadedSessionID = id
+	history := []core.Message{core.NewUserText("still here")}
+	m.shared.messages = history
+	m.CmdCtx.Messages = history
+
+	saveResumedSessionOnExit(cfg, nil, &m)
+
+	loaded, err := core.LoadSession(id)
+	if err != nil {
+		t.Fatalf("session should be re-created under the same id: %v", err)
+	}
+	if len(loaded.Messages) != 1 {
+		t.Errorf("Messages len = %d, want 1", len(loaded.Messages))
+	}
+}
+
+// TestSaveFinalModel_ResumedModelValueKeepsID: RunProgram's exit
+// path gets a Model value from p.Run(). A --resume run must
+// overwrite its own record, not mint a new one.
+func TestSaveFinalModel_ResumedModelValueKeepsID(t *testing.T) {
+	withTempHome(t)
+	const id = "resume-final-1"
+	cfg := &core.Config{Model: core.DefaultModel}
+	if err := core.SaveSession(&core.ConversationSession{
+		ID:       id,
+		Model:    core.DefaultModel,
+		Messages: []core.Message{core.NewUserText("first")},
+	}); err != nil {
+		t.Fatalf("seed SaveSession: %v", err)
+	}
+	m := InitialModel(cfg, core.NewCostTracker())
+	m.LoadedSessionID = id
+	m.CmdCtx.Messages = []core.Message{
+		core.NewUserText("first"),
+		core.NewAssistantText("reply"),
+	}
+
+	saveFinalModel(cfg, nil, m)
+
+	dir, _ := core.ConversationsPath()
+	entries, _ := os.ReadDir(dir)
+	if len(entries) != 1 || entries[0].Name() != id+".json" {
+		t.Fatalf("expected only %s.json, got %v", id, entries)
+	}
+	loaded, err := core.LoadSession(id)
+	if err != nil {
+		t.Fatalf("LoadSession: %v", err)
+	}
+	if len(loaded.Messages) != 2 {
+		t.Errorf("Messages len = %d, want 2", len(loaded.Messages))
 	}
 }

@@ -11,6 +11,30 @@ import (
 	"github.com/ArpitK24/forge/internal/core"
 )
 
+// asModel recovers the TUI Model from a tea.Model. bubbletea's
+// p.Run() returns the Model VALUE that Update produced; tests and
+// other callers may pass a *Model. Both are accepted.
+func asModel(tm tea.Model) (*Model, bool) {
+	switch v := tm.(type) {
+	case Model:
+		return &v, true
+	case *Model:
+		return v, v != nil
+	}
+	return nil, false
+}
+
+// saveFinalModel saves the session for the model p.Run()
+// returned: a --resume run overwrites its loaded record in place,
+// anything else mints a fresh id.
+func saveFinalModel(cfg *core.Config, logger *slog.Logger, final tea.Model) {
+	if fm, ok := asModel(final); ok && fm.LoadedSessionID != "" {
+		saveResumedSessionOnExit(cfg, logger, final)
+		return
+	}
+	saveSessionOnExit(cfg, logger, final)
+}
+
 // saveSessionOnExit writes the conversation to disk on a
 // graceful TUI exit. Called by RunProgram after p.Run() returns
 // and before the terminal is restored, so any error message we
@@ -18,9 +42,7 @@ import (
 //
 // Behavior:
 //   - If the final model is nil (panic path before Init), skip.
-//   - If the model is not a *Model (defensive — bubbletea may
-//     wrap it for some Cmd paths), skip. In practice it always
-//     is, because NewProgram was given the Model directly.
+//   - If the model is neither a Model nor a *Model, skip.
 //   - If the message history is empty, skip. A blank TUI
 //     session is not worth a file.
 //   - On any save error, log to stderr. The TUI is gone; the
@@ -41,24 +63,16 @@ func saveSessionOnExit(cfg *core.Config, logger *slog.Logger, m tea.Model) {
 	if m == nil {
 		return
 	}
-	mm, ok := m.(*Model)
-	if !ok || mm == nil {
+	mm, ok := asModel(m)
+	if !ok {
 		return
 	}
-	// Snapshot the shared messages under the mutex. The
-	// pointer to shared is stable across Model copies
-	// (bubbletea copies Model on every Update, but the
-	// *sharedState field points to the same struct), so this
-	// lock sees the latest state.
-	msgs, unlock := mm.shared.lockMessages()
-	defer unlock()
-	if len(*msgs) == 0 {
+	// Snapshot the live history (a copy, so later mutations
+	// don't affect the on-disk file).
+	snapshot := mm.historySnapshot()
+	if len(snapshot) == 0 {
 		return
 	}
-	// Copy the slice so future mutations to mm.shared.messages
-	// (e.g. /clear) don't affect the on-disk file. We use
-	// append-to-nil to allocate a new backing array.
-	snapshot := append([]core.Message(nil), *msgs...)
 
 	id, err := core.NewSessionID()
 	if err != nil {
@@ -110,16 +124,14 @@ func saveResumedSessionOnExit(cfg *core.Config, logger *slog.Logger, m tea.Model
 	if m == nil {
 		return
 	}
-	mm, ok := m.(*Model)
-	if !ok || mm == nil {
+	mm, ok := asModel(m)
+	if !ok {
 		return
 	}
-	msgs, unlock := mm.shared.lockMessages()
-	defer unlock()
-	if len(*msgs) == 0 {
+	snapshot := mm.historySnapshot()
+	if len(snapshot) == 0 {
 		return
 	}
-	snapshot := append([]core.Message(nil), *msgs...)
 
 	id := mm.LoadedSessionID
 	if id == "" {
@@ -141,14 +153,13 @@ func saveResumedSessionOnExit(cfg *core.Config, logger *slog.Logger, m tea.Model
 	// rewrite. SaveSession's "only set CreatedAt when zero"
 	// guard would otherwise reset it because the in-memory
 	// struct's CreatedAt is the zero value here.
-	loaded, err := core.LoadSession(id)
-	createdAt := loaded.CreatedAt
-	if err != nil {
-		// Missing or corrupt file: start fresh. The user
-		// will see the new entry with a "now" CreatedAt
-		// rather than the original; that's an acceptable
-		// fallback when the source is gone.
-		createdAt = time.Time{}
+	// Missing or corrupt file: start fresh. The user will see
+	// the new entry with a "now" CreatedAt rather than the
+	// original; that's an acceptable fallback when the source
+	// is gone. (LoadSession returns nil on error.)
+	var createdAt time.Time
+	if loaded, err := core.LoadSession(id); err == nil && loaded != nil {
+		createdAt = loaded.CreatedAt
 	}
 
 	s := &core.ConversationSession{

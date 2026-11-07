@@ -148,12 +148,17 @@ type sharedState struct {
 	messages []core.Message
 }
 
-// lockMessages acquires the shared mutex and returns a pointer to
-// the message slice plus a done function the caller MUST defer.
-// Centralizing the lock here keeps every callsite uniform.
-func (s *sharedState) lockMessages() (*[]core.Message, func()) {
-	s.mu.Lock()
-	return &s.messages, s.mu.Unlock
+// historySnapshot returns a copy of the live conversation
+// history. The live history is CmdCtx.Messages (submitInput and
+// handleLoopFinished write it under shared.mu); shared.messages
+// is only the --resume seed.
+func (m *Model) historySnapshot() []core.Message {
+	if m.shared == nil || m.CmdCtx == nil {
+		return nil
+	}
+	m.shared.mu.Lock()
+	defer m.shared.mu.Unlock()
+	return append([]core.Message(nil), m.CmdCtx.Messages...)
 }
 
 // PermissionDialogState holds the state for the in-TUI permission
