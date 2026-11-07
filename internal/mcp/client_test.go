@@ -629,3 +629,47 @@ func itoa64(n int64) string {
 	}
 	return string(b[pos:])
 }
+
+// TestClient_CallAfterTransportDeath_FailsFast is the regression test
+// for a hang found by the race job in CI: once the read loop has
+// exited on a transport error, a later call used to register a
+// pending entry nobody would ever answer and block forever (with a
+// background ctx). It must now fail immediately.
+func TestClient_CallAfterTransportDeath_FailsFast(t *testing.T) {
+	tr := newFakeTransport()
+	tr.recvErr = errors.New("simulated transport failure")
+	cli := newClient("dead", tr, silentLogger())
+	if err := cli.start(context.Background()); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer cli.close(context.Background())
+
+	// Wait for the read loop to observe the failure.
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		cli.mu.Lock()
+		dead := cli.deadErr != nil
+		cli.mu.Unlock()
+		if dead {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("read loop never recorded the transport failure")
+		}
+		time.Sleep(time.Millisecond)
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		var out any
+		done <- cli.call(context.Background(), "tools/list", nil, &out)
+	}()
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Fatal("call on a dead client succeeded, want error")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("call on a dead client hung")
+	}
+}

@@ -22,8 +22,7 @@ import (
 func writeFrame(w io.Writer, body []byte) (int, error) {
 	// One Write for header+body: a frame is never split across
 	// writes, so a reader can't observe a header without its body.
-	frame := make([]byte, 0, len(body)+32)
-	frame = fmt.Appendf(frame, "Content-Length: %d\r\n\r\n", len(body))
+	frame := fmt.Appendf(nil, "Content-Length: %d\r\n\r\n", len(body))
 	frame = append(frame, body...)
 	n, err := w.Write(frame)
 	if err != nil {
