@@ -9,7 +9,7 @@ import (
 	"github.com/ArpitK24/forge/internal/core"
 )
 
-// --- Bugs 2 + 3: compaction state and summary model ---------------
+// --- Bug 2: compaction state persists so the breaker trips ---------
 
 // compactProbeProvider answers main-loop requests with a tool call
 // that reports a huge prompt (so auto-compaction always triggers)

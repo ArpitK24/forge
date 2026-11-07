@@ -141,7 +141,8 @@ const (
 //     marker on the summary message) can read it without a
 //     second signature change.
 //   - summaryModel: the model id to invoke for the summary
-//     call. In Step 1 this is hardcoded to core.FastModel.
+//     call. RunQueryLoop passes Config.SummaryModel, defaulting
+//     to the session model.
 //
 // Returns the compacted slice (summary message + tail). When
 // the conversation is shorter than AutoCompactTailKeep+1,
@@ -221,8 +222,8 @@ func buildSummaryMessage(text, model string, turnsSummarized int) core.Message {
 //   - model: the active loop model id. Forwarded to
 //     CompactConversation (currently unused inside).
 //   - summaryModel: the model id to use for the summary
-//     call. Hardcoded to core.FastModel by the call sites in
-//     Phase 4 Step 1.
+//     call. RunQueryLoop passes Config.SummaryModel, defaulting
+//     to the session model.
 //   - turnUsage: the most recent turn's token usage. Used as
 //     the "used" approximation in the trigger math; a proper
 //     implementation would track the running input total

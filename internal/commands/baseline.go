@@ -137,8 +137,8 @@ func (compactCmd) Help() string {
 	return "Replaces the conversation history with a shorter summary. " +
 		"The most recent " + fmt.Sprintf("%d", core.AutoCompactTailKeep) +
 		" messages are kept verbatim; everything older is collapsed " +
-		"into one summary message produced by a model call. The " +
-		"summary model is currently " + core.FastModel + "."
+		"into one summary message produced by a model call, using " +
+		"the session's active model."
 }
 func (compactCmd) Execute(ctx context.Context, _ string, cctx *CommandContext) CommandResult {
 	if cctx == nil {
@@ -152,7 +152,13 @@ func (compactCmd) Execute(ctx context.Context, _ string, cctx *CommandContext) C
 	if cctx.Config != nil {
 		model = cctx.Config.EffectiveModel()
 	}
-	compacted, err := query.CompactConversation(ctx, cctx.Client, cctx.Messages, model, core.FastModel)
+	// Summarize with the session's own model: it is the one
+	// model guaranteed to exist on the active provider.
+	summaryModel := model
+	if summaryModel == "" {
+		summaryModel = core.FastModel
+	}
+	compacted, err := query.CompactConversation(ctx, cctx.Client, cctx.Messages, model, summaryModel)
 	if err != nil {
 		return ErrorResult(fmt.Sprintf("compact failed: %v", err))
 	}

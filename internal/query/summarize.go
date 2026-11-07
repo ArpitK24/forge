@@ -34,9 +34,8 @@ const CompactSummaryPrompt = "You are a context-compaction assistant. Summarize 
 //   - ctx: cancellation. A cancelled ctx aborts the underlying
 //     HTTP request via the provider contract.
 //   - client: the Provider to call. Same one the loop uses.
-//   - summaryModel: the model id to invoke. In Step 1 this is
-//     hardcoded to core.FastModel; a future --summary-model flag
-//     will plumb it from config (out of scope here).
+//   - summaryModel: the model id to invoke. RunQueryLoop passes
+//     Config.SummaryModel, defaulting to the session model.
 //   - head: the older slice of the conversation to summarize.
 //     Empty head returns an empty string with no error (no API
 //     call) — the caller can short-circuit.

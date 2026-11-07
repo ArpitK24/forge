@@ -40,6 +40,10 @@ type Config struct {
 	// so the breaker survives across calls. nil = the loop
 	// keeps its own state for the duration of this call.
 	CompactState *CompactState
+	// SummaryModel is the model used for compaction summaries.
+	// Empty = the session's own Model, which is always valid
+	// for the active provider (a hard-coded NIM model is not).
+	SummaryModel string
 }
 
 // OutcomeKind enumerates the loop's terminal states. Spec §5.1.
@@ -390,8 +394,12 @@ func RunQueryLoop(
 		// by the caller via cfg.CompactState) carries the
 		// failure count and circuit breaker across turns.
 		if toolCtx != nil && toolCtx.Cfg != nil && toolCtx.Cfg.AutoCompact {
+			summaryModel := cfg.SummaryModel
+			if summaryModel == "" {
+				summaryModel = cfg.Model
+			}
 			_ = AutoCompactIfNeeded(ctx, client, &messages, cfg.Model,
-				core.FastModel, turnUsage, compactState, eventCh)
+				summaryModel, turnUsage, compactState, eventCh)
 		}
 
 		// 7. Branch on stop reason.
