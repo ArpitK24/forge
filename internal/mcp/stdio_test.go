@@ -92,8 +92,10 @@ func TestStdioTransport_CloseWhileRecvInFlight(t *testing.T) {
 		// respond to SIGTERM from outside, but the Go
 		// runtime will close its stdin pipe on Close(),
 		// which trips the EOF.
+		// ping prints to stdout, so send that to NUL: the
+		// child must stay silent or Recv would get a line.
 		cmd = "cmd"
-		args = []string{"/c", "ping", "-n", "30", "127.0.0.1"}
+		args = []string{"/c", "ping", "-n", "30", "127.0.0.1", ">NUL"}
 	} else {
 		// sleep on Unix ignores SIGTERM but exits when
 		// stdin closes — exactly the behavior we want.
