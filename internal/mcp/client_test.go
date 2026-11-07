@@ -53,10 +53,10 @@ func waitForSends(t *testing.T, f *fakeTransport, n int) {
 // StdioTransport mutex). Tests don't write concurrently.
 // Recv is single-goroutine (only the read goroutine).
 type fakeTransport struct {
-	mu      sync.Mutex  // guards sent, pending, hold
-	sent    [][]byte    // recorded Send() calls
-	pending [][]byte    // bytes waiting to be returned by Recv
-	hold    bool        // when true, Recv blocks until release
+	mu      sync.Mutex    // guards sent, pending, hold
+	sent    [][]byte      // recorded Send() calls
+	pending [][]byte      // bytes waiting to be returned by Recv
+	hold    bool          // when true, Recv blocks until release
 	gate    chan struct{} // closed by release() to unblock Recv
 	closed  atomic.Bool
 
@@ -311,7 +311,7 @@ func TestClient_ConcurrentCallsIDCorrelation(t *testing.T) {
 		r := Response{
 			JSONRPC: JSONRPCVersion,
 			ID:      id,
-			Result: json.RawMessage(`{"content":[{"type":"text","text":"` + text + `"}]}`),
+			Result:  json.RawMessage(`{"content":[{"type":"text","text":"` + text + `"}]}`),
 		}
 		b, err := json.Marshal(r)
 		if err != nil {

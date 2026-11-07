@@ -39,22 +39,22 @@ type Transport interface {
 // Recv is single-goroutine (only the per-plugin client's
 // read goroutine calls it). Close is idempotent.
 type StdioTransport struct {
-	cfg       PluginConfig
-	mu        sync.Mutex // serializes Send
-	cmd       *exec.Cmd
-	stdin     io.WriteCloser
-	stdout    *bufio.Reader
-	stderr    io.ReadCloser
-	closed    bool
+	cfg        PluginConfig
+	mu         sync.Mutex // serializes Send
+	cmd        *exec.Cmd
+	stdin      io.WriteCloser
+	stdout     *bufio.Reader
+	stderr     io.ReadCloser
+	closed     bool
 	stderrDone chan struct{}
 }
 
 // PluginConfig holds the configuration for a single plugin.
 type PluginConfig struct {
-	Name      string
-	Path      string // absolute path to the plugin binary
-	Args      []string
-	Env       map[string]string
+	Name string
+	Path string // absolute path to the plugin binary
+	Args []string
+	Env  map[string]string
 }
 
 // NewStdioTransport constructs a transport but does NOT

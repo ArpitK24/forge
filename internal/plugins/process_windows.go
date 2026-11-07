@@ -45,7 +45,7 @@ func sendCtrlBreakToProcessGroup(proc *os.Process) error {
 	dll := syscall.NewLazyDLL("kernel32.dll")
 	procGenCtrl := dll.NewProc("GenerateConsoleCtrlEvent")
 	r, _, err := procGenCtrl.Call(
-		1,          // CTRL_BREAK_EVENT
+		1,                 // CTRL_BREAK_EVENT
 		uintptr(proc.Pid), // dwProcessGroupId
 	)
 	if r == 0 {

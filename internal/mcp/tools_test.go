@@ -321,8 +321,8 @@ func TestConvertCallResult_TextOnly(t *testing.T) {
 // the loop's serializer then takes the Text branch.
 func TestConvertCallResult_ZeroBlocks(t *testing.T) {
 	cases := []struct {
-		name        string
-		isError     bool
+		name             string
+		isError          bool
 		wantNonEmptyText bool
 	}{
 		{"success-empty", false, false},

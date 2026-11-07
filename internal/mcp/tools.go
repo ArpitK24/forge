@@ -152,12 +152,12 @@ type toolsCallParams struct {
 // (text + image + audio + embedded resource) pass through
 // without losing any field the typed struct doesn't capture.
 type toolResultBlock struct {
-	Type string          `json:"type"`
-	Text string          `json:"text,omitempty"`
-	Data string          `json:"data,omitempty"`       // base64-encoded media bytes (image / audio)
-	MIMEType string      `json:"mimeType,omitempty"`   // MIME type for image / audio
-	URI  string          `json:"uri,omitempty"`        // resource_link URI
-	Name string          `json:"name,omitempty"`       // resource_link / embedded resource name
+	Type     string          `json:"type"`
+	Text     string          `json:"text,omitempty"`
+	Data     string          `json:"data,omitempty"`     // base64-encoded media bytes (image / audio)
+	MIMEType string          `json:"mimeType,omitempty"` // MIME type for image / audio
+	URI      string          `json:"uri,omitempty"`      // resource_link URI
+	Name     string          `json:"name,omitempty"`     // resource_link / embedded resource name
 	Resource json.RawMessage `json:"resource,omitempty"` // embedded resource object
 	// Raw holds the verbatim block bytes — set by UnmarshalJSON
 	// from the input. Used by convertCallResult to populate

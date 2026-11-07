@@ -82,26 +82,26 @@ func newSSEState() *sseState {
 
 // chunk is the OpenAI Chat Completions streaming chunk shape.
 type chunk struct {
-	ID      string         `json:"id"`
-	Object  string         `json:"object"`
-	Created int64          `json:"created"`
-	Model   string         `json:"model"`
-	Choices []chunkChoice  `json:"choices"`
-	Usage   *chunkUsage    `json:"usage,omitempty"`
-	Error   *chunkError    `json:"error,omitempty"`
+	ID      string        `json:"id"`
+	Object  string        `json:"object"`
+	Created int64         `json:"created"`
+	Model   string        `json:"model"`
+	Choices []chunkChoice `json:"choices"`
+	Usage   *chunkUsage   `json:"usage,omitempty"`
+	Error   *chunkError   `json:"error,omitempty"`
 }
 
 // chunkChoice is one entry in a chunk's `choices` array.
 type chunkChoice struct {
-	Index        int         `json:"index"`
-	Delta        chunkDelta  `json:"delta"`
-	FinishReason string      `json:"finish_reason"`
+	Index        int        `json:"index"`
+	Delta        chunkDelta `json:"delta"`
+	FinishReason string     `json:"finish_reason"`
 }
 
 // chunkDelta is the per-chunk delta payload.
 type chunkDelta struct {
-	Role      string        `json:"role,omitempty"`
-	Content   string        `json:"content,omitempty"`
+	Role      string         `json:"role,omitempty"`
+	Content   string         `json:"content,omitempty"`
 	ToolCalls []chunkTCDelta `json:"tool_calls,omitempty"`
 }
 

@@ -11,10 +11,10 @@
 // We deliberately do NOT have Args.ToConfig read the file itself:
 // that would couple the pure parsing path to the filesystem and
 // make the function hard to test. main.go orchestrates the order:
-//   1. parse flags -> ToConfig() (CLI overrides on a fresh Config)
-//   2. LoadLayeredSettings() (apply file defaults, with project
-//      and local overrides on top of the global file)
-//   3. ApplySettings() (fill the still-zero fields of cfg)
+//  1. parse flags -> ToConfig() (CLI overrides on a fresh Config)
+//  2. LoadLayeredSettings() (apply file defaults, with project
+//     and local overrides on top of the global file)
+//  3. ApplySettings() (fill the still-zero fields of cfg)
 package cli
 
 import (

@@ -588,9 +588,9 @@ func grepRenderCount(perFileCount map[string]int, absRoot string, start, end, to
 	return ToolResult{
 		Text: sb.String(),
 		Metadata: map[string]any{
-			"file_count":   len(pairs),
-			"match_count":  total,
-			"truncated":    false,
+			"file_count":  len(pairs),
+			"match_count": total,
+			"truncated":   false,
 		},
 	}
 }

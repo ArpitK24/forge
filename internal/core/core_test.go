@@ -91,10 +91,10 @@ func TestErrorUnwrapChain(t *testing.T) {
 
 func TestAutoPermissionHandlerMatrix(t *testing.T) {
 	tests := []struct {
-		name    string
-		mode    PermissionMode
+		name     string
+		mode     PermissionMode
 		readOnly bool
-		want    PermissionDecision
+		want     PermissionDecision
 	}{
 		{"bypass everything", PermissionBypassPermissions, false, DecisionAllow},
 		{"bypass read-only", PermissionBypassPermissions, true, DecisionAllow},
@@ -210,10 +210,10 @@ func TestConfigEffectiveDefaults(t *testing.T) {
 
 func TestParsePermissionMode(t *testing.T) {
 	cases := map[string]PermissionMode{
-		"default":             PermissionDefault,
-		"accept-edits":        PermissionAcceptEdits,
-		"bypass-permissions":  PermissionBypassPermissions,
-		"plan":                PermissionPlan,
+		"default":            PermissionDefault,
+		"accept-edits":       PermissionAcceptEdits,
+		"bypass-permissions": PermissionBypassPermissions,
+		"plan":               PermissionPlan,
 	}
 	for s, want := range cases {
 		got, ok := ParsePermissionMode(s)

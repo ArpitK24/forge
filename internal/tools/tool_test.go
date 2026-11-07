@@ -60,9 +60,9 @@ func TestToolResult_JSONShapeStability(t *testing.T) {
 
 	t.Run("Blocks populated — emits content array", func(t *testing.T) {
 		r := ToolResult{
-			Text:   "first\nsecond",
+			Text:    "first\nsecond",
 			IsError: false,
-			Blocks: json.RawMessage(`[{"type":"text","text":"first"},{"type":"image","data":"abc","mimeType":"image/png"},{"type":"text","text":"second"}]`),
+			Blocks:  json.RawMessage(`[{"type":"text","text":"first"},{"type":"image","data":"abc","mimeType":"image/png"},{"type":"text","text":"second"}]`),
 		}
 		b, err := json.Marshal(r)
 		if err != nil {

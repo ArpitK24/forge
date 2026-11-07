@@ -24,11 +24,11 @@ import (
 // runWithRetry along a non-success path without a real HTTP
 // server.
 type errorProvider struct {
-	err    *core.Error
-	info   api.ModelInfo
+	err  *core.Error
+	info api.ModelInfo
 }
 
-func (e *errorProvider) Info() api.ModelInfo                       { return e.info }
+func (e *errorProvider) Info() api.ModelInfo { return e.info }
 func (e *errorProvider) Stream(ctx context.Context, _ api.Request) (<-chan api.StreamEvent, <-chan error) {
 	events := make(chan api.StreamEvent, 1)
 	errs := make(chan error, 1)
@@ -48,13 +48,15 @@ func (e *errorProvider) Stream(ctx context.Context, _ api.Request) (<-chan api.S
 //     errOn; subsequent calls return the canned script.
 //   - Otherwise every call returns the canned script.
 type recordingProvider struct {
-	script   []api.StreamEvent
+	script     []api.StreamEvent
 	failFirstN int
-	errOn     *core.Error
+	errOn      *core.Error
 	callsSoFar atomic.Int32
 }
 
-func (r *recordingProvider) Info() api.ModelInfo { return api.ModelInfo{ID: "fake", ContextWindow: 128_000} }
+func (r *recordingProvider) Info() api.ModelInfo {
+	return api.ModelInfo{ID: "fake", ContextWindow: 128_000}
+}
 func (r *recordingProvider) Stream(ctx context.Context, _ api.Request) (<-chan api.StreamEvent, <-chan error) {
 	n := r.callsSoFar.Add(1)
 	events := make(chan api.StreamEvent, 32)

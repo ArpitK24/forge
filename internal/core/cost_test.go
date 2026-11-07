@@ -82,11 +82,11 @@ func TestEstimateCostUSDWithCache(t *testing.T) {
 	// And the math: when we set explicit cache prices via the
 	// helper, they should be honored, not fallen back to input rate.
 	manualRow := ModelPricing{
-		ModelSubstring:        "test-explicit-cache",
-		InputPerMtok:          1.0,
-		OutputPerMtok:         2.0,
-		CacheCreationPerMtok:  5.0,
-		CacheReadPerMtok:      0.5,
+		ModelSubstring:       "test-explicit-cache",
+		InputPerMtok:         1.0,
+		OutputPerMtok:        2.0,
+		CacheCreationPerMtok: 5.0,
+		CacheReadPerMtok:     0.5,
 	}
 	// Replace the default table temporarily by pricing for the
 	// test substring: this works because PricingFor does substring
@@ -221,9 +221,9 @@ func TestFormatIntAndFloat(t *testing.T) {
 	}
 
 	fcases := []struct {
-		in     float64
-		dec    int
-		want   string
+		in   float64
+		dec  int
+		want string
 	}{
 		{1.0, 1, "1.0"},
 		{1.25, 1, "1.3"}, // bankers? No — we round half up
