@@ -14,6 +14,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -24,7 +25,8 @@ import (
 // All fields are exported so cmd/forge/main.go can wire them into a
 // *core.Config without ceremony.
 type Args struct {
-	// PositionalPrompt is the first non-flag argument, if any. It is
+	// PositionalPrompt is every non-flag argument joined with single
+	// spaces (flags may appear before or after it). It is
 	// the "headless one-shot prompt" mode from spec §7.3: when present
 	// (or piped on stdin) and the binary is not in interactive TUI
 	// mode, this becomes the first user message.
@@ -184,17 +186,22 @@ func (p *Parser) Parse() (*Args, error) {
 	p.fs.StringVar(&outputFormatStr, "output-format", "",
 		"one of: text, json, stream-json")
 
-	if err := p.fs.Parse(p.args); err != nil {
+	// The stdlib flag package stops at the first positional argument,
+	// so `forge -p "fix tests" --model x` would leave --model unparsed.
+	// Move every flag (and its value) ahead of the positionals first,
+	// keeping their relative order, then parse once.
+	flags, positionals := splitArgs(p.fs, p.args)
+	if err := p.fs.Parse(flags); err != nil {
 		return nil, err
 	}
+	// splitArgs only routes recognised flag shapes to flags, so
+	// anything Parse leaves behind is a positional too.
+	positionals = slices.Concat(p.fs.Args(), positionals)
 
-	// Positional: the first remaining argument after flag parsing is
-	// the prompt. (We don't support multi-word positional prompts in
-	// Phase 1 — users with multi-word prompts can use single quotes
-	// in their shell.)
-	if rest := p.fs.Args(); len(rest) > 0 {
-		a.PositionalPrompt = rest[0]
-	}
+	// Positional: every remaining word, joined with single spaces, is
+	// the prompt, so `forge fix the tests` and `forge "fix the tests"`
+	// behave the same.
+	a.PositionalPrompt = strings.Join(positionals, " ")
 
 	// Stdin-piped prompt: if there's no positional prompt and stdin
 	// is not a terminal, we'll read the prompt from stdin in main.go.
@@ -247,6 +254,54 @@ func (p *Parser) Parse() (*Args, error) {
 	}
 
 	return a, nil
+}
+
+// splitArgs separates args into flag tokens (each flag with its value,
+// in their original order) and positional words, so flags may appear
+// anywhere on the command line, before or after the prompt.
+//
+// Rules, matching the flag package's own syntax:
+//   - "--" ends flag parsing; every later argument is positional.
+//   - "-" on its own is positional.
+//   - "-name=value" / "--name=value" is one flag token.
+//   - "-name" / "--name" for a boolean flag is one token; for any other
+//     flag it takes the next argument as its value (even if that value
+//     looks like a flag or is "--").
+//   - Unknown flags are kept as flags so Parse reports them, rather
+//     than having them silently become part of the prompt.
+func splitArgs(fs *flag.FlagSet, args []string) (flags, positionals []string) {
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if arg == "--" {
+			positionals = append(positionals, args[i+1:]...)
+			break
+		}
+		if len(arg) < 2 || arg[0] != '-' {
+			positionals = append(positionals, arg)
+			continue
+		}
+		flags = append(flags, arg)
+		name := strings.TrimPrefix(strings.TrimPrefix(arg, "-"), "-")
+		if strings.Contains(name, "=") {
+			continue
+		}
+		f := fs.Lookup(name)
+		if f == nil || isBoolFlag(f) {
+			continue
+		}
+		if i+1 < len(args) {
+			i++
+			flags = append(flags, args[i])
+		}
+	}
+	return flags, positionals
+}
+
+// isBoolFlag reports whether f is a boolean flag, i.e. one the flag
+// package accepts without a value.
+func isBoolFlag(f *flag.Flag) bool {
+	bf, ok := f.Value.(interface{ IsBoolFlag() bool })
+	return ok && bf.IsBoolFlag()
 }
 
 // loadMCPConfig reads the JSON file at a.MCPConfig and returns the
