@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"testing"
+	"time"
 
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/tools"
@@ -64,7 +65,23 @@ func mustMarshal(v any) []byte {
 func setupMcpTool(t *testing.T, respBytes []byte) (*mcpTool, *fakeTransport) {
 	t.Helper()
 	tr := newFakeTransport()
+	// Hold the canned response until the call has been sent.
+	// Without this the readLoop can consume it before
+	// Execute registers its pending entry, which the client
+	// (correctly) treats as an orphan and fails the
+	// connection. That race flaked CI on main (c0b979b).
+	tr.setHold(true)
 	tr.queue(respBytes)
+	go func() {
+		deadline := time.Now().Add(5 * time.Second)
+		for time.Now().Before(deadline) {
+			if tr.lastSent() != nil {
+				tr.release()
+				return
+			}
+			time.Sleep(time.Millisecond)
+		}
+	}()
 	mgr := NewManager(nil, slog.New(slog.NewTextHandler(io.Discard, nil)))
 	mgr.servers["test"] = &serverState{
 		name: "test",
