@@ -28,37 +28,53 @@ import (
 // denies the call (does NOT quit the TUI), Tab/Shift+Tab cycle
 // focus, Enter activates the focused button.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Query-loop messages are handled before any modal. Each one
+	// re-arms its own subscription, so dropping one while the
+	// picker or permission dialog is open would stop the TUI
+	// listening to the loop for the rest of the turn.
+	switch msg := msg.(type) {
+	case queryEventMsg:
+		// Process the event, then re-subscribe on the per-turn
+		// channel so bubbletea keeps draining until the loop
+		// closes it.
+		mm, _ := m.handleQueryEvent(msg)
+		m = mm.(Model)
+		if m.currentEventCh != nil {
+			return m, waitForEvent(m.currentEventCh)
+		}
+		return m, nil
+	case loopFinishedMsg:
+		return m.handleLoopFinished(msg)
+	case permissionRequestMsg:
+		return m.openPermissionDialog(msg)
+	}
+
 	// If the sessions picker is open, it owns all input. The
 	// picker is a modal overlay (matches the "Esc leaves the
 	// modal" decision in H2): every key press goes to the
-	// picker, and only key presses produce a response — other
-	// messages (window resize, loop events) fall through so
-	// the layout still updates and streaming keeps flowing.
+	// picker. Loop messages are handled above so streaming
+	// keeps flowing.
 	if m.SessionPicker != nil {
 		if k, ok := msg.(tea.KeyMsg); ok {
 			return m.handlePickerKey(k)
 		}
-		// Non-key messages are dropped while the picker is up,
-		// matching the permission dialog's freeze-everything
-		// contract.
+		// Other non-key messages are dropped while the picker
+		// is up (loop messages were handled above).
 		return m, nil
 	}
 
 	// If the permission dialog is open, it owns all input until
-	// the user decides. This branch is reached on EVERY message
-	// type — key presses, loop events, window resizes — and
-	// short-circuits the rest of Update. The only messages we
-	// still care about while the dialog is open are key presses
-	// (to navigate/activate) and any pending permissionRequestMsg
-	// that would queue a second dialog (we leave that one on the
-	// channel — see openPermissionDialog).
+	// the user decides. This branch sees every message except
+	// the loop messages handled above, and short-circuits the
+	// rest of Update. A second permission request stays on the
+	// channel until respondPermission re-arms the subscription.
 	if m.PermissionDialog != nil {
 		if k, ok := msg.(tea.KeyMsg); ok {
 			return m.handlePermissionDialogKey(k)
 		}
-		// Non-key messages (window resize, loop events) are
-		// dropped while the dialog is up. This matches the
-		// "freeze everything" decision.
+		// Other non-key messages (window resize) are dropped
+		// while the dialog is up; loop messages were handled
+		// above so the turn keeps flowing.
 		return m, nil
 	}
 
@@ -70,25 +86,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Height = msg.Height
 		m.computeLayout()
 		return m, nil
-
-	// --- Query-loop events (forwarded from program.go) ---
-	case queryEventMsg:
-		// Process the event, then re-subscribe on the per-turn
-		// channel so bubbletea keeps draining until the loop
-		// closes it.
-		mm, _ := m.handleQueryEvent(msg)
-		m = mm.(Model)
-		if m.currentEventCh != nil {
-			return m, waitForEvent(m.currentEventCh)
-		}
-		return m, nil
-
-	case loopFinishedMsg:
-		return m.handleLoopFinished(msg)
-
-	// --- Permission request from the loop (Step 5) ---
-	case permissionRequestMsg:
-		return m.openPermissionDialog(msg)
 
 	// --- Key presses ---
 	case tea.KeyMsg:
@@ -685,6 +682,12 @@ func (m Model) respondPermission(d core.PermissionDecision) (tea.Model, tea.Cmd)
 
 	if dlg.Respond != nil {
 		dlg.Respond(d)
+	}
+	// Wait for the loop's next permission request (a second
+	// tool call in the same turn). The subscription delivers one
+	// request per Cmd, so it has to be re-armed after each answer.
+	if m.bridge != nil && m.bridge.PermReqCh != nil {
+		return m, waitForPermRequest(m.bridge.PermReqCh)
 	}
 	return m, nil
 }
