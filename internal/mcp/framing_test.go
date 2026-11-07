@@ -91,7 +91,7 @@ func TestWriteFrame_RejectsUnframeableBody(t *testing.T) {
 // TestWriteFrame_RejectsOversizeBody: outbound messages share the
 // inbound cap.
 func TestWriteFrame_RejectsOversizeBody(t *testing.T) {
-	body := []byte(`{"s":"` + strings.Repeat("x", maxFrameBytes) + `"}`)
+	body := bytes.Repeat([]byte("x"), maxFrameBytes+1) // size is checked before content
 	var buf bytes.Buffer
 	_, err := writeFrame(&buf, body)
 	var ce *core.Error
