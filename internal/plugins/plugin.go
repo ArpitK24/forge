@@ -1,10 +1,14 @@
 package plugins
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
+	"sort"
+	"strings"
 	"sync"
 
 	"github.com/ArpitK24/forge/internal/core"
@@ -41,6 +45,7 @@ type PluginServer struct {
 	name        string
 	description string
 	tools       map[string]toolHandler
+	defs        map[string]ToolDef
 	mu          sync.RWMutex
 }
 
@@ -54,6 +59,7 @@ func NewPluginServer(name, description string) *PluginServer {
 		name:        name,
 		description: description,
 		tools:       make(map[string]toolHandler),
+		defs:        make(map[string]ToolDef),
 	}
 }
 
@@ -63,45 +69,69 @@ func (p *PluginServer) RegisterTool(def ToolDef, handler toolHandler) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.tools[def.Name] = handler
-	// Store schema in a way the initialize response can access it.
-	// We'll use a parallel map or embed in the handler closure.
-	// For simplicity, store the schema in the tool's metadata.
-	_ = def // schema stored implicitly for now
+	p.defs[def.Name] = def
 }
 
 // Serve starts the JSON-RPC server loop on stdin/stdout.
 // This blocks until stdin is closed or an unrecoverable error occurs.
+// A clean EOF on stdin (the host closing the pipe) returns nil.
 func (p *PluginServer) Serve() error {
-	dec := json.NewDecoder(os.Stdin)
-	enc := json.NewEncoder(os.Stdout)
+	return p.ServeIO(os.Stdin, os.Stdout)
+}
 
+// ServeIO runs the server loop over arbitrary streams. It speaks
+// the same Content-Length framing the host's StdioTransport uses
+// (writeFrame / readFrame), so a plugin built on PluginServer can
+// actually complete the initialize handshake.
+func (p *PluginServer) ServeIO(in io.Reader, out io.Writer) error {
+	r := bufio.NewReader(in)
 	for {
-		var req Request
-		if err := dec.Decode(&req); err != nil {
-			// EOF or decode error — exit cleanly.
+		body, err := readFrame(r)
+		if err != nil {
+			if isCleanEOF(err) {
+				return nil
+			}
 			return err
 		}
 
+		var req Request
 		var resp Response
 		resp.JSONRPC = JSONRPCVersion
-		resp.ID = req.ID
-
-		switch req.Method {
-		case MethodInitialize:
-			resp.Result = p.handleInitialize()
-		case MethodToolsCall:
-			resp.Result, resp.Error = p.handleToolsCall(req.Params)
-		default:
-			resp.Error = &RPCError{
-				Code:    -32601,
-				Message: "Method not found: " + req.Method,
+		if err := json.Unmarshal(body, &req); err != nil {
+			resp.Error = &RPCError{Code: -32700, Message: "parse error: " + err.Error()}
+		} else {
+			resp.ID = req.ID
+			switch req.Method {
+			case MethodInitialize:
+				resp.Result = p.handleInitialize()
+			case MethodToolsCall:
+				resp.Result, resp.Error = p.handleToolsCall(req.Params)
+			default:
+				resp.Error = &RPCError{
+					Code:    -32601,
+					Message: "Method not found: " + req.Method,
+				}
+			}
+			if req.ID == 0 {
+				// Notification: JSON-RPC says no response.
+				continue
 			}
 		}
 
-		if err := enc.Encode(resp); err != nil {
+		data, err := json.Marshal(resp)
+		if err != nil {
+			return err
+		}
+		if _, err := writeFrame(out, data); err != nil {
 			return err
 		}
 	}
+}
+
+// isCleanEOF reports whether err means the host closed stdin
+// between messages (a clean shutdown) rather than mid-frame.
+func isCleanEOF(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "read frame header: unexpected EOF")
 }
 
 // serverInfo is the server info in initialize response.
@@ -129,15 +159,27 @@ func (p *PluginServer) handleInitialize() json.RawMessage {
 		Tools           []toolInfo `json:"tools"`
 	}
 
-	var tools []toolInfo
+	names := make([]string, 0, len(p.tools))
 	for name := range p.tools {
-		// We can't easily extract the schema from the handler closure.
-		// For MVP, we use a minimal schema. The plugin author
-		// can use a more sophisticated registration if needed.
+		names = append(names, name)
+	}
+	sort.Strings(names) // deterministic tool order
+
+	tools := make([]toolInfo, 0, len(names))
+	for _, name := range names {
+		def := p.defs[name]
+		desc := def.Description
+		if desc == "" {
+			desc = "Plugin tool: " + name
+		}
+		schema := def.InputSchema
+		if len(schema) == 0 {
+			schema = json.RawMessage(`{"type":"object","properties":{}}`)
+		}
 		tools = append(tools, toolInfo{
 			Name:        name,
-			Description: "Plugin tool: " + name,
-			InputSchema: json.RawMessage(`{"type":"object","properties":{}}`),
+			Description: desc,
+			InputSchema: schema,
 		})
 	}
 
@@ -227,12 +269,10 @@ func (t *PluginTool) Execute(ctx context.Context, input json.RawMessage, tc *too
 		Name:      t.name,
 		Arguments: input,
 	}
-	params, err := json.Marshal(callParams)
-	if err != nil {
-		return tools.ToolResult{IsError: true, Text: "marshal call params: " + err.Error()}
-	}
-
-	resp, err := t.client.call(ctx, MethodToolsCall, params)
+	// Pass the struct, not pre-marshalled bytes: client.call
+	// marshals params itself, and []byte would be re-encoded as a
+	// base64 JSON string the plugin can't decode.
+	resp, err := t.client.call(ctx, MethodToolsCall, callParams)
 	if err != nil {
 		return tools.ToolResult{IsError: true, Text: "plugin call failed: " + err.Error()}
 	}
