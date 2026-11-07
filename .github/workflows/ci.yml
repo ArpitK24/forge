@@ -61,7 +61,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: "1.26.10"
           cache: true
@@ -136,7 +136,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           # Pin to the version the project targets. AGENTS.md §1
           # says Go 1.26.10; the action's `go-version` accepts a
