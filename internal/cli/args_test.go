@@ -169,3 +169,27 @@ func TestParseInterspersedFlagErrors(t *testing.T) {
 		})
 	}
 }
+
+// TestUsageMatchesImplementation guards against --help advertising
+// things the binary does not do.
+func TestUsageMatchesImplementation(t *testing.T) {
+	u := Usage("forge")
+	for _, s := range []string{
+		"acp",               // no ACP subcommand exists; "forge acp" sends "acp" as a prompt
+		"ANTHROPIC_API_KEY", // never read anywhere
+	} {
+		if strings.Contains(u, s) {
+			t.Errorf("Usage advertises %q, which is not implemented", s)
+		}
+	}
+	for _, s := range []string{
+		"NVIDIA_API_KEY", // read by headless and the TUI
+		"OPENAI_API_KEY", // read by headless and the TUI
+		"FORGE_CWD",      // read by resolveCwd
+		"\n  --  ",       // end-of-flags marker
+	} {
+		if !strings.Contains(u, s) {
+			t.Errorf("Usage missing %q", s)
+		}
+	}
+}
