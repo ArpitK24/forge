@@ -221,8 +221,14 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 // Returns an error if the API key is missing; the caller decides
 // whether to surface it or proceed without a provider (the TUI
 // still works for /commands).
+//
+// The base URL follows headless precedence: --api-base
+// (cfg.APIBase) → FORGE_API_BASE → the provider default.
 func buildProvider(cfg *core.Config, logger *slog.Logger) (api.Provider, error) {
 	apiKey := resolveAPIKey(cfg)
+	if cfg != nil && cfg.APIBase == "" {
+		cfg.APIBase = os.Getenv("FORGE_API_BASE")
+	}
 	return selector.Select(cfg, apiKey)
 }
 
