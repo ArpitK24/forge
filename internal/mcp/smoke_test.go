@@ -27,7 +27,7 @@
 //
 // To run locally:
 //
-//   go test -count=1 -tags mcp_smoke -run TestMcp ./internal/mcp/...
+//	go test -count=1 -tags mcp_smoke -run TestMcp ./internal/mcp/...
 //
 // The CI step in .github/workflows/ci.yml runs the same
 // command on ubuntu-latest (and macOS / Windows runners get

@@ -57,10 +57,18 @@ func TestOpenPicker_PopulatesFromDisk(t *testing.T) {
 	if len(p.Entries) != 3 {
 		t.Fatalf("len(Entries) = %d, want 3", len(p.Entries))
 	}
-	want := []string{"c", "b", "a"} // most-recent first
-	for i, id := range want {
-		if p.Entries[i].ID != id {
-			t.Errorf("Entries[%d].ID = %q, want %q", i, p.Entries[i].ID, id)
+	// The picker must mirror ListSessions' order (most-recent
+	// first). Compare against ListSessions rather than a fixed
+	// slice: SaveSession stamps UpdatedAt with time.Now(), and on
+	// Windows' coarse clock two saves can tie, which ListSessions
+	// breaks by ID.
+	sessions, err := core.ListSessions()
+	if err != nil {
+		t.Fatalf("ListSessions: %v", err)
+	}
+	for i, s := range sessions {
+		if p.Entries[i].ID != s.ID {
+			t.Errorf("Entries[%d].ID = %q, want %q", i, p.Entries[i].ID, s.ID)
 		}
 	}
 }

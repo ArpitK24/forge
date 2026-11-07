@@ -55,9 +55,9 @@ type serverTool struct {
 // cfg.McpServers; failed servers leave no entry but their
 // error is captured in Manager.errors.
 type serverState struct {
-	name    string
-	cli     *client
-	tools   []serverTool // snapshot at Connect time
+	name     string
+	cli      *client
+	tools    []serverTool    // snapshot at Connect time
 	rawTools json.RawMessage // verbatim result.tools array, kept for tools.go to wrap
 }
 
@@ -69,7 +69,7 @@ type serverState struct {
 type Manager struct {
 	cfg     []core.McpServerConfig // copy of what the user asked for
 	log     *slog.Logger
-	mu      sync.RWMutex           // guards servers and errors
+	mu      sync.RWMutex // guards servers and errors
 	servers map[string]*serverState
 	errors  map[string]error // per-server connect errors
 }
@@ -296,9 +296,9 @@ func (m *Manager) Close(ctx context.Context) error {
 // initializeParams is what we send on the wire for "initialize".
 // Shape per spec §2.1 (Lifecycle).
 type initializeParams struct {
-	ProtocolVersion string                 `json:"protocolVersion"`
-	Capabilities    map[string]any         `json:"capabilities"`
-	ClientInfo      implementationInfo     `json:"clientInfo"`
+	ProtocolVersion string             `json:"protocolVersion"`
+	Capabilities    map[string]any     `json:"capabilities"`
+	ClientInfo      implementationInfo `json:"clientInfo"`
 }
 
 // implementationInfo identifies a client or server. Both
@@ -349,9 +349,9 @@ type toolDescriptor struct {
 // without losing any field the descriptor struct didn't
 // capture.
 type toolsListResult struct {
-	Tools     []toolDescriptor `json:"tools"`
-	NextCursor string          `json:"nextCursor,omitempty"`
-	RawTools   json.RawMessage `json:"-"`
+	Tools      []toolDescriptor `json:"tools"`
+	NextCursor string           `json:"nextCursor,omitempty"`
+	RawTools   json.RawMessage  `json:"-"`
 }
 
 // UnmarshalJSON on toolsListResult captures the verbatim
@@ -362,8 +362,8 @@ func (t *toolsListResult) UnmarshalJSON(b []byte) error {
 	// Decode into a parallel struct that retains the raw
 	// array as well as the typed entries.
 	var aux struct {
-		Tools     []toolDescriptor `json:"tools"`
-		NextCursor string          `json:"nextCursor,omitempty"`
+		Tools      []toolDescriptor `json:"tools"`
+		NextCursor string           `json:"nextCursor,omitempty"`
 	}
 	if err := json.Unmarshal(b, &aux); err != nil {
 		return err

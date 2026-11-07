@@ -48,9 +48,9 @@ type FakeProvider struct {
 func NewFakeProvider(scripts ...[]StreamEvent) *FakeProvider {
 	return &FakeProvider{
 		InfoValue: ModelInfo{
-			ID:            "fake-model",
-			Provider:      "fake",
-			ContextWindow: 128_000,
+			ID:              "fake-model",
+			Provider:        "fake",
+			ContextWindow:   128_000,
 			SupportsToolUse: true,
 		},
 		Scripts: scripts,
@@ -169,11 +169,11 @@ func ScriptTextResponse(text string) []StreamEvent {
 
 // ScriptToolCallThenText returns a two-turn canned script:
 //
-//   1. A tool-call turn that invokes name(args). The query loop
-//      is expected to run the tool, append the result, and call
-//      Stream again.
-//   2. A text-only turn that emits finalText — the "after the
-//      tool ran" answer.
+//  1. A tool-call turn that invokes name(args). The query loop
+//     is expected to run the tool, append the result, and call
+//     Stream again.
+//  2. A text-only turn that emits finalText — the "after the
+//     tool ran" answer.
 //
 // Call args as the JSON-encoded tool input (e.g.
 // `[]byte(`{"command":"echo hi"}`)`).

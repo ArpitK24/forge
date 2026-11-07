@@ -39,22 +39,22 @@ type Transport interface {
 // Recv is single-goroutine (only the per-plugin client's
 // read goroutine calls it). Close is idempotent.
 type StdioTransport struct {
-	cfg       PluginConfig
-	mu        sync.Mutex // serializes Send
-	cmd       *exec.Cmd
-	stdin     io.WriteCloser
-	stdout    *bufio.Reader
-	stderr    io.ReadCloser
-	closed    bool
+	cfg        PluginConfig
+	mu         sync.Mutex // serializes Send
+	cmd        *exec.Cmd
+	stdin      io.WriteCloser
+	stdout     *bufio.Reader
+	stderr     io.ReadCloser
+	closed     bool
 	stderrDone chan struct{}
 }
 
 // PluginConfig holds the configuration for a single plugin.
 type PluginConfig struct {
-	Name      string
-	Path      string // absolute path to the plugin binary
-	Args      []string
-	Env       map[string]string
+	Name string
+	Path string // absolute path to the plugin binary
+	Args []string
+	Env  map[string]string
 }
 
 // NewStdioTransport constructs a transport but does NOT
@@ -144,7 +144,17 @@ func (t *StdioTransport) Send(body []byte) error {
 // Recv blocks until one framed message arrives or ctx is
 // cancelled.
 func (t *StdioTransport) Recv(ctx context.Context) ([]byte, error) {
-	if t.stdout == nil {
+	// Snapshot the reader under the lock: Close runs concurrently
+	// with the client's readLoop, and reading t.stdout unguarded
+	// was a data race (and a nil-pointer panic when Close won).
+	t.mu.Lock()
+	stdout := t.stdout
+	closed := t.closed
+	t.mu.Unlock()
+	if closed {
+		return nil, core.Newf(core.KindMCP, "plugin %q: recv on closed transport", t.cfg.Name)
+	}
+	if stdout == nil {
 		return nil, core.Newf(core.KindMCP, "plugin %q: recv before start", t.cfg.Name)
 	}
 	type result struct {
@@ -153,7 +163,7 @@ func (t *StdioTransport) Recv(ctx context.Context) ([]byte, error) {
 	}
 	ch := make(chan result, 1)
 	go func() {
-		body, err := readFrame(t.stdout)
+		body, err := readFrame(stdout)
 		ch <- result{body, err}
 	}()
 	select {
@@ -161,7 +171,7 @@ func (t *StdioTransport) Recv(ctx context.Context) ([]byte, error) {
 		return nil, core.Wrap(core.KindCancelled, ctx.Err(), fmt.Sprintf("plugin %q: recv cancelled", t.cfg.Name))
 	case r := <-ch:
 		if r.err != nil {
-			var kind core.ErrorKind = core.KindMCP
+			kind := core.KindMCP
 			var ce *core.Error
 			if errors.As(r.err, &ce) {
 				kind = ce.Kind
@@ -233,7 +243,8 @@ func (t *StdioTransport) Close() error {
 
 	t.cmd = nil
 	t.stdin = nil
-	t.stdout = nil
+	// t.stdout is kept: an in-flight Recv still holds it and will
+	// see EOF now that the pipe is closed.
 	t.stderr = nil
 	return nil
 }

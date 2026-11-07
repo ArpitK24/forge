@@ -70,6 +70,11 @@ type client struct {
 	// cancel.
 	mu      sync.Mutex
 	pending map[int64]chan pendingResp
+	// deadErr is set (under mu) once the read loop has exited.
+	// After that no response can ever arrive, so call() must
+	// fail fast instead of registering a pending entry that
+	// nobody will answer.
+	deadErr error
 
 	// notifyCh is the channel for server-initiated notifications
 	// (id == 0). Reserved for a future step (sampling requests,
@@ -204,6 +209,9 @@ func (c *client) readLoop(ctx context.Context) {
 func (c *client) failPending(err error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	if c.deadErr == nil {
+		c.deadErr = err
+	}
 	for id, ch := range c.pending {
 		ch <- pendingResp{err: err}
 		delete(c.pending, id)
@@ -251,6 +259,11 @@ func (c *client) call(ctx context.Context, method string, params, result any) er
 	if c.closed.Load() {
 		c.mu.Unlock()
 		return core.Newf(core.KindMCP, "mcp %q: call on closed client", c.name)
+	}
+	if c.deadErr != nil {
+		err := c.deadErr
+		c.mu.Unlock()
+		return core.Wrap(core.KindMCP, err, fmt.Sprintf("mcp %q: connection lost", c.name))
 	}
 	c.pending[id] = ch
 	c.mu.Unlock()

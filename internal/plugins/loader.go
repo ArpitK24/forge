@@ -128,11 +128,11 @@ func loadPluginsFromDir(ctx context.Context, root string, log *slog.Logger) ([]t
 
 // PluginManifest is the plugin.json schema.
 type PluginManifest struct {
-	Name        string   `json:"name"`
-	Version     string   `json:"version"`
-	Description string   `json:"description"`
-	Entrypoint  string   `json:"entrypoint"` // relative to plugin dir
-	Args        []string `json:"args,omitempty"`
+	Name        string            `json:"name"`
+	Version     string            `json:"version"`
+	Description string            `json:"description"`
+	Entrypoint  string            `json:"entrypoint"` // relative to plugin dir
+	Args        []string          `json:"args,omitempty"`
 	Env         map[string]string `json:"env,omitempty"`
 }
 
@@ -158,10 +158,10 @@ func readManifest(path string) (PluginManifest, error) {
 // and wraps the returned tools as tools.Tool.
 func loadPlugin(ctx context.Context, manifest PluginManifest, entrypoint string, log *slog.Logger) ([]tools.Tool, error) {
 	cfg := PluginConfig{
-		Name:      manifest.Name,
-		Path:      entrypoint,
-		Args:      manifest.Args,
-		Env:       manifest.Env,
+		Name: manifest.Name,
+		Path: entrypoint,
+		Args: manifest.Args,
+		Env:  manifest.Env,
 	}
 	transport := NewStdioTransport(cfg)
 	cli := newClient(manifest.Name, transport, log)
@@ -211,10 +211,10 @@ type initializeParams struct {
 
 // initializeResult is the response from initialize.
 type initializeResult struct {
-	ProtocolVersion string      `json:"protocolVersion"`
-	Capabilities    struct{}    `json:"capabilities"`
-	ServerInfo      serverInfo  `json:"serverInfo"`
-	Tools           []toolInfo  `json:"tools"`
+	ProtocolVersion string     `json:"protocolVersion"`
+	Capabilities    struct{}   `json:"capabilities"`
+	ServerInfo      serverInfo `json:"serverInfo"`
+	Tools           []toolInfo `json:"tools"`
 }
 
 // MethodInitialize is the JSON-RPC method for initialization.

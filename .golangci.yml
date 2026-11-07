@@ -1,0 +1,28 @@
+# golangci-lint v2 config. Run locally with: golangci-lint run ./...
+version: "2"
+
+linters:
+  # errcheck, govet, ineffassign, staticcheck, unused
+  default: standard
+  settings:
+    errcheck:
+      # Best-effort cleanup and terminal writes; failures here are
+      # not actionable and checking them adds noise.
+      exclude-functions:
+        - (io.Closer).Close
+        - (*os.File).Close
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - io.WriteString
+  exclusions:
+    presets:
+      - std-error-handling
+    rules:
+      # Tests may ignore errors from setup helpers.
+      - path: _test\.go
+        linters: [errcheck]
+
+formatters:
+  enable:
+    - gofmt

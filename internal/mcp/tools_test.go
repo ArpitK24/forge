@@ -7,7 +7,6 @@ import (
 	"io"
 	"log/slog"
 	"testing"
-	"time"
 
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/tools"
@@ -321,8 +320,8 @@ func TestConvertCallResult_TextOnly(t *testing.T) {
 // the loop's serializer then takes the Text branch.
 func TestConvertCallResult_ZeroBlocks(t *testing.T) {
 	cases := []struct {
-		name        string
-		isError     bool
+		name             string
+		isError          bool
 		wantNonEmptyText bool
 	}{
 		{"success-empty", false, false},
@@ -400,22 +399,4 @@ func TestMcpTool_Execute_ServerNotConnected(t *testing.T) {
 // documents the contract.
 func TestMcpTool_InterfaceCompliance(t *testing.T) {
 	var _ tools.Tool = (*mcpTool)(nil)
-}
-
-// waitForReady polls the fake until pending queue is empty,
-// proving the read goroutine drained the queued bytes. Used
-// when a test wants to know the demux finished.
-func waitForReady(t *testing.T, f *fakeTransport) {
-	t.Helper()
-	deadline := time.Now().Add(2 * time.Second)
-	for time.Now().Before(deadline) {
-		f.mu.Lock()
-		got := len(f.pending)
-		f.mu.Unlock()
-		if got == 0 {
-			return
-		}
-		time.Sleep(2 * time.Millisecond)
-	}
-	t.Fatalf("waitForReady: pending queue still has bytes after 2s")
 }

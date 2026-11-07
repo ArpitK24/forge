@@ -48,7 +48,80 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  quality:
+    name: format + lint + race + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.10"
+          cache: true
+
+      - name: gofmt check
+        # Fails if any file is not gofmt-formatted. Fix locally
+        # with `gofmt -w .`.
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "These files need gofmt -w:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.15.0
+
+      - name: Race detector + coverage
+        # The race detector needs cgo. The shipped binaries stay
+        # CGO_ENABLED=0; this only affects the test build.
+        env:
+          CGO_ENABLED: "1"
+        run: go test -race -count=1 -timeout 5m -covermode=atomic -coverprofile=coverage.out ./...
+
+      - name: Coverage summary
+        run: |
+          total="$(go tool cover -func=coverage.out | awk '/^total:/ {print $3}')"
+          echo "Total coverage: $total"
+          {
+            echo "### Test coverage: $total"
+            echo
+            echo '| Package | Coverage |'
+            echo '|---|---|'
+            go test -count=1 -cover ./... 2>/dev/null \
+              | awk '/coverage:/ {for (i=1;i<=NF;i++) if ($i=="coverage:") print "| " $2 " | " $(i+1) " |"}'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+          retention-days: 14
+
+  docker:
+    name: docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t forge:ci .
+
+      - name: Smoke test image
+        run: docker run --rm forge:ci --version
+
   ci:
     name: vet + test + build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -66,9 +139,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           # Pin to the version the project targets. AGENTS.md §1
-          # says Go 1.26.5; the action's `go-version` accepts a
+          # says Go 1.26.10; the action's `go-version` accepts a
           # patch version.
-          go-version: "1.26.5"
+          go-version: "1.26.10"
           cache: true
 
       - name: go vet

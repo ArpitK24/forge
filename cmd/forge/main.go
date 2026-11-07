@@ -59,7 +59,7 @@ func run(program string, args []string) error {
 		return nil
 	}
 	if parsed.ShowVersion {
-		fmt.Printf("%s %s\n", core.AppName, core.AppVersion)
+		fmt.Printf("%s %s (commit %s, built %s)\n", core.AppName, core.AppVersion, core.AppCommit, core.AppBuildDate)
 		fmt.Println(core.AppTagline)
 		return nil
 	}
@@ -168,9 +168,8 @@ func dumpSystemPrompt(cfg *core.Config) error {
 // Scanner with a generous buffer so multi-line pastes work; the
 // "prompt" is everything up to EOF.
 func readPromptFromStdin() (string, error) {
-	if _, err := os.Stdin.Seek(0, io.SeekStart); err != nil {
-		// stdin may be a pipe (not seekable); ignore that case.
-	}
+	// stdin may be a pipe (not seekable); a failed rewind is fine.
+	_, _ = os.Stdin.Seek(0, io.SeekStart)
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
 	var b strings.Builder

@@ -1,0 +1,7 @@
+.git
+.github
+dist
+coverage.out
+*.test
+.forge
+**/node_modules

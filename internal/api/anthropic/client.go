@@ -328,11 +328,9 @@ func convertSystem(in api.SystemPrompt) any {
 func convertMessages(in []core.Message) []wireMessage {
 	out := make([]wireMessage, 0, len(in))
 	for _, m := range in {
-		role := m.Role.String()
+		role := "assistant"
 		if m.Role == core.RoleUser {
 			role = "user"
-		} else {
-			role = "assistant"
 		}
 
 		if m.Role == core.RoleAssistant && m.HasToolUse() {

@@ -127,11 +127,11 @@ func (m Model) handleKey(k tea.KeyMsg) (tea.Model, tea.Cmd) {
 		case keyMatches(k, km.Escape):
 			return m.cancelStreaming()
 		case keyMatches(k, km.PageUp):
-			m.Viewport.LineUp(m.Viewport.Height)
+			m.Viewport.ScrollUp(m.Viewport.Height)
 			m.AutoScroll = false
 			return m, nil
 		case keyMatches(k, km.PageDown):
-			m.Viewport.LineDown(m.Viewport.Height)
+			m.Viewport.ScrollDown(m.Viewport.Height)
 			return m, nil
 		case keyMatches(k, km.CtrlQuestion):
 			m.HelpVisible = true
@@ -226,12 +226,12 @@ func (m Model) handleKey(k tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	// Scrolling.
 	if keyMatches(k, km.PageUp) {
-		m.Viewport.LineUp(m.Viewport.Height)
+		m.Viewport.ScrollUp(m.Viewport.Height)
 		m.AutoScroll = false
 		return m, nil
 	}
 	if keyMatches(k, km.PageDown) {
-		m.Viewport.LineDown(m.Viewport.Height)
+		m.Viewport.ScrollDown(m.Viewport.Height)
 		// If we've reached the bottom, re-enable auto-scroll.
 		if m.Viewport.AtBottom() {
 			m.AutoScroll = true

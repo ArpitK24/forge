@@ -20,16 +20,15 @@ import (
 // Returns the number of bytes written. Errors are propagated
 // from the underlying io.Writer.
 func writeFrame(w io.Writer, body []byte) (int, error) {
-	header := fmt.Sprintf("Content-Length: %d\r\n\r\n", len(body))
-	hN, err := io.WriteString(w, header)
+	// One Write for header+body: a frame is never split across
+	// writes, so a reader can't observe a header without its body.
+	frame := fmt.Appendf(nil, "Content-Length: %d\r\n\r\n", len(body))
+	frame = append(frame, body...)
+	n, err := w.Write(frame)
 	if err != nil {
-		return hN, core.Wrap(core.KindIO, err, "write frame header")
+		return n, core.Wrap(core.KindIO, err, "write frame")
 	}
-	bN, err := w.Write(body)
-	if err != nil {
-		return hN + bN, core.Wrap(core.KindIO, err, "write frame body")
-	}
-	return hN + bN, nil
+	return n, nil
 }
 
 // readFrame reads one Content-Length-framed message from r and

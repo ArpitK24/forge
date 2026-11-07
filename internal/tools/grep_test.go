@@ -180,9 +180,9 @@ func TestGrepHeadLimitAndOffset(t *testing.T) {
 func TestGrepTypeFilter(t *testing.T) {
 	tc, dir := readTC(t)
 	for name, content := range map[string]string{
-		"a.go":         "package main",
-		"b.txt":        "package main", // same content, wrong ext
-		"c.md":         "package main",
+		"a.go":  "package main",
+		"b.txt": "package main", // same content, wrong ext
+		"c.md":  "package main",
 	} {
 		if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0644); err != nil {
 			t.Fatalf("write %s: %v", name, err)
