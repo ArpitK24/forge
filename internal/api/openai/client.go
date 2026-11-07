@@ -197,6 +197,11 @@ func buildRequestBody(req api.Request) ([]byte, error) {
 		Model:    req.Model,
 		Stream:   true,
 		Messages: convertMessages(req.Messages),
+		// Without include_usage, OpenAI streams carry no usage
+		// at all, so input tokens (and the auto-compaction
+		// trigger that keys off them) read as zero. With it, the
+		// usage arrives in a final chunk with empty choices.
+		StreamOptions: &wireStreamOptions{IncludeUsage: true},
 	}
 	if req.System.IsString && req.System.String != "" {
 		// Prepend a system message. The OpenAI Chat Completions
@@ -240,6 +245,13 @@ type wireRequest struct {
 	Stop        []string      `json:"stop,omitempty"`
 	Tools       []wireTool    `json:"tools,omitempty"`
 	ToolChoice  any           `json:"tool_choice,omitempty"`
+	// StreamOptions asks for the final usage chunk.
+	StreamOptions *wireStreamOptions `json:"stream_options,omitempty"`
+}
+
+// wireStreamOptions is the Chat Completions stream_options object.
+type wireStreamOptions struct {
+	IncludeUsage bool `json:"include_usage"`
 }
 
 // wireMessage is the per-message wire shape. The Content field

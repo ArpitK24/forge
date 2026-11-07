@@ -25,6 +25,9 @@ All notable changes to Forge are documented here. The format follows
   an in-flight `Recv`.
 - `forge --version` can now be stamped at build time (the version was a
   const, which `-ldflags -X` cannot set).
+- OpenAI adapter: request `stream_options.include_usage` and read prompt
+  tokens from the final usage chunk, so input tokens, cost and the
+  auto-compaction trigger no longer read as zero on the default provider.
 
 ### Added
 - CI quality job: gofmt check, golangci-lint, race detector, coverage
