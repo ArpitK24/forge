@@ -63,7 +63,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26.5"
+          go-version: "1.26.10"
           cache: true
 
       - name: gofmt check
@@ -87,7 +87,7 @@ jobs:
         # CGO_ENABLED=0; this only affects the test build.
         env:
           CGO_ENABLED: "1"
-        run: go test -race -count=1 -covermode=atomic -coverprofile=coverage.out ./...
+        run: go test -race -count=1 -timeout 5m -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Coverage summary
         run: |
@@ -139,9 +139,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           # Pin to the version the project targets. AGENTS.md §1
-          # says Go 1.26.5; the action's `go-version` accepts a
+          # says Go 1.26.10; the action's `go-version` accepts a
           # patch version.
-          go-version: "1.26.5"
+          go-version: "1.26.10"
           cache: true
 
       - name: go vet
