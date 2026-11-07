@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -171,8 +172,8 @@ func TestRunWithRetryEventualSuccess(t *testing.T) {
 	if p.callsSoFar.Load() < 2 {
 		t.Errorf("provider saw %d calls, want >= 2 (one failed, one retry)", p.callsSoFar.Load())
 	}
-	// Cost was reset between attempts, so the final Summary
-	// reflects the successful attempt only.
+	// The failed attempt recorded no usage, so the cost
+	// tracker holds the successful attempt only.
 	close(events)
 	_ = events
 }
@@ -322,4 +323,123 @@ data: [DONE]
 
 	_ = client
 	_ = tc
+}
+
+// countingTool counts Execute calls so a test can prove a side
+// effect ran exactly once.
+type countingTool struct{ calls atomic.Int32 }
+
+func (c *countingTool) Name() string                          { return "Bash" }
+func (c *countingTool) Description() string                   { return "counts" }
+func (c *countingTool) PermissionLevel() core.PermissionLevel { return core.PermExecute }
+func (c *countingTool) InputSchema() json.RawMessage          { return json.RawMessage(`{"type":"object"}`) }
+func (c *countingTool) Execute(context.Context, json.RawMessage, *tools.ToolContext) tools.ToolResult {
+	c.calls.Add(1)
+	return tools.ToolResult{Text: "side effect done"}
+}
+
+// toolThen429Provider asks for a tool call while the history
+// has no tool result yet, rate-limits the first request that
+// follows a tool result, then answers with text.
+type toolThen429Provider struct {
+	mu       sync.Mutex
+	limited  bool
+	requests [][]core.Message
+}
+
+func (p *toolThen429Provider) Info() api.ModelInfo {
+	return api.ModelInfo{ID: "fake", ContextWindow: 128_000}
+}
+func (p *toolThen429Provider) Stream(_ context.Context, req api.Request) (<-chan api.StreamEvent, <-chan error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.requests = append(p.requests, append([]core.Message(nil), req.Messages...))
+	events := make(chan api.StreamEvent, 8)
+	errs := make(chan error, 1)
+	defer close(events)
+	defer close(errs)
+
+	last := req.Messages[len(req.Messages)-1]
+	hasResult := false
+	if !last.Content.IsString {
+		for _, b := range last.Content.Blocks {
+			if b.Kind == core.BlockToolResult {
+				hasResult = true
+			}
+		}
+	}
+	switch {
+	case !hasResult:
+		events <- api.EventOfMessageStart("fake", nil)
+		events <- api.EventOfBlockStart(0, core.ContentBlock{
+			Kind:    core.BlockToolUse,
+			ToolUse: &core.ToolUse{ID: "call_1", Name: "Bash", Input: []byte(`{"command":"echo >> log"}`)},
+		})
+		events <- api.EventOfMessageDelta(api.StopToolUse, nil)
+		events <- api.EventOfMessageStop()
+	case !p.limited:
+		p.limited = true
+		rateErr := &core.Error{Kind: core.KindRateLimit, RetryAfter: 1, StatusCode: 429}
+		events <- api.EventOfError(rateErr)
+		errs <- rateErr
+	default:
+		events <- api.EventOfMessageStart("fake", nil)
+		events <- api.EventOfBlockStart(0, core.TextBlock(""))
+		events <- api.EventOfBlockDelta(0, api.TextDelta("done"))
+		events <- api.EventOfBlockStop(0)
+		events <- api.EventOfMessageDelta(api.StopEndTurn, nil)
+		events <- api.EventOfMessageStop()
+	}
+	return events, errs
+}
+
+// TestRunWithRetryDoesNotReExecuteTools: a 429 that arrives after
+// a tool already ran must only re-issue the model request, with
+// the tool result still in the history.
+func TestRunWithRetryDoesNotReExecuteTools(t *testing.T) {
+	p := &toolThen429Provider{}
+	tool := &countingTool{}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	out := runWithRetry(ctx, p,
+		[]core.Message{core.NewUserText("append to log")},
+		[]tools.Tool{tool}, nil,
+		query.Config{Model: "fake", MaxTurns: 5}, nil,
+		make(chan query.Event, 256),
+		slog.New(slog.NewTextHandler(io.Discard, nil)),
+	)
+	if out.Kind != query.OutcomeEndTurn {
+		t.Fatalf("Kind = %v, want end_turn (err=%v)", out.Kind, out.Err)
+	}
+	if n := tool.calls.Load(); n != 1 {
+		t.Errorf("tool executed %d times, want 1 (retry must not re-run tools)", n)
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	retried := p.requests[len(p.requests)-1]
+	if len(retried) != 3 {
+		t.Errorf("retried request carried %d messages, want 3 (user, tool_use, tool_result)", len(retried))
+	}
+}
+
+// TestJSONRendererClearsStaleError: a failed attempt's error must
+// not survive into the json document when the retry succeeds.
+func TestJSONRendererClearsStaleError(t *testing.T) {
+	events := make(chan query.Event, 4)
+	events <- query.OutcomeEvent{Kind: query.OutcomeError, Err: core.New(core.KindRateLimit, "429")}
+	events <- query.OutcomeEvent{Kind: query.OutcomeEndTurn}
+	close(events)
+	var buf strings.Builder
+	(&jsonRenderer{w: &buf}).run(events)
+	var doc map[string]any
+	if err := json.Unmarshal([]byte(buf.String()), &doc); err != nil {
+		t.Fatalf("decode: %v (%s)", err, buf.String())
+	}
+	if doc["outcome"] != "end_turn" {
+		t.Errorf("outcome = %v, want end_turn", doc["outcome"])
+	}
+	if e, ok := doc["error"]; ok && e != "" {
+		t.Errorf("error = %v, want empty after a successful retry", e)
+	}
 }

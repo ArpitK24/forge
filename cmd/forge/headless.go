@@ -411,6 +411,9 @@ func (r *jsonRenderer) run(events <-chan query.Event) {
 			outcomeKind = e.Kind.String()
 			usage = e.Usage
 			turns = e.Turns
+			// A retried attempt's OutcomeEvent replaces the
+			// failed one, error included.
+			outcomeErr = ""
 			if e.Err != nil {
 				outcomeErr = e.Err.Error()
 			}
@@ -523,8 +526,11 @@ const headlessRetryMax = 4
 // runWithRetry wraps query.RunQueryLoop with a small retry
 // loop. On OutcomeError, it inspects the error: if it's
 // retryable (KindRateLimit, HTTP 429, HTTP 529) the loop is
-// re-run from the same starting messages; otherwise the
-// error is returned immediately.
+// resumed from the history the failed attempt reached
+// (Outcome.Messages), so only the model request is re-issued:
+// tool calls that already ran keep their results and are never
+// executed again. The remaining turn budget carries over too.
+// Non-retryable errors are returned immediately.
 //
 // The retry honors the provider's Retry-After header (in
 // seconds) when present, falling back to exponential
@@ -549,6 +555,13 @@ func runWithRetry(
 	logger *slog.Logger,
 ) query.Outcome {
 	var last query.Outcome
+	if cfg.MaxTurns <= 0 {
+		cfg.MaxTurns = core.DefaultMaxTurns
+	}
+	if cfg.CompactState == nil {
+		// One session: the compaction breaker spans attempts.
+		cfg.CompactState = &query.CompactState{}
+	}
 	for attempt := 0; attempt < headlessRetryMax; attempt++ {
 		last = query.RunQueryLoop(ctx, provider, messages, toolsList, toolCtx, cfg, cost, events)
 		if last.Kind != query.OutcomeError {
@@ -558,6 +571,18 @@ func runWithRetry(
 		// *core.Error; nil-receiver methods (e.g.
 		// IsRetryable) are safe to call.
 		if last.Err == nil || !last.Err.IsRetryable() {
+			return last
+		}
+		// Resume where the failed attempt stopped. Its
+		// history already holds every assistant turn and
+		// tool_result, so the retry only re-sends the model
+		// request; restarting from the original prompt would
+		// run the tools (and their side effects) again.
+		if len(last.Messages) > 0 {
+			messages = last.Messages
+		}
+		cfg.MaxTurns -= last.Turns
+		if cfg.MaxTurns <= 0 {
 			return last
 		}
 		// Compute the delay. If the provider told us
@@ -578,14 +603,10 @@ func runWithRetry(
 			"delay", delay,
 			"err_kind", last.Err.Kind,
 		)
-		// Reset the cost tracker for the next attempt so
-		// the final summary reflects only the successful
-		// attempt. Reset is exposed as a public method on
-		// CostTracker; the loop's own AddUsage calls are
-		// what we want to clear.
-		if cost != nil {
-			cost.Reset()
-		}
+		// The cost tracker is NOT reset: turns completed
+		// before the error were really spent and are kept in
+		// the resumed history; the failed request itself
+		// recorded no usage.
 		select {
 		case <-ctx.Done():
 			last.Kind = query.OutcomeCancelled

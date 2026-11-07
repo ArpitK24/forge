@@ -43,6 +43,11 @@ All notable changes to Forge are documented here. The format follows
   `is_error` tool results ("permission denied" / "unknown tool") and the
   loop continues, as the README describes, instead of ending the session
   silently. `MaxTurns` still bounds a model that keeps retrying.
+- Headless retry after a 429/529 resumes from the history the failed
+  attempt reached and only re-issues the model request; it no longer
+  restarts from the original prompt and re-runs tools that already ran
+  (side effects twice, history lost). The json output's `error` field is
+  cleared when the retry succeeds.
 
 ### Added
 - CI quality job: gofmt check, golangci-lint, race detector, coverage
