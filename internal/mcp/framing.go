@@ -41,6 +41,7 @@ const maxFrameBytes = 32 << 20 // 32 MiB
 // strings, so compaction removes every raw newline). A body that
 // still cannot be put on one line is rejected rather than sent,
 // because a stray newline would desynchronize the peer's reader.
+// Bodies over maxFrameBytes are rejected too.
 //
 // The message and its terminator go out in a single Write so a
 // concurrent writer sharing the pipe can never split them.
@@ -56,9 +57,15 @@ func writeFrame(w io.Writer, body []byte) (int, error) {
 	if len(bytes.TrimSpace(body)) == 0 {
 		return 0, core.New(core.KindMCP, "write frame: empty message")
 	}
-	msg := make([]byte, 0, len(body)+1)
-	msg = append(msg, body...)
-	msg = append(msg, '\n')
+	if len(body) > maxFrameBytes {
+		// Same cap as inbound: a peer using a similar limit
+		// would drop the message anyway.
+		return 0, core.Newf(core.KindMCP, "write frame: message is %d bytes (max %d)", len(body), maxFrameBytes)
+	}
+	// The full slice expression caps body's capacity, so append
+	// copies instead of writing the newline into the caller's
+	// backing array.
+	msg := append(body[:len(body):len(body)], '\n')
 	n, err := w.Write(msg)
 	if err != nil {
 		return n, core.Wrap(core.KindIO, err, "write frame")

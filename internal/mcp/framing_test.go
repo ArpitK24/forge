@@ -88,6 +88,38 @@ func TestWriteFrame_RejectsUnframeableBody(t *testing.T) {
 	}
 }
 
+// TestWriteFrame_RejectsOversizeBody: outbound messages share the
+// inbound cap.
+func TestWriteFrame_RejectsOversizeBody(t *testing.T) {
+	body := []byte(`{"s":"` + strings.Repeat("x", maxFrameBytes) + `"}`)
+	var buf bytes.Buffer
+	_, err := writeFrame(&buf, body)
+	var ce *core.Error
+	if !errors.As(err, &ce) || ce.Kind != core.KindMCP {
+		t.Fatalf("err = %v, want KindMCP", err)
+	}
+	if buf.Len() != 0 {
+		t.Errorf("wrote %d bytes; want nothing", buf.Len())
+	}
+}
+
+// TestWriteFrame_DoesNotMutateCallerBuffer: appending the newline
+// must not scribble into spare capacity of the caller's slice.
+func TestWriteFrame_DoesNotMutateCallerBuffer(t *testing.T) {
+	backing := []byte(`{"a":1}XXXX`)
+	body := backing[:7]
+	var buf bytes.Buffer
+	if _, err := writeFrame(&buf, body); err != nil {
+		t.Fatalf("writeFrame: %v", err)
+	}
+	if string(backing) != `{"a":1}XXXX` {
+		t.Errorf("caller buffer modified: %q", backing)
+	}
+	if buf.String() != "{\"a\":1}\n" {
+		t.Errorf("wire = %q", buf.String())
+	}
+}
+
 // TestWriteReadRoundTrip: a body written via writeFrame is
 // recovered exactly by readFrame, across sizes that cross the
 // bufio buffer boundary (64 KiB in StdioTransport) several times.
