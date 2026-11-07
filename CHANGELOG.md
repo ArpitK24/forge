@@ -36,6 +36,9 @@ All notable changes to Forge are documented here. The format follows
   model instead of a hard-coded NIM model that does not exist on
   Anthropic/OpenAI, so compaction no longer always fails off NIM.
   `query.Config.SummaryModel` can override it.
+- Compaction no longer splits a tool call from its result: the head/tail
+  cut moves earlier when the tail would start with a `tool_result`, which
+  providers reject once its `tool_use` has been summarized.
 
 ### Added
 - CI quality job: gofmt check, golangci-lint, race detector, coverage

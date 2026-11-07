@@ -169,7 +169,12 @@ func CompactConversation(
 		// is the floor: everything is tail. Return unchanged.
 		return messages, nil
 	}
-	cutoff := len(messages) - core.AutoCompactTailKeep
+	cutoff := safeCompactCutoff(messages, len(messages)-core.AutoCompactTailKeep)
+	if cutoff <= 0 {
+		// Everything before the cut belongs to one tool
+		// exchange; nothing can be summarized on its own.
+		return messages, nil
+	}
 	head := make([]core.Message, cutoff)
 	copy(head, messages[:cutoff])
 	tail := messages[cutoff:]
@@ -188,6 +193,30 @@ func CompactConversation(
 	out = append(out, summaryMsg)
 	out = append(out, tail...)
 	return out, nil
+}
+
+// safeCompactCutoff moves a head/tail cut earlier until the tail
+// does not start with a tool_result. Starting the tail there would
+// summarize away the tool_use it answers, leaving an orphaned
+// tool_result that providers reject with a 400.
+func safeCompactCutoff(messages []core.Message, cutoff int) int {
+	for cutoff > 0 && cutoff < len(messages) && hasToolResult(messages[cutoff]) {
+		cutoff--
+	}
+	return cutoff
+}
+
+// hasToolResult reports whether m carries a tool_result block.
+func hasToolResult(m core.Message) bool {
+	if m.Content.IsString {
+		return false
+	}
+	for _, b := range m.Content.Blocks {
+		if b.Kind == core.BlockToolResult {
+			return true
+		}
+	}
+	return false
 }
 
 // buildSummaryMessage wraps the summary text in the
