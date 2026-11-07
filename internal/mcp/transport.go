@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"context"
-	"io"
 )
 
 // Transport is the seam between a per-server client and the
@@ -48,11 +47,3 @@ var (
 	_ Transport = (*StdioTransport)(nil)
 	_ Transport = (*HTTPTransport)(nil)
 )
-
-// nopCloser is used by transports that don't expose a
-// stream to Close separately — saves an import cycle.
-type nopCloser struct {
-	io.Reader
-}
-
-func (nopCloser) Close() error { return nil }

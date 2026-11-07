@@ -575,17 +575,10 @@ func TestClient_OrphanResponseExitsReadLoop(t *testing.T) {
 	// should fail (the read goroutine has exited, so any
 	// future response is undeliverable, and the client is
 	// effectively dead).
-	deadline := time.Now().Add(2 * time.Second)
-	for time.Now().Before(deadline) {
-		var discard any
-		_ = cli.call(context.Background(), "ping", nil, &discard)
-		if cli.closed.Load() {
-			break
-		}
-		// Without a follow-up response queued, call hangs —
-		// close is the best signal.
-		break
-	}
+	// One follow-up call: without a queued response it fails or
+	// returns; close below is the real signal.
+	var discard any
+	_ = cli.call(context.Background(), "ping", nil, &discard)
 
 	// Cleanup: cli.close should be safe to call even if
 	// the read loop already exited.

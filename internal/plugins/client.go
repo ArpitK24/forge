@@ -7,15 +7,9 @@ import (
 	"log/slog"
 	"sync"
 	"sync/atomic"
-	"time"
 
 	"github.com/ArpitK24/forge/internal/core"
 )
-
-// closeTimeout is how long the client's read goroutine waits
-// to drain on transport errors. Once exceeded, the goroutine
-// exits and any pending callers see a clean error.
-const closeTimeout = 2 * time.Second
 
 // pendingResp is what a single call() awaits on its per-id
 // channel. The response value is the JSON-RPC envelope; the
@@ -208,7 +202,7 @@ func (c *client) call(ctx context.Context, method string, params any) (Response,
 }
 
 // notify sends a JSON-RPC notification (no response expected).
-func (c *client) notify(ctx context.Context, method string, params any) error {
+func (c *client) notify(ctx context.Context, method string, params any) error { //nolint:unused // reserved for plugin notifications
 	req := Request{
 		JSONRPC: JSONRPCVersion,
 		Method:  method,

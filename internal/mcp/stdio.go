@@ -198,7 +198,7 @@ func (t *StdioTransport) Recv(ctx context.Context) ([]byte, error) {
 			// by framing_test.go). If somehow it isn't, fall
 			// back to KindMCP — the peer's framing was malformed
 			// enough to make our classifier not run.
-			var kind core.ErrorKind = core.KindMCP
+			kind := core.KindMCP
 			var ce *core.Error
 			if errors.As(r.err, &ce) {
 				kind = ce.Kind

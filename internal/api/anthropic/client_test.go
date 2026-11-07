@@ -509,7 +509,7 @@ func TestClientContextCancelled(t *testing.T) {
 	})
 
 	// Cancel after the server has sent the first event.
-	_, _ = <-events
+	<-events
 	cancel()
 
 	// Drain.

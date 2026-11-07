@@ -79,18 +79,3 @@ func ExecuteCommand(ctx context.Context, raw string, cctx *CommandContext) *Comm
 	res := cmd.Execute(ctx, args, cctx)
 	return &res
 }
-
-// parseSubcommand splits args into a leading sub-word and the rest.
-// Used by commands like `/goal pause` and `/mcp list`. Returns the
-// sub-command (lowercased) and the remainder (untrimmed leading
-// whitespace already stripped). Empty input → ("", "").
-func parseSubcommand(args string) (sub, rest string) {
-	args = strings.TrimSpace(args)
-	if args == "" {
-		return "", ""
-	}
-	if i := strings.IndexAny(args, " \t"); i >= 0 {
-		return strings.ToLower(args[:i]), strings.TrimSpace(args[i+1:])
-	}
-	return strings.ToLower(args), ""
-}

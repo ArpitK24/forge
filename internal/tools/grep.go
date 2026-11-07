@@ -530,7 +530,7 @@ func grepRenderContent(window []grepMatch, absRoot string, before, after int, tr
 		_ = after
 	}
 	if truncated {
-		sb.WriteString(fmt.Sprintf("\n[truncated: showing first %d matches; pass head_limit/offset to paginate]", headLimit))
+		fmt.Fprintf(&sb, "\n[truncated: showing first %d matches; pass head_limit/offset to paginate]", headLimit)
 	}
 	return ToolResult{
 		Text: sb.String(),

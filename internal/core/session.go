@@ -131,7 +131,7 @@ func DeriveTitle(msgs []Message) string {
 		// Collapse internal whitespace (newlines, tabs, runs
 		// of spaces) into single spaces.
 		text = strings.Join(strings.Fields(text), " ")
-		return truncateTitle(text, 60)
+		return truncateTitle(text, titleRuneCap)
 	}
 	return ""
 }

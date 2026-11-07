@@ -9,6 +9,6 @@ import "os"
 // (SIGTERM to the process group) directly and never
 // calls this function; it exists only so the symbol
 // is available to the Windows-only build of bash.go.
-func sendCtrlBreakToProcessGroup(p *os.Process) error {
+func sendCtrlBreakToProcessGroup(p *os.Process) error { //nolint:unused // referenced only by the Windows build
 	return nil
 }

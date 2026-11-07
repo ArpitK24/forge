@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -14,7 +13,6 @@ import (
 	"github.com/ArpitK24/forge/internal/commands"
 	"github.com/ArpitK24/forge/internal/core"
 	"github.com/ArpitK24/forge/internal/query"
-	"github.com/ArpitK24/forge/internal/tools"
 )
 
 // renderedMessage is a message the TUI displays in the scrollable
@@ -265,33 +263,10 @@ type permRequest struct {
 	RespondCh chan core.PermissionDecision
 }
 
-// appendMessage adds a rendered message to the model's list and
-// scrolls to the end if AutoScroll is on. Called from Update.
-func (m Model) appendMessage(msg renderedMessage) (Model, tea.Cmd) {
-	m.Messages = append(m.Messages, msg)
-	if m.AutoScroll {
-		m.GotoBottom()
-	}
-	return m, nil
-}
-
-// scrollToBottom forces the viewport to the end.
-func (m *Model) scrollToBottom() {
-	if m.Viewport.TotalLineCount() > 0 {
-		m.Viewport.GotoBottom()
-	}
-}
-
 // GotoBottom is a convenience that sets AutoScroll and scrolls.
 func (m *Model) GotoBottom() {
 	m.AutoScroll = true
 	m.Viewport.GotoBottom()
-}
-
-// setModelStatus updates the status line and triggers a re-render.
-func (m Model) setModelStatus(format string, args ...any) (Model, tea.Cmd) {
-	m.Status = fmt.Sprintf(format, args...)
-	return m, nil
 }
 
 // SessionPickerState is the in-TUI sessions browser overlay
@@ -322,26 +297,6 @@ func (m *Model) effectiveModel() string {
 		return m.Config.EffectiveModel()
 	}
 	return core.DefaultModel
-}
-
-// buildQueryConfig maps the TUI's core.Config to a query.Config.
-func (m *Model) buildQueryConfig(systemPrompt string) query.Config {
-	if m.Config == nil {
-		return query.Config{}
-	}
-	return query.Config{
-		Model:              m.effectiveModel(),
-		MaxTokens:          m.Config.EffectiveMaxTokens(),
-		SystemPrompt:       systemPrompt,
-		AppendSystemPrompt: m.Config.AppendSystemPrompt,
-		MaxTurns:           m.Config.EffectiveMaxTurns(),
-	}
-}
-
-// ensureTools returns the tool list. In Phase 3 this is always
-// tools.AllTools(); Phase 4 adds MCP tools.
-func (m *Model) ensureTools() []tools.Tool {
-	return tools.AllTools()
 }
 
 // init enters bubbletea's Init lifecycle. We don't need to do

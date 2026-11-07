@@ -161,7 +161,7 @@ func (t *StdioTransport) Recv(ctx context.Context) ([]byte, error) {
 		return nil, core.Wrap(core.KindCancelled, ctx.Err(), fmt.Sprintf("plugin %q: recv cancelled", t.cfg.Name))
 	case r := <-ch:
 		if r.err != nil {
-			var kind core.ErrorKind = core.KindMCP
+			kind := core.KindMCP
 			var ce *core.Error
 			if errors.As(r.err, &ce) {
 				kind = ce.Kind
