@@ -2,6 +2,12 @@
 
 > **A context engine for code, in your terminal.**
 
+[![CI](https://github.com/ArpitK24/forge/actions/workflows/ci.yml/badge.svg)](https://github.com/ArpitK24/forge/actions/workflows/ci.yml)
+[![Security](https://github.com/ArpitK24/forge/actions/workflows/security.yml/badge.svg)](https://github.com/ArpitK24/forge/actions/workflows/security.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ArpitK24/forge)](https://goreportcard.com/report/github.com/ArpitK24/forge)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/ArpitK24/forge)](go.mod)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 Forge is a coding agent that gives a language model the **full working context** of your project — file tree, environment, git state, memory files, system prompt, and the conversation history — and turns that context into actions. It runs in your terminal, talks to any OpenAI-compatible API, and ships as a single static binary you can drop on any machine.
 
 Most agents treat context as an afterthought: a system prompt, a tool result, repeat. Forge treats it as the primary product. The system prompt is *assembled* per-run (env + git + `FORGE.md` discovery, layered on top of the user's overrides). Tool results are streamed, structured, and tagged with read-only intent. Every graceful exit writes the conversation to `~/.forge/conversations/` so the next session can pick it up. The point isn't to be a cleverer model — it's to make whatever model you're using *see more of what's actually going on*.
@@ -53,6 +59,15 @@ dependencies. Forge supports Windows, Linux, and macOS
 (intel and Apple Silicon); CI on every push to `main`
 re-runs `go vet`, `go test`, and `scripts/build.sh` on
 all three operating systems.
+
+#### Or run it in Docker
+
+```bash
+docker build -t forge .
+docker run -it --rm -v "$PWD":/workspace -e FORGE_API_KEY forge
+```
+
+The image mounts your project at `/workspace` and runs as a non-root user.
 
 ### 2. Set an API key
 
@@ -289,4 +304,6 @@ platform's signal is independently useful.
 
 ## License
 
-Internal project. All rights reserved until a public license is chosen.
+Forge is licensed under the [Apache License 2.0](LICENSE). See [NOTICE](NOTICE).
+
+Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Security issues: [SECURITY.md](SECURITY.md).
