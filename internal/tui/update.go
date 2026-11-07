@@ -285,7 +285,8 @@ func (m Model) submitInput() (tea.Model, tea.Cmd) {
 	m.StreamBuffer = ""
 	m.Status = "Thinking…"
 
-	return m, m.startQueryLoop()
+	cmd := m.startQueryLoop()
+	return m, cmd
 }
 
 // dispatchCommand runs a slash command via the commands framework.
@@ -314,7 +315,8 @@ func (m Model) dispatchCommand(raw string) (tea.Model, tea.Cmd) {
 		m.Streaming = true
 		m.StreamBuffer = ""
 		m.Status = "Thinking…"
-		return m, m.startQueryLoop()
+		cmd := m.startQueryLoop()
+		return m, cmd
 	}
 
 	switch res.Kind {
@@ -348,7 +350,8 @@ func (m Model) dispatchCommand(raw string) (tea.Model, tea.Cmd) {
 		m.Streaming = true
 		m.StreamBuffer = ""
 		m.Status = "Thinking…"
-		return m, m.startQueryLoop()
+		cmd := m.startQueryLoop()
+		return m, cmd
 
 	case commands.ResultClearConversation:
 		m.Messages = nil

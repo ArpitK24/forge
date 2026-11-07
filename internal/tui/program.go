@@ -266,7 +266,13 @@ func resolveAPIKey(cfg *core.Config) string {
 // it terminates. A shared channel would be poisoned for the next
 // turn. The per-turn channel is stashed on the Model as
 // currentEventCh so Update's re-subscribe can find it.
-func (m Model) startQueryLoop() tea.Cmd {
+//
+// Pointer receiver: the channel, cancel func and LoopRunning flag
+// must land on the Model that Update returns. Callers do
+// `cmd := m.startQueryLoop(); return m, cmd` (not
+// `return m, m.startQueryLoop()`, whose operand order is
+// unspecified).
+func (m *Model) startQueryLoop() tea.Cmd {
 	if m.bridge == nil || m.bridge.Provider == nil {
 		// No provider — surface an error immediately and don't
 		// spawn anything.
@@ -310,8 +316,9 @@ func (m Model) startQueryLoop() tea.Cmd {
 	// Snapshot everything the goroutine needs into locals so the
 	// closure captures values, not the Model (which is copied per
 	// Update call — the Model in the closure would be stale).
-	provider := m.bridge.Provider
-	sysPrompt := m.bridge.SystemPrompt
+	bridge := m.bridge
+	provider := bridge.Provider
+	sysPrompt := bridge.SystemPrompt
 	cfg := m.Config
 	cost := m.Cost
 
@@ -327,11 +334,11 @@ func (m Model) startQueryLoop() tea.Cmd {
 		// plugin tools (Phase 4 step). When no plugins were
 		// loaded, PluginTools is nil — append is a no-op for nil.
 		toolsList := tools.AllTools()
-		if mcpMgr := m.bridge.McpManager; mcpMgr != nil {
+		if mcpMgr := bridge.McpManager; mcpMgr != nil {
 			toolsList = append(toolsList, mcpMgr.Tools()...)
 		}
-		if len(m.bridge.PluginTools) > 0 {
-			toolsList = append(toolsList, m.bridge.PluginTools...)
+		if len(bridge.PluginTools) > 0 {
+			toolsList = append(toolsList, bridge.PluginTools...)
 		}
 		tc := &tools.ToolContext{
 			WorkingDir:  cfg.WorkingDir,
@@ -406,7 +413,7 @@ func (m Model) startQueryLoop() tea.Cmd {
 		// mutex is needed because the goroutine writes
 		// exactly once and then exits, and the reader
 		// blocks on the channel close before reading.
-		m.bridge.LastOutcome = &outcome
+		bridge.LastOutcome = &outcome
 	}()
 
 	// Return two subscribe Cmds: one for the loop event stream
