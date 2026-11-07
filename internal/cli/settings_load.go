@@ -18,9 +18,10 @@
 package cli
 
 import (
-	"errors"
-	"os"
+	"fmt"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/ArpitK24/forge/internal/core"
 )
@@ -40,60 +41,162 @@ func LoadSettings() (core.Settings, error) {
 	return res.Settings, nil
 }
 
-// LoadLayeredSettings loads settings files in priority order
-// (managed > local > project > global) and merges them with
-// LayerSettings. The "managed" layer is reserved for Phase 4;
-// in Phase 2 it's always the zero Settings.
-//
-// A missing file is fine. A malformed file or a real I/O error
-// is returned. (Silent fallbacks would mask real problems.)
+// LayeredSettings is the result of LoadLayered: the merged settings
+// plus any warnings the caller should show the user (keys that were
+// ignored because they came from an untrusted project file).
+type LayeredSettings struct {
+	Settings core.Settings
+	Warnings []string
+}
+
+// untrustedKeys are the settings keys a project-level file
+// (.forge/settings.json or .forge/settings.local.json) may only set
+// when the project is listed in the global trusted_projects. Each
+// one either widens what tools may run without a prompt or launches
+// a process at startup. trusted_projects itself is never honoured
+// from a project file (see core.LayerSettings).
+var untrustedKeys = []string{"permission_mode", "mcp_servers", "permission_rules", "trusted_projects"}
+
+// LoadLayeredSettings loads and merges the settings layers and
+// returns just the merged Settings. Callers that can show warnings
+// should use LoadLayered instead.
 func LoadLayeredSettings(workingDir string) (core.Settings, error) {
+	res, err := LoadLayered(workingDir)
+	return res.Settings, err
+}
+
+// LoadLayered loads settings files in priority order
+// (managed > local > project > global) and merges them with
+// core.LayerSettings. The "managed" layer is reserved for Phase 4;
+// it's always the zero Settings for now.
+//
+// Trust model: ~/.forge/settings.json belongs to the user and is
+// trusted. The two project files live inside the repository, so
+// anyone who can commit to it controls them (settings.local.json
+// is only gitignored by convention). Unless the project's absolute
+// path is listed in the global "trusted_projects", the
+// security-sensitive keys (untrustedKeys) are dropped from both
+// project files and a warning naming them is returned. Everything
+// else (model, max_tokens, theme, verbose, auto_compact) still
+// applies.
+//
+// A missing file is fine and contributes nothing to the merge. A
+// malformed file or a real I/O error is returned. (Silent
+// fallbacks would mask real problems.) Loading never creates
+// .forge/ inside the project.
+func LoadLayered(workingDir string) (LayeredSettings, error) {
 	globalRes, err := core.LoadSettings("")
 	if err != nil {
-		return core.Settings{}, err
+		return LayeredSettings{}, err
 	}
 	global := globalRes.Settings
+	out := LayeredSettings{}
 
 	var project, local core.Settings
 	if workingDir != "" {
-		projPath := filepath.Join(workingDir, core.ProjectConfigDirName, core.SettingsFilename)
-		if projRes, err := core.LoadSettings(projPath); err == nil {
-			project = projRes.Settings
-		} else if isRealLoadError(err) {
-			return core.Settings{}, err
+		if abs, err := filepath.Abs(workingDir); err == nil {
+			workingDir = abs
 		}
-
-		localPath := filepath.Join(workingDir, core.ProjectConfigDirName, core.LocalSettingsFilename)
-		if localRes, err := core.LoadSettings(localPath); err == nil {
-			local = localRes.Settings
-		} else if isRealLoadError(err) {
-			return core.Settings{}, err
+		trusted := isTrustedProject(workingDir, global.TrustedProjects)
+		for _, layer := range []struct {
+			name string
+			dst  *core.Settings
+		}{
+			{core.SettingsFilename, &project},
+			{core.LocalSettingsFilename, &local},
+		} {
+			path := filepath.Join(workingDir, core.ProjectConfigDirName, layer.name)
+			// Running from $HOME: the "project" file is the
+			// global file. Don't load it twice (or distrust it).
+			if samePath(path, globalRes.Path) {
+				continue
+			}
+			s, found, err := core.ReadSettingsFile(path)
+			if err != nil {
+				return LayeredSettings{}, err
+			}
+			if !found {
+				continue
+			}
+			if !trusted {
+				if ignored := stripUntrusted(&s); len(ignored) > 0 {
+					out.Warnings = append(out.Warnings, fmt.Sprintf(
+						"ignoring %s from %s: project settings can't set these unless %q is listed in \"trusted_projects\" in %s",
+						strings.Join(ignored, ", "), path, workingDir, globalRes.Path))
+				}
+			}
+			*layer.dst = s
 		}
 	}
 
-	return core.LayerSettings(core.Settings{}, local, project, global), nil
+	out.Settings = core.LayerSettings(core.Settings{}, local, project, global)
+	return out, nil
 }
 
-// isRealLoadError reports whether err from core.LoadSettings is
-// a genuine failure (malformed JSON, I/O error) rather than the
-// benign "file does not exist" case. We classify by the
-// typed *core.Error's Kind: KindIO with an IsNotExist underlying
-// cause is "missing file" (benign); anything else is real.
-func isRealLoadError(err error) bool {
-	if err == nil {
-		return false
-	}
-	var ferr *core.Error
-	if !errors.As(err, &ferr) {
-		// Unknown error type — treat as real to be safe.
-		return true
-	}
-	if ferr.Kind == core.KindIO && ferr.Cause != nil {
-		if os.IsNotExist(ferr.Cause) {
-			return false
+// stripUntrusted clears the security-sensitive keys on s and
+// returns the JSON names of the ones that were set.
+func stripUntrusted(s *core.Settings) []string {
+	var ignored []string
+	for _, key := range untrustedKeys {
+		set := false
+		switch key {
+		case "permission_mode":
+			set = s.PermissionMode != core.PermissionDefault
+			s.PermissionMode = core.PermissionDefault
+		case "mcp_servers":
+			set = len(s.McpServers) > 0
+			s.McpServers = nil
+		case "permission_rules":
+			set = len(s.PermissionRules) > 0
+			s.PermissionRules = nil
+		case "trusted_projects":
+			set = len(s.TrustedProjects) > 0
+			s.TrustedProjects = nil
+		}
+		if set {
+			ignored = append(ignored, key)
 		}
 	}
-	return true
+	return ignored
+}
+
+// isTrustedProject reports whether dir is listed in trusted.
+// Entries must be absolute paths; relative entries are ignored
+// rather than resolved against an attacker-chosen cwd. Paths are
+// compared after cleaning and resolving symlinks (and
+// case-insensitively on Windows).
+func isTrustedProject(dir string, trusted []string) bool {
+	for _, t := range trusted {
+		if t == "" || !filepath.IsAbs(t) {
+			continue
+		}
+		if samePath(dir, t) {
+			return true
+		}
+	}
+	return false
+}
+
+// samePath reports whether a and b name the same location.
+func samePath(a, b string) bool {
+	if a == "" || b == "" {
+		return false
+	}
+	a, b = canonicalPath(a), canonicalPath(b)
+	if runtime.GOOS == "windows" {
+		return strings.EqualFold(a, b)
+	}
+	return a == b
+}
+
+func canonicalPath(p string) string {
+	if abs, err := filepath.Abs(p); err == nil {
+		p = abs
+	}
+	if resolved, err := filepath.EvalSymlinks(p); err == nil {
+		p = resolved
+	}
+	return filepath.Clean(p)
 }
 
 // ApplySettings copies settings.json values into any still-zero
@@ -116,11 +219,13 @@ func ApplySettings(cfg *core.Config, settings core.Settings) *core.Config {
 	if cfg.MaxTokens == 0 && settings.MaxTokens != 0 {
 		cfg.MaxTokens = settings.MaxTokens
 	}
-	// PermissionMode: ToConfig fills cfg.PermissionMode with
-	// PermissionDefault if the user didn't pass --permission-mode.
-	// We treat that as "the user expressed no preference" and
-	// let the settings value win when it is non-default.
-	if cfg.PermissionMode == core.PermissionDefault &&
+	// PermissionMode: an explicit --permission-mode (or
+	// --dangerously-skip-permissions) always wins, even when it
+	// asked for "default". Otherwise a non-default settings value
+	// fills in. (Project files only reach here with a
+	// permission_mode when the project is trusted; see LoadLayered.)
+	if !cfg.PermissionModeFromFlag &&
+		cfg.PermissionMode == core.PermissionDefault &&
 		settings.PermissionMode != core.PermissionDefault {
 		cfg.PermissionMode = settings.PermissionMode
 	}
@@ -129,15 +234,12 @@ func ApplySettings(cfg *core.Config, settings core.Settings) *core.Config {
 	if !cfg.Verbose && settings.Verbose {
 		cfg.Verbose = true
 	}
-	// AutoCompact: settings can turn it ON when the user didn't
-	// pass --no-auto-compact. We never use settings to turn it
-	// OFF, because Config.AutoCompact is a value (not a pointer)
-	// and we can't distinguish "user didn't pass" from "user
-	// passed --no-auto-compact" once the Config is built. Phase
-	// 3's TUI exposes a /auto-compact pointer toggle and
-	// resolves the ambiguity.
-	if !cfg.AutoCompact && settings.AutoCompact != nil && *settings.AutoCompact {
-		cfg.AutoCompact = true
+	// AutoCompact defaults to ON in ToConfig and the only CLI flag
+	// (--no-auto-compact) turns it OFF. So settings may only turn
+	// it off ("auto_compact": false); they never turn it back on,
+	// which is what used to make --no-auto-compact a dead flag.
+	if settings.AutoCompact != nil && !*settings.AutoCompact {
+		cfg.AutoCompact = false
 	}
 	// McpServers: ToConfig fills cfg.McpServers when --mcp-config
 	// was passed; settings.McpServers fills the gap when the CLI

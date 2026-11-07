@@ -371,6 +371,7 @@ func (a *Args) ToConfig() (*core.Config, error) {
 	}
 	if a.PermissionModeSet {
 		c.PermissionMode = a.PermissionMode
+		c.PermissionModeFromFlag = true
 	} else {
 		c.PermissionMode = core.PermissionDefault
 	}
