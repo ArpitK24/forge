@@ -33,6 +33,13 @@ type Config struct {
 	Thinking *core.ThinkingConfig
 	// Temperature is the sampling temperature. nil = provider default.
 	Temperature *float64
+	// CompactState is the session's auto-compaction state
+	// (failure counter, circuit breaker). Callers that run
+	// several loops in one session (the TUI calls RunQueryLoop
+	// once per user message) pass the same pointer every time
+	// so the breaker survives across calls. nil = the loop
+	// keeps its own state for the duration of this call.
+	CompactState *CompactState
 }
 
 // OutcomeKind enumerates the loop's terminal states. Spec §5.1.
@@ -224,6 +231,13 @@ func RunQueryLoop(
 	var lastMessage core.Message
 	turns := 0
 
+	// Compaction state must outlive a single turn, otherwise
+	// the circuit breaker can never see consecutive failures.
+	compactState := cfg.CompactState
+	if compactState == nil {
+		compactState = &CompactState{}
+	}
+
 	// finalize emits an OutcomeEvent carrying the final
 	// Outcome summary and returns the Outcome itself. Every
 	// return path in the loop calls this so renderers and
@@ -372,15 +386,10 @@ func RunQueryLoop(
 		// window, summarize the older messages and keep the
 		// most recent AutoCompactTailKeep verbatim.
 		//
-		// The per-session counter state (failure count,
-		// circuit-breaker flag) is local to this loop call:
-		// headless one-shots start fresh per invocation, and
-		// the TUI's session-scoped state will live on the
-		// shared Model in a future step. Per-loop scope is
-		// sufficient to exercise the trigger math + summarizer
-		// path Step 1 cares about.
+		// compactState (hoisted above the turn loop, or owned
+		// by the caller via cfg.CompactState) carries the
+		// failure count and circuit breaker across turns.
 		if toolCtx != nil && toolCtx.Cfg != nil && toolCtx.Cfg.AutoCompact {
-			compactState := &CompactState{}
 			_ = AutoCompactIfNeeded(ctx, client, &messages, cfg.Model,
 				core.FastModel, turnUsage, compactState, eventCh)
 		}

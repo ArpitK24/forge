@@ -28,6 +28,10 @@ All notable changes to Forge are documented here. The format follows
 - OpenAI adapter: request `stream_options.include_usage` and read prompt
   tokens from the final usage chunk, so input tokens, cost and the
   auto-compaction trigger no longer read as zero on the default provider.
+- Auto-compaction circuit breaker now trips: its state was recreated every
+  turn, so a failing summarizer was retried on every turn forever. The
+  state now lives for the whole loop, and `query.Config.CompactState` lets
+  multi-call sessions share it.
 
 ### Added
 - CI quality job: gofmt check, golangci-lint, race detector, coverage

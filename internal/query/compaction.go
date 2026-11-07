@@ -261,6 +261,9 @@ func AutoCompactIfNeeded(
 	// one-shot test; don't bother with the counter."
 	failures := 0
 	if state != nil {
+		if state.Disabled {
+			return false
+		}
 		failures = state.ConsecutiveFailures
 	}
 	used := turnUsage.InputTokens
