@@ -59,7 +59,7 @@ func run(program string, args []string) error {
 		return nil
 	}
 	if parsed.ShowVersion {
-		fmt.Printf("%s %s\n", core.AppName, core.AppVersion)
+		fmt.Printf("%s %s (commit %s, built %s)\n", core.AppName, core.AppVersion, core.AppCommit, core.AppBuildDate)
 		fmt.Println(core.AppTagline)
 		return nil
 	}

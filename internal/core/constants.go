@@ -9,12 +9,22 @@ const (
 	// AppName is the product name as it appears in --version, the
 	// settings directory name, the binary name, etc.
 	AppName = "forge"
-	// AppVersion is set at build time via -ldflags. Defaulted here for
-	// dev builds. The release process overrides this.
-	AppVersion = "0.0.1-dev"
 	// AppTagline is the project's tagline. Used in --version output
 	// and the first-run welcome banner.
 	AppTagline = "Agentic coding, forged in your terminal."
+)
+
+// Build metadata. These are vars, not consts, so the release build can
+// stamp them with -ldflags "-X github.com/ArpitK24/forge/internal/core.AppVersion=v1.2.3 ...".
+// (A const cannot be overridden by -X, which is why the old
+// "set at build time" comment never actually worked.)
+var (
+	// AppVersion is the release version; "0.0.1-dev" for local builds.
+	AppVersion = "0.0.1-dev"
+	// AppCommit is the git commit the binary was built from.
+	AppCommit = "none"
+	// AppBuildDate is the UTC build timestamp (RFC 3339).
+	AppBuildDate = "unknown"
 )
 
 // Model defaults. Per spec §2.4, we expose three tiers (cheap / default /
