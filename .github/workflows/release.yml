@@ -23,7 +23,7 @@ jobs:
       - name: Test before releasing
         run: go test -count=1 ./...
 
-      - uses: goreleaser/goreleaser-action@v6
+      - uses: goreleaser/goreleaser-action@v7
         with:
           version: "~> v2"
           args: release --clean
