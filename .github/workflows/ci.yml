@@ -124,6 +124,64 @@ jobs:
       - name: Smoke test image
         run: docker run --rm forge:ci --version
 
+  retrieval-eval:
+    # Context-engine Milestone 0 (eval/README.md). Scores the B0/B1/B2
+    # retrieval baselines on the internal Forge tasks twice and fails if
+    # the two reports differ by a single byte. Drift from the committed
+    # baseline is reported as a warning: regenerate it in the PR that
+    # changes retrieval. Not a required check.
+    name: retrieval eval (internal, determinism)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Fetch pull request heads
+        # Some internal tasks come from PR branch commits that were
+        # squash-merged; their base commits live under refs/pull.
+        run: git fetch --no-tags origin '+refs/pull/*/head:refs/remotes/origin/pr/*'
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.10"
+          cache: true
+
+      - name: Build
+        run: go build -o forge-eval ./cmd/forge
+
+      - name: Run twice and compare
+        run: |
+          set -euo pipefail
+          for i in 1 2; do
+            ./forge-eval eval retrieval --dataset internal --repo ArpitK24/forge=. \
+              --no-fetch --strict --out "run$i.json" 2> "run$i.log"
+          done
+          cat run1.log
+          cat run1.log | sed -n '/^| baseline/,$p' >> "$GITHUB_STEP_SUMMARY"
+          if ! cmp -s run1.json run2.json; then
+            echo "::error::retrieval eval is not deterministic: run1.json and run2.json differ"
+            diff run1.json run2.json | head -50
+            exit 1
+          fi
+
+      - name: Compare with committed baseline
+        run: |
+          if ! cmp -s run1.json eval/baselines/internal.json; then
+            echo "::warning::retrieval results differ from eval/baselines/internal.json; regenerate it if the change is intended"
+            diff eval/baselines/internal.json run1.json | head -40 || true
+          fi
+
+      - name: Upload results
+        uses: actions/upload-artifact@v7
+        with:
+          name: retrieval-eval-internal
+          path: run1.json
+          retention-days: 14
+
   ci:
     name: vet + test + build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

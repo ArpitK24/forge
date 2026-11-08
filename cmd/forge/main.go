@@ -43,6 +43,10 @@ func main() {
 // This makes the binary's startup logic unit-testable from a future
 // phase without spawning a subprocess.
 func run(program string, args []string) error {
+	// Hidden developer subcommand: the context-engine eval harness.
+	if len(args) > 0 && args[0] == "eval" {
+		return runEval(args[1:])
+	}
 	parser := cli.NewParser(program, args)
 	parsed, err := parser.Parse()
 	if err != nil {
