@@ -1,0 +1,5305 @@
+{
+  "schema_version": 1,
+  "dataset": "internal",
+  "budget": 8192,
+  "tokenizer": "bytes/4",
+  "gold_includes_tests": false,
+  "bootstrap": {
+    "resamples": 2000,
+    "seed": 20261108,
+    "level": 0.95
+  },
+  "tasks": 34,
+  "scored": 34,
+  "skipped": [],
+  "baselines": [
+    {
+      "name": "b0",
+      "aggregate": {
+        "file_recall@1": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "file_recall@10": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "file_recall@3": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "file_recall@5": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "func_recall@10": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "func_recall@5": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "gold_in_pack": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "mrr": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        },
+        "pack_tokens": {
+          "mean": 0,
+          "ci_lo": 0,
+          "ci_hi": 0,
+          "n": 34
+        }
+      },
+      "tasks": [
+        {
+          "id": "forge-06ef5410774d",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-12567c61b30b",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-1619bf876323",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-3eef3bc0c970",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-3fdbdf3f8f85",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-55d38966a5ef",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-5b71dbb4e67a",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-5b8cce289ece",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-5cc848996ee2",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-5dcd315be6e1",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-641a12f97ce7",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-68223187f4e0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-75325ef263d5",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-75a9193fa31c",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-7887bab8a724",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-8060c0b5ff44",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-9099b5e82071",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a58d2492d60c",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a5b9b68b9675",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a5e6e6819fc0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a68c41600a02",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a7da1650649f",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a81fac97db23",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-a90340e4f83f",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-aaa0a5147ba8",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-ab408d9ccb2e",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-ae5b70146c20",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-b0cad387b298",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-ca89a7608f16",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-ce7d9dca1843",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-d25bc1912b12",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-d7040be54d71",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-d8928323ceaf",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        },
+        {
+          "id": "forge-eade154b6319",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0,
+            "pack_tokens": 0
+          },
+          "top_files": [],
+          "top_symbols": [],
+          "pack_files": 0
+        }
+      ]
+    },
+    {
+      "name": "b1-1k",
+      "aggregate": {
+        "file_recall@1": {
+          "mean": 0.112092,
+          "ci_lo": 0.035294,
+          "ci_hi": 0.20915,
+          "n": 34
+        },
+        "file_recall@10": {
+          "mean": 0.624428,
+          "ci_lo": 0.483905,
+          "ci_hi": 0.763725,
+          "n": 34
+        },
+        "file_recall@3": {
+          "mean": 0.20433,
+          "ci_lo": 0.104085,
+          "ci_hi": 0.322222,
+          "n": 34
+        },
+        "file_recall@5": {
+          "mean": 0.390931,
+          "ci_lo": 0.267157,
+          "ci_hi": 0.52549,
+          "n": 34
+        },
+        "func_recall@10": {
+          "mean": 0.224851,
+          "ci_lo": 0.127512,
+          "ci_hi": 0.33888,
+          "n": 34
+        },
+        "func_recall@5": {
+          "mean": 0.202676,
+          "ci_lo": 0.103992,
+          "ci_hi": 0.313725,
+          "n": 34
+        },
+        "gold_in_pack": {
+          "mean": 0.730801,
+          "ci_lo": 0.603758,
+          "ci_hi": 0.854167,
+          "n": 34
+        },
+        "mrr": {
+          "mean": 0.372444,
+          "ci_lo": 0.262082,
+          "ci_hi": 0.489868,
+          "n": 34
+        },
+        "pack_tokens": {
+          "mean": 1018.029412,
+          "ci_lo": 1016.117647,
+          "ci_hi": 1019.823529,
+          "n": 34
+        }
+      },
+      "tasks": [
+        {
+          "id": "forge-06ef5410774d",
+          "metrics": {
+            "file_recall@1": 0.2,
+            "file_recall@10": 1,
+            "file_recall@3": 0.4,
+            "file_recall@5": 0.6,
+            "func_recall@10": 0.1111111111111111,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/cost.go",
+            "internal/core/messages.go",
+            "internal/query/loop.go",
+            "internal/api/request.go",
+            "internal/api/openai/client.go",
+            "internal/cli/cli.go",
+            "cmd/forge/main.go",
+            "cmd/forge/headless.go",
+            "internal/core/permissions.go"
+          ],
+          "top_symbols": [
+            "internal/core/cost.go::CostTracker",
+            "internal/core/config.go::Config.EffectiveMaxTokens",
+            "internal/core/config.go::Config.EffectiveModel",
+            "internal/core/config.go::PermissionMode",
+            "internal/api/request.go::SystemPrompt",
+            "internal/query/loop.go::Config",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/core/config.go::Config",
+            "internal/core/config.go::OutputFormat",
+            "internal/core/messages.go::UsageInfo"
+          ],
+          "pack_files": 16
+        },
+        {
+          "id": "forge-12567c61b30b",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1020
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/plugins/plugin.go",
+            "internal/core/permissions.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go",
+            "internal/api/events.go",
+            "internal/mcp/client.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop.go::executeToolCalls",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/thinking.go::ThinkingConfig",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::CacheControl",
+            "internal/api/request.go::CacheControl",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 18
+        },
+        {
+          "id": "forge-1619bf876323",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.07142857142857142,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "cmd/forge/main.go",
+            "internal/core/messages.go",
+            "examples/plugins/echo/main.go",
+            "internal/core/config.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/plugins/client.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "cmd/forge/main.go::main",
+            "internal/core/config.go::PermissionMode",
+            "examples/plugins/echo/main.go::main",
+            "internal/core/config.go::OutputFormat",
+            "internal/core/cost.go::CostTracker",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/permissions.go::PermissionDecision"
+          ],
+          "pack_files": 24
+        },
+        {
+          "id": "forge-3eef3bc0c970",
+          "metrics": {
+            "file_recall@1": 0.1111111111111111,
+            "file_recall@10": 0.5555555555555556,
+            "file_recall@3": 0.2222222222222222,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.10526315789473684,
+            "func_recall@5": 0.10526315789473684,
+            "gold_in_pack": 0.5555555555555556,
+            "mrr": 1,
+            "pack_tokens": 1024
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/api/provider.go",
+            "internal/api/anthropic/registry.go",
+            "internal/api/openai/registry.go",
+            "internal/query/accumulator.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/api/anthropic/registry.go::LookupModel",
+            "internal/api/openai/registry.go::LookupModel",
+            "internal/api/provider.go::LookupModel",
+            "internal/core/messages.go::Thinking",
+            "internal/core/messages.go::ContentBlock",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::MessageContent",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/anthropic/registry.go::ContextWindowForModel"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-3fdbdf3f8f85",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 1018
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/query/compaction.go",
+            "cmd/forge/headless.go",
+            "internal/api/request.go",
+            "internal/core/cost.go",
+            "internal/tools/tool.go",
+            "internal/core/permissions.go",
+            "internal/plugins/plugin.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/compaction.go::CompactState",
+            "internal/query/loop.go::OutcomeEvent",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/thinking.go::ThinkingConfig",
+            "internal/core/messages.go::CacheControl"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-55d38966a5ef",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/api/provider.go",
+            "internal/core/errors.go",
+            "internal/api/openai/client.go",
+            "internal/core/permissions.go",
+            "internal/api/events.go",
+            "cmd/forge/headless.go",
+            "internal/api/request.go",
+            "internal/tui/program.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/api/provider.go::Provider",
+            "internal/api/provider.go::ModelInfo",
+            "internal/api/openai/client.go::New",
+            "internal/core/errors.go::New",
+            "internal/core/errors.go::ErrorKind",
+            "internal/tools/tool.go::ToolResult",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/thinking.go::ThinkingConfig"
+          ],
+          "pack_files": 18
+        },
+        {
+          "id": "forge-5b71dbb4e67a",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 1,
+            "func_recall@10": 0.75,
+            "func_recall@5": 0.75,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 1015
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/tui/model.go",
+            "internal/core/session.go",
+            "internal/tui/program.go",
+            "internal/tui/session_save.go",
+            "cmd/forge/main.go",
+            "internal/core/permissions.go",
+            "examples/plugins/echo/main.go",
+            "internal/core/config.go",
+            "internal/plugins/plugin.go"
+          ],
+          "top_symbols": [
+            "internal/tui/program.go::RunProgram",
+            "internal/tui/session_save.go::saveResumedSessionOnExit",
+            "internal/core/session.go::LoadSession",
+            "internal/tui/model.go::Model",
+            "internal/tui/model.go::sharedState.lockMessages",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission"
+          ],
+          "pack_files": 23
+        },
+        {
+          "id": "forge-5b8cce289ece",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1011
+          },
+          "top_files": [
+            "internal/query/compaction.go",
+            "internal/core/messages.go",
+            "internal/query/loop.go",
+            "internal/api/provider.go",
+            "internal/api/request.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go",
+            "internal/plugins/plugin.go",
+            "internal/mcp/client.go",
+            "internal/api/anthropic/registry.go"
+          ],
+          "top_symbols": [
+            "internal/query/compaction.go::CompactConversation",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/provider.go::ContextWindowForModel",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/api/anthropic/registry.go::ContextWindowForModel",
+            "internal/api/openai/registry.go::ContextWindowForModel",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/query/summarize.go::SummarizeHead"
+          ],
+          "pack_files": 24
+        },
+        {
+          "id": "forge-5cc848996ee2",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.25,
+            "func_recall@5": 0.25,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 1017
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/plugins/plugin.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go",
+            "internal/api/events.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::DefaultSettings",
+            "internal/query/loop.go::Config",
+            "internal/core/config.go::Config",
+            "internal/core/config.go::PermissionMode",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/api/request.go::SystemPrompt",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/thinking.go::ThinkingConfig"
+          ],
+          "pack_files": 20
+        },
+        {
+          "id": "forge-5dcd315be6e1",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 1018
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/tools/tool.go",
+            "internal/core/permissions.go",
+            "internal/mcp/tools.go",
+            "internal/core/cost.go",
+            "internal/mcp/manager.go",
+            "internal/commands/baseline.go",
+            "internal/api/request.go",
+            "internal/tools/grep.go",
+            "internal/tools/glob.go"
+          ],
+          "top_symbols": [
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/permissions.go::AutoPermissionHandler.RequestPermission",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::CacheControl",
+            "internal/core/messages.go::MessageContent",
+            "internal/core/cost.go::CostTracker"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-641a12f97ce7",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.25,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/plugins/client.go",
+            "internal/query/accumulator.go",
+            "internal/mcp/protocol.go",
+            "internal/api/events.go",
+            "internal/api/openai/stream.go",
+            "internal/mcp/client.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go"
+          ],
+          "top_symbols": [
+            "internal/core/messages.go::ContentBlock",
+            "internal/plugins/client.go::Request",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/api/request.go::Request",
+            "internal/mcp/protocol.go::Request",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::CacheControl",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::UsageInfo"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-68223187f4e0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.1111111111111111,
+            "pack_tokens": 1020
+          },
+          "top_files": [
+            "internal/core/errors.go",
+            "internal/core/messages.go",
+            "internal/api/openai/client.go",
+            "internal/api/events.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/query/loop_test.go",
+            "internal/api/provider.go",
+            "internal/tools/bash.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/core/errors.go::ErrorKind",
+            "internal/api/openai/client.go::New",
+            "internal/core/errors.go::New",
+            "internal/core/errors.go::Error.WithDetail",
+            "internal/api/events.go::StreamEvent",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/errors.go::Error.IsRetryable",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/errors.go::Error.IsContextLimit"
+          ],
+          "pack_files": 16
+        },
+        {
+          "id": "forge-75325ef263d5",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.6666666666666666,
+            "file_recall@3": 0,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 0.6666666666666666,
+            "mrr": 0.25,
+            "pack_tokens": 1019
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/messages.go",
+            "internal/api/events.go",
+            "internal/cli/cli.go",
+            "internal/query/loop.go",
+            "internal/api/request.go",
+            "internal/cli/settings_load.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/core/thinking.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::McpServerConfig",
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/cli/cli.go::Args.ToConfig",
+            "internal/core/config.go::PermissionMode",
+            "internal/query/loop.go::Config",
+            "internal/core/config.go::Config",
+            "internal/api/request.go::SystemPrompt",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock",
+            "internal/cli/cli.go::Usage"
+          ],
+          "pack_files": 15
+        },
+        {
+          "id": "forge-75a9193fa31c",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.2,
+            "pack_tokens": 1014
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/tui/model.go",
+            "internal/core/messages.go",
+            "internal/tui/update.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/program.go",
+            "internal/tui/session_save_test.go",
+            "internal/core/session.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/tui/model.go::queryEventMsg",
+            "internal/tui/update.go::Model.respondPermission",
+            "internal/mcp/protocol.go::RPCError",
+            "internal/plugins/client.go::RPCError",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop"
+          ],
+          "pack_files": 27
+        },
+        {
+          "id": "forge-7887bab8a724",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.02702702702702703,
+            "pack_tokens": 1020
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/mcp/tools.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/plugins/client.go",
+            "internal/mcp/manager.go",
+            "internal/mcp/client.go",
+            "internal/core/errors.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::MessageContent",
+            "internal/core/messages.go::CacheControl",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/messages.go::Document",
+            "internal/core/messages.go::Message.GetFirstText"
+          ],
+          "pack_files": 20
+        },
+        {
+          "id": "forge-8060c0b5ff44",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.8,
+            "file_recall@3": 0.2,
+            "file_recall@5": 0.4,
+            "func_recall@10": 0.2857142857142857,
+            "func_recall@5": 0.2857142857142857,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 1019
+          },
+          "top_files": [
+            "internal/core/cost.go",
+            "internal/core/messages.go",
+            "internal/commands/command.go",
+            "internal/api/provider.go",
+            "internal/query/compaction.go",
+            "internal/core/errors.go",
+            "internal/api/openai/client.go",
+            "internal/query/loop.go",
+            "internal/tui/model.go",
+            "internal/tui/program.go"
+          ],
+          "top_symbols": [
+            "internal/core/cost.go::CostTracker",
+            "internal/commands/command.go::CommandContext",
+            "internal/core/messages.go::UsageInfo",
+            "internal/query/compaction.go::CompactConversation",
+            "internal/api/provider.go::Provider",
+            "internal/tui/model.go::Model",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/provider.go::ModelInfo",
+            "internal/core/cost.go::formatInt"
+          ],
+          "pack_files": 18
+        },
+        {
+          "id": "forge-9099b5e82071",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.021739130434782608,
+            "pack_tokens": 1014
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/permissions.go",
+            "internal/core/config.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tools/editutil/count.go",
+            "internal/tui/keymap.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup"
+          ],
+          "pack_files": 28
+        },
+        {
+          "id": "forge-a58d2492d60c",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.07142857142857142,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/plugins/plugin.go",
+            "internal/plugins/client.go",
+            "internal/api/events.go",
+            "internal/mcp/client.go",
+            "internal/tools/tool.go",
+            "internal/core/errors.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/plugins/process_windows.go::sendCtrlBreakToProcessGroup",
+            "internal/tools/bash_windows.go::sendCtrlBreakToProcessGroup",
+            "internal/tools/bash_other.go::sendCtrlBreakToProcessGroup",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 27
+        },
+        {
+          "id": "forge-a5b9b68b9675",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.3333333333333333,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.6666666666666666,
+            "mrr": 0.1111111111111111,
+            "pack_tokens": 1015
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/core/cost.go",
+            "internal/core/errors.go",
+            "internal/mcp/client.go",
+            "internal/api/provider.go"
+          ],
+          "top_symbols": [
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/bash_windows.go::sendCtrlBreakToProcessGroup",
+            "internal/tools/bash_other.go::sendCtrlBreakToProcessGroup",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::CacheControl",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 28
+        },
+        {
+          "id": "forge-a5e6e6819fc0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.03333333333333333,
+            "pack_tokens": 1002
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tools/editutil/count.go",
+            "internal/tui/keymap.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup"
+          ],
+          "pack_files": 27
+        },
+        {
+          "id": "forge-a68c41600a02",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.3333333333333333,
+            "mrr": 0.047619047619047616,
+            "pack_tokens": 1013
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/plugins/client.go",
+            "internal/tui/session_save.go",
+            "internal/mcp/client.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go",
+            "internal/core/session.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::PermissionMode",
+            "internal/core/config.go::Settings",
+            "internal/core/config.go::OutputFormat",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/config.go::HookEvent",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/config.go::McpServerConfig",
+            "internal/core/config.go::PermissionRule",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/core/config.go::HookEntry"
+          ],
+          "pack_files": 23
+        },
+        {
+          "id": "forge-a7da1650649f",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/core/config.go",
+            "internal/query/compaction.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/plugins/plugin.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/query/compaction.go::CompactState",
+            "internal/query/loop.go::Config",
+            "internal/core/config.go::Config",
+            "internal/core/config.go::PermissionMode",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-a81fac97db23",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/api/events.go",
+            "internal/mcp/framing.go",
+            "internal/plugins/framing.go",
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/messages.go",
+            "internal/plugins/plugin.go",
+            "internal/plugins/transport.go",
+            "internal/mcp/stdio.go",
+            "internal/api/anthropic/client.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/framing.go::readFrame",
+            "internal/plugins/framing.go::readFrame",
+            "internal/mcp/framing.go::writeFrame",
+            "internal/plugins/framing.go::writeFrame",
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/client.go::client"
+          ],
+          "pack_files": 31
+        },
+        {
+          "id": "forge-a90340e4f83f",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.25,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0.14285714285714285,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.25,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 1022
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/config.go",
+            "internal/tui/model.go",
+            "internal/core/messages.go",
+            "internal/query/loop.go",
+            "internal/core/permissions.go",
+            "internal/core/errors.go",
+            "internal/api/request.go",
+            "internal/mcp/protocol.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/tui/model.go::Model",
+            "internal/mcp/protocol.go::RPCError",
+            "internal/plugins/client.go::RPCError",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop",
+            "internal/query/loop.go::Config"
+          ],
+          "pack_files": 26
+        },
+        {
+          "id": "forge-aaa0a5147ba8",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.2,
+            "pack_tokens": 1010
+          },
+          "top_files": [
+            "internal/tools/read_test.go",
+            "internal/core/messages.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/tools/read.go",
+            "internal/core/config.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/tools/grep.go",
+            "internal/tools/glob.go"
+          ],
+          "top_symbols": [
+            "internal/tools/read_test.go::TestReadOffsetAndLimit",
+            "internal/tools/read.go::ReadTool",
+            "internal/tools/tool.go::ToolContext",
+            "internal/tools/read_test.go::decodeReadInput",
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/permissions.go::AutoPermissionHandler",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/permissions.go::AutoPermissionHandler.RequestPermission",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission"
+          ],
+          "pack_files": 19
+        },
+        {
+          "id": "forge-ab408d9ccb2e",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.125,
+            "file_recall@3": 0.125,
+            "file_recall@5": 0.125,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.375,
+            "mrr": 0.5,
+            "pack_tokens": 1015
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tui/keymap.go",
+            "internal/tools/editutil/count.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/messages.go::ContentBlock",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup",
+            "internal/tools/bash_windows_setup.go::applyProcessGroupSetup",
+            "internal/api/request.go::ThinkingConfig"
+          ],
+          "pack_files": 28
+        },
+        {
+          "id": "forge-ae5b70146c20",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.025,
+            "pack_tokens": 1001
+          },
+          "top_files": [
+            "internal/api/events.go",
+            "internal/core/messages.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/update.go",
+            "internal/tui/session_save_test.go",
+            "internal/core/session.go",
+            "internal/tui/model.go",
+            "internal/core/permissions.go",
+            "internal/core/config.go",
+            "internal/api/request.go"
+          ],
+          "top_symbols": [
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/session.go::ConversationSession",
+            "internal/tui/update.go::Model.Update",
+            "internal/tui/session_save_test.go::foreignModel.Update",
+            "internal/tui/resume_picker.go::resumePickerDelegate.Update",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-b0cad387b298",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.09090909090909091,
+            "pack_tokens": 1022
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/core/cost.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tools/editutil/count.go",
+            "internal/api/provider.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/request.go::SystemPrompt",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup",
+            "internal/tools/bash_windows_setup.go::applyProcessGroupSetup",
+            "internal/api/request.go::ThinkingConfig"
+          ],
+          "pack_files": 25
+        },
+        {
+          "id": "forge-ca89a7608f16",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 1020
+          },
+          "top_files": [
+            "internal/mcp/framing.go",
+            "internal/plugins/framing.go",
+            "internal/plugins/transport.go",
+            "internal/mcp/stdio.go",
+            "internal/mcp/client_test.go",
+            "internal/core/messages.go",
+            "internal/mcp/http.go",
+            "internal/plugins/plugin_test.go",
+            "internal/mcp/manager.go",
+            "internal/plugins/client.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/framing.go::writeFrame",
+            "internal/plugins/framing.go::writeFrame",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/framing.go::readFrame",
+            "internal/plugins/framing.go::readFrame",
+            "internal/mcp/client_test.go::fakeTransport",
+            "internal/mcp/client_test.go::fakeTransport.Send",
+            "internal/mcp/stdio.go::StdioTransport.Send",
+            "internal/plugins/transport.go::StdioTransport.Send"
+          ],
+          "pack_files": 27
+        },
+        {
+          "id": "forge-ce7d9dca1843",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.6666666666666666,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 1023
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/mcp/client.go",
+            "internal/api/fake.go",
+            "internal/core/permissions.go",
+            "internal/query/loop.go",
+            "internal/api/anthropic/client.go",
+            "internal/api/openai/client.go",
+            "internal/api/request.go"
+          ],
+          "top_symbols": [
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/api/fake.go::FakeProvider",
+            "internal/mcp/client.go::client.call",
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::CacheControl",
+            "internal/mcp/client.go::pendingResp"
+          ],
+          "pack_files": 19
+        },
+        {
+          "id": "forge-d25bc1912b12",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 1,
+            "mrr": 0.2,
+            "pack_tokens": 1022
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/messages.go",
+            "internal/tui/model.go",
+            "internal/tui/program.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/update.go",
+            "internal/tui/session_save_test.go",
+            "internal/core/permissions.go",
+            "internal/core/session.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/tui/model.go::Model",
+            "internal/tui/program.go::Model.startQueryLoop",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/mcp/protocol.go::RPCError",
+            "internal/plugins/client.go::RPCError",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop"
+          ],
+          "pack_files": 25
+        },
+        {
+          "id": "forge-d7040be54d71",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1021
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/messages.go",
+            "internal/api/anthropic/client.go",
+            "internal/api/openai/client.go",
+            "internal/core/session.go",
+            "internal/core/errors.go",
+            "internal/api/events.go",
+            "internal/api/request.go",
+            "internal/api/provider.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop",
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/client.go::client",
+            "internal/plugins/client.go::client",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/core/session.go::ListSessions",
+            "internal/mcp/protocol.go::RPCError"
+          ],
+          "pack_files": 22
+        },
+        {
+          "id": "forge-d8928323ceaf",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 1016
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/permissions.go",
+            "internal/tools/editutil/count.go",
+            "internal/query/loop_test.go",
+            "internal/tools/bash.go",
+            "internal/tools/tool.go",
+            "internal/query/loop.go",
+            "internal/api/events.go",
+            "cmd/forge/headless.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/query/loop_test.go::recordingTool.PermissionLevel",
+            "internal/core/permissions.go::PermissionLevel",
+            "internal/tools/bash.go::BashTool.PermissionLevel",
+            "internal/tools/tool.go::AllTools",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock"
+          ],
+          "pack_files": 18
+        },
+        {
+          "id": "forge-eade154b6319",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 1021
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "cmd/forge/main.go",
+            "examples/plugins/echo/main.go",
+            "internal/core/config.go",
+            "internal/plugins/plugin.go",
+            "internal/core/permissions.go",
+            "internal/tui/program.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/request.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "cmd/forge/main.go::main",
+            "examples/plugins/echo/main.go::main",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/cost.go::CostTracker",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission"
+          ],
+          "pack_files": 23
+        }
+      ]
+    },
+    {
+      "name": "b1-4k",
+      "aggregate": {
+        "file_recall@1": {
+          "mean": 0.112092,
+          "ci_lo": 0.035294,
+          "ci_hi": 0.20915,
+          "n": 34
+        },
+        "file_recall@10": {
+          "mean": 0.624428,
+          "ci_lo": 0.483905,
+          "ci_hi": 0.763725,
+          "n": 34
+        },
+        "file_recall@3": {
+          "mean": 0.20433,
+          "ci_lo": 0.104085,
+          "ci_hi": 0.322222,
+          "n": 34
+        },
+        "file_recall@5": {
+          "mean": 0.390931,
+          "ci_lo": 0.267157,
+          "ci_hi": 0.52549,
+          "n": 34
+        },
+        "func_recall@10": {
+          "mean": 0.224851,
+          "ci_lo": 0.127512,
+          "ci_hi": 0.33888,
+          "n": 34
+        },
+        "func_recall@5": {
+          "mean": 0.202676,
+          "ci_lo": 0.103992,
+          "ci_hi": 0.313725,
+          "n": 34
+        },
+        "gold_in_pack": {
+          "mean": 0.935866,
+          "ci_lo": 0.881536,
+          "ci_hi": 0.983252,
+          "n": 34
+        },
+        "mrr": {
+          "mean": 0.372444,
+          "ci_lo": 0.262082,
+          "ci_hi": 0.489868,
+          "n": 34
+        },
+        "pack_tokens": {
+          "mean": 4060,
+          "ci_lo": 4019.294118,
+          "ci_hi": 4088.794118,
+          "n": 34
+        }
+      },
+      "tasks": [
+        {
+          "id": "forge-06ef5410774d",
+          "metrics": {
+            "file_recall@1": 0.2,
+            "file_recall@10": 1,
+            "file_recall@3": 0.4,
+            "file_recall@5": 0.6,
+            "func_recall@10": 0.1111111111111111,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 3555
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/cost.go",
+            "internal/core/messages.go",
+            "internal/query/loop.go",
+            "internal/api/request.go",
+            "internal/api/openai/client.go",
+            "internal/cli/cli.go",
+            "cmd/forge/main.go",
+            "cmd/forge/headless.go",
+            "internal/core/permissions.go"
+          ],
+          "top_symbols": [
+            "internal/core/cost.go::CostTracker",
+            "internal/core/config.go::Config.EffectiveMaxTokens",
+            "internal/core/config.go::Config.EffectiveModel",
+            "internal/core/config.go::PermissionMode",
+            "internal/api/request.go::SystemPrompt",
+            "internal/query/loop.go::Config",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/core/config.go::Config",
+            "internal/core/config.go::OutputFormat",
+            "internal/core/messages.go::UsageInfo"
+          ],
+          "pack_files": 28
+        },
+        {
+          "id": "forge-12567c61b30b",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 4091
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/plugins/plugin.go",
+            "internal/core/permissions.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go",
+            "internal/api/events.go",
+            "internal/mcp/client.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop.go::executeToolCalls",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/thinking.go::ThinkingConfig",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::CacheControl",
+            "internal/api/request.go::CacheControl",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 60
+        },
+        {
+          "id": "forge-1619bf876323",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.07142857142857142,
+            "pack_tokens": 4085
+          },
+          "top_files": [
+            "cmd/forge/main.go",
+            "internal/core/messages.go",
+            "examples/plugins/echo/main.go",
+            "internal/core/config.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/plugins/client.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "cmd/forge/main.go::main",
+            "internal/core/config.go::PermissionMode",
+            "examples/plugins/echo/main.go::main",
+            "internal/core/config.go::OutputFormat",
+            "internal/core/cost.go::CostTracker",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/permissions.go::PermissionDecision"
+          ],
+          "pack_files": 56
+        },
+        {
+          "id": "forge-3eef3bc0c970",
+          "metrics": {
+            "file_recall@1": 0.1111111111111111,
+            "file_recall@10": 0.5555555555555556,
+            "file_recall@3": 0.2222222222222222,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.10526315789473684,
+            "func_recall@5": 0.10526315789473684,
+            "gold_in_pack": 0.7777777777777778,
+            "mrr": 1,
+            "pack_tokens": 4083
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/api/provider.go",
+            "internal/api/anthropic/registry.go",
+            "internal/api/openai/registry.go",
+            "internal/query/accumulator.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/api/anthropic/registry.go::LookupModel",
+            "internal/api/openai/registry.go::LookupModel",
+            "internal/api/provider.go::LookupModel",
+            "internal/core/messages.go::Thinking",
+            "internal/core/messages.go::ContentBlock",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::MessageContent",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/anthropic/registry.go::ContextWindowForModel"
+          ],
+          "pack_files": 43
+        },
+        {
+          "id": "forge-3fdbdf3f8f85",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 4096
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/query/compaction.go",
+            "cmd/forge/headless.go",
+            "internal/api/request.go",
+            "internal/core/cost.go",
+            "internal/tools/tool.go",
+            "internal/core/permissions.go",
+            "internal/plugins/plugin.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/compaction.go::CompactState",
+            "internal/query/loop.go::OutcomeEvent",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/thinking.go::ThinkingConfig",
+            "internal/core/messages.go::CacheControl"
+          ],
+          "pack_files": 62
+        },
+        {
+          "id": "forge-55d38966a5ef",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 4094
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/api/provider.go",
+            "internal/core/errors.go",
+            "internal/api/openai/client.go",
+            "internal/core/permissions.go",
+            "internal/api/events.go",
+            "cmd/forge/headless.go",
+            "internal/api/request.go",
+            "internal/tui/program.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/api/provider.go::Provider",
+            "internal/api/provider.go::ModelInfo",
+            "internal/api/openai/client.go::New",
+            "internal/core/errors.go::New",
+            "internal/core/errors.go::ErrorKind",
+            "internal/tools/tool.go::ToolResult",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/thinking.go::ThinkingConfig"
+          ],
+          "pack_files": 46
+        },
+        {
+          "id": "forge-5b71dbb4e67a",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 1,
+            "func_recall@10": 0.75,
+            "func_recall@5": 0.75,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 4087
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/tui/model.go",
+            "internal/core/session.go",
+            "internal/tui/program.go",
+            "internal/tui/session_save.go",
+            "cmd/forge/main.go",
+            "internal/core/permissions.go",
+            "examples/plugins/echo/main.go",
+            "internal/core/config.go",
+            "internal/plugins/plugin.go"
+          ],
+          "top_symbols": [
+            "internal/tui/program.go::RunProgram",
+            "internal/tui/session_save.go::saveResumedSessionOnExit",
+            "internal/core/session.go::LoadSession",
+            "internal/tui/model.go::Model",
+            "internal/tui/model.go::sharedState.lockMessages",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission"
+          ],
+          "pack_files": 60
+        },
+        {
+          "id": "forge-5b8cce289ece",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 4093
+          },
+          "top_files": [
+            "internal/query/compaction.go",
+            "internal/core/messages.go",
+            "internal/query/loop.go",
+            "internal/api/provider.go",
+            "internal/api/request.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go",
+            "internal/plugins/plugin.go",
+            "internal/mcp/client.go",
+            "internal/api/anthropic/registry.go"
+          ],
+          "top_symbols": [
+            "internal/query/compaction.go::CompactConversation",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/provider.go::ContextWindowForModel",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/api/anthropic/registry.go::ContextWindowForModel",
+            "internal/api/openai/registry.go::ContextWindowForModel",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/query/summarize.go::SummarizeHead"
+          ],
+          "pack_files": 61
+        },
+        {
+          "id": "forge-5cc848996ee2",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.25,
+            "func_recall@5": 0.25,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 4096
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/plugins/plugin.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go",
+            "internal/api/events.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::DefaultSettings",
+            "internal/query/loop.go::Config",
+            "internal/core/config.go::Config",
+            "internal/core/config.go::PermissionMode",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/api/request.go::SystemPrompt",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::ThinkingConfig",
+            "internal/core/thinking.go::ThinkingConfig"
+          ],
+          "pack_files": 60
+        },
+        {
+          "id": "forge-5dcd315be6e1",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 4095
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/tools/tool.go",
+            "internal/core/permissions.go",
+            "internal/mcp/tools.go",
+            "internal/core/cost.go",
+            "internal/mcp/manager.go",
+            "internal/commands/baseline.go",
+            "internal/api/request.go",
+            "internal/tools/grep.go",
+            "internal/tools/glob.go"
+          ],
+          "top_symbols": [
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/permissions.go::AutoPermissionHandler.RequestPermission",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::CacheControl",
+            "internal/core/messages.go::MessageContent",
+            "internal/core/cost.go::CostTracker"
+          ],
+          "pack_files": 49
+        },
+        {
+          "id": "forge-641a12f97ce7",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 4087
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/plugins/client.go",
+            "internal/query/accumulator.go",
+            "internal/mcp/protocol.go",
+            "internal/api/events.go",
+            "internal/api/openai/stream.go",
+            "internal/mcp/client.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go"
+          ],
+          "top_symbols": [
+            "internal/core/messages.go::ContentBlock",
+            "internal/plugins/client.go::Request",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/api/request.go::Request",
+            "internal/mcp/protocol.go::Request",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::CacheControl",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::UsageInfo"
+          ],
+          "pack_files": 66
+        },
+        {
+          "id": "forge-68223187f4e0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.1111111111111111,
+            "pack_tokens": 3800
+          },
+          "top_files": [
+            "internal/core/errors.go",
+            "internal/core/messages.go",
+            "internal/api/openai/client.go",
+            "internal/api/events.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/query/loop_test.go",
+            "internal/api/provider.go",
+            "internal/tools/bash.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/core/errors.go::ErrorKind",
+            "internal/api/openai/client.go::New",
+            "internal/core/errors.go::New",
+            "internal/core/errors.go::Error.WithDetail",
+            "internal/api/events.go::StreamEvent",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/errors.go::Error.IsRetryable",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/errors.go::Error.IsContextLimit"
+          ],
+          "pack_files": 29
+        },
+        {
+          "id": "forge-75325ef263d5",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.6666666666666666,
+            "file_recall@3": 0,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 4079
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/messages.go",
+            "internal/api/events.go",
+            "internal/cli/cli.go",
+            "internal/query/loop.go",
+            "internal/api/request.go",
+            "internal/cli/settings_load.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/core/thinking.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::McpServerConfig",
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/cli/cli.go::Args.ToConfig",
+            "internal/core/config.go::PermissionMode",
+            "internal/query/loop.go::Config",
+            "internal/core/config.go::Config",
+            "internal/api/request.go::SystemPrompt",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock",
+            "internal/cli/cli.go::Usage"
+          ],
+          "pack_files": 55
+        },
+        {
+          "id": "forge-75a9193fa31c",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.2,
+            "pack_tokens": 4082
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/tui/model.go",
+            "internal/core/messages.go",
+            "internal/tui/update.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/program.go",
+            "internal/tui/session_save_test.go",
+            "internal/core/session.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/tui/model.go::queryEventMsg",
+            "internal/tui/update.go::Model.respondPermission",
+            "internal/mcp/protocol.go::RPCError",
+            "internal/plugins/client.go::RPCError",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop"
+          ],
+          "pack_files": 62
+        },
+        {
+          "id": "forge-7887bab8a724",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.02702702702702703,
+            "pack_tokens": 4093
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/mcp/tools.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/plugins/client.go",
+            "internal/mcp/manager.go",
+            "internal/mcp/client.go",
+            "internal/core/errors.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::MessageContent",
+            "internal/core/messages.go::CacheControl",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/messages.go::Document",
+            "internal/core/messages.go::Message.GetFirstText"
+          ],
+          "pack_files": 57
+        },
+        {
+          "id": "forge-8060c0b5ff44",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.8,
+            "file_recall@3": 0.2,
+            "file_recall@5": 0.4,
+            "func_recall@10": 0.2857142857142857,
+            "func_recall@5": 0.2857142857142857,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 4095
+          },
+          "top_files": [
+            "internal/core/cost.go",
+            "internal/core/messages.go",
+            "internal/commands/command.go",
+            "internal/api/provider.go",
+            "internal/query/compaction.go",
+            "internal/core/errors.go",
+            "internal/api/openai/client.go",
+            "internal/query/loop.go",
+            "internal/tui/model.go",
+            "internal/tui/program.go"
+          ],
+          "top_symbols": [
+            "internal/core/cost.go::CostTracker",
+            "internal/commands/command.go::CommandContext",
+            "internal/core/messages.go::UsageInfo",
+            "internal/query/compaction.go::CompactConversation",
+            "internal/api/provider.go::Provider",
+            "internal/tui/model.go::Model",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/provider.go::ModelInfo",
+            "internal/core/cost.go::formatInt"
+          ],
+          "pack_files": 43
+        },
+        {
+          "id": "forge-9099b5e82071",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.021739130434782608,
+            "pack_tokens": 4091
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/permissions.go",
+            "internal/core/config.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tools/editutil/count.go",
+            "internal/tui/keymap.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup"
+          ],
+          "pack_files": 55
+        },
+        {
+          "id": "forge-a58d2492d60c",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.07142857142857142,
+            "pack_tokens": 4084
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/plugins/plugin.go",
+            "internal/plugins/client.go",
+            "internal/api/events.go",
+            "internal/mcp/client.go",
+            "internal/tools/tool.go",
+            "internal/core/errors.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/plugins/process_windows.go::sendCtrlBreakToProcessGroup",
+            "internal/tools/bash_windows.go::sendCtrlBreakToProcessGroup",
+            "internal/tools/bash_other.go::sendCtrlBreakToProcessGroup",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 72
+        },
+        {
+          "id": "forge-a5b9b68b9675",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.3333333333333333,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.1111111111111111,
+            "pack_tokens": 4096
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/core/cost.go",
+            "internal/core/errors.go",
+            "internal/mcp/client.go",
+            "internal/api/provider.go"
+          ],
+          "top_symbols": [
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/bash_windows.go::sendCtrlBreakToProcessGroup",
+            "internal/tools/bash_other.go::sendCtrlBreakToProcessGroup",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::CacheControl",
+            "internal/api/request.go::CacheControl",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 67
+        },
+        {
+          "id": "forge-a5e6e6819fc0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.03333333333333333,
+            "pack_tokens": 4093
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tools/editutil/count.go",
+            "internal/tui/keymap.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup"
+          ],
+          "pack_files": 57
+        },
+        {
+          "id": "forge-a68c41600a02",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.6666666666666666,
+            "mrr": 0.047619047619047616,
+            "pack_tokens": 4084
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/plugins/client.go",
+            "internal/tui/session_save.go",
+            "internal/mcp/client.go",
+            "internal/plugins/plugin.go",
+            "internal/tools/tool.go",
+            "internal/core/session.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::PermissionMode",
+            "internal/core/config.go::Settings",
+            "internal/core/config.go::OutputFormat",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/config.go::HookEvent",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/config.go::McpServerConfig",
+            "internal/core/config.go::PermissionRule",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission",
+            "internal/core/config.go::HookEntry"
+          ],
+          "pack_files": 58
+        },
+        {
+          "id": "forge-a7da1650649f",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 4096
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/core/config.go",
+            "internal/query/compaction.go",
+            "internal/core/messages.go",
+            "internal/api/request.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/plugins/plugin.go",
+            "internal/core/cost.go",
+            "internal/plugins/client.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/query/compaction.go::CompactState",
+            "internal/query/loop.go::Config",
+            "internal/core/config.go::Config",
+            "internal/core/config.go::PermissionMode",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/api/request.go::SystemPrompt"
+          ],
+          "pack_files": 61
+        },
+        {
+          "id": "forge-a81fac97db23",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 4094
+          },
+          "top_files": [
+            "internal/api/events.go",
+            "internal/mcp/framing.go",
+            "internal/plugins/framing.go",
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/messages.go",
+            "internal/plugins/plugin.go",
+            "internal/plugins/transport.go",
+            "internal/mcp/stdio.go",
+            "internal/api/anthropic/client.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/framing.go::readFrame",
+            "internal/plugins/framing.go::readFrame",
+            "internal/mcp/framing.go::writeFrame",
+            "internal/plugins/framing.go::writeFrame",
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/client.go::client"
+          ],
+          "pack_files": 47
+        },
+        {
+          "id": "forge-a90340e4f83f",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.25,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0.14285714285714285,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 4072
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/config.go",
+            "internal/tui/model.go",
+            "internal/core/messages.go",
+            "internal/query/loop.go",
+            "internal/core/permissions.go",
+            "internal/core/errors.go",
+            "internal/api/request.go",
+            "internal/mcp/protocol.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/tui/model.go::Model",
+            "internal/mcp/protocol.go::RPCError",
+            "internal/plugins/client.go::RPCError",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop",
+            "internal/query/loop.go::Config"
+          ],
+          "pack_files": 66
+        },
+        {
+          "id": "forge-aaa0a5147ba8",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.2,
+            "pack_tokens": 4091
+          },
+          "top_files": [
+            "internal/tools/read_test.go",
+            "internal/core/messages.go",
+            "internal/core/permissions.go",
+            "internal/tools/tool.go",
+            "internal/tools/read.go",
+            "internal/core/config.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/tools/grep.go",
+            "internal/tools/glob.go"
+          ],
+          "top_symbols": [
+            "internal/tools/read_test.go::TestReadOffsetAndLimit",
+            "internal/tools/read.go::ReadTool",
+            "internal/tools/tool.go::ToolContext",
+            "internal/tools/read_test.go::decodeReadInput",
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/permissions.go::AutoPermissionHandler",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/core/permissions.go::AutoPermissionHandler.RequestPermission",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission"
+          ],
+          "pack_files": 36
+        },
+        {
+          "id": "forge-ab408d9ccb2e",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.125,
+            "file_recall@3": 0.125,
+            "file_recall@5": 0.125,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.875,
+            "mrr": 0.5,
+            "pack_tokens": 4087
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tui/keymap.go",
+            "internal/tools/editutil/count.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/messages.go::ContentBlock",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup",
+            "internal/tools/bash_windows_setup.go::applyProcessGroupSetup",
+            "internal/api/request.go::ThinkingConfig"
+          ],
+          "pack_files": 54
+        },
+        {
+          "id": "forge-ae5b70146c20",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.025,
+            "pack_tokens": 4092
+          },
+          "top_files": [
+            "internal/api/events.go",
+            "internal/core/messages.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/update.go",
+            "internal/tui/session_save_test.go",
+            "internal/core/session.go",
+            "internal/tui/model.go",
+            "internal/core/permissions.go",
+            "internal/core/config.go",
+            "internal/api/request.go"
+          ],
+          "top_symbols": [
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/session.go::ConversationSession",
+            "internal/tui/update.go::Model.Update",
+            "internal/tui/session_save_test.go::foreignModel.Update",
+            "internal/tui/resume_picker.go::resumePickerDelegate.Update",
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult"
+          ],
+          "pack_files": 60
+        },
+        {
+          "id": "forge-b0cad387b298",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.09090909090909091,
+            "pack_tokens": 4093
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/api/request.go",
+            "internal/core/cost.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/commands/command.go",
+            "internal/tools/editutil/count.go",
+            "internal/api/provider.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "internal/core/messages.go::UsageInfo",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/request.go::SystemPrompt",
+            "internal/tools/bash_unix.go::applyProcessGroupSetup",
+            "internal/tools/bash_windows_setup.go::applyProcessGroupSetup",
+            "internal/api/request.go::ThinkingConfig"
+          ],
+          "pack_files": 45
+        },
+        {
+          "id": "forge-ca89a7608f16",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 4086
+          },
+          "top_files": [
+            "internal/mcp/framing.go",
+            "internal/plugins/framing.go",
+            "internal/plugins/transport.go",
+            "internal/mcp/stdio.go",
+            "internal/mcp/client_test.go",
+            "internal/core/messages.go",
+            "internal/mcp/http.go",
+            "internal/plugins/plugin_test.go",
+            "internal/mcp/manager.go",
+            "internal/plugins/client.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/framing.go::writeFrame",
+            "internal/plugins/framing.go::writeFrame",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/framing.go::readFrame",
+            "internal/plugins/framing.go::readFrame",
+            "internal/mcp/client_test.go::fakeTransport",
+            "internal/mcp/client_test.go::fakeTransport.Send",
+            "internal/mcp/stdio.go::StdioTransport.Send",
+            "internal/plugins/transport.go::StdioTransport.Send"
+          ],
+          "pack_files": 58
+        },
+        {
+          "id": "forge-ce7d9dca1843",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.6666666666666666,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 4096
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/tools/tool.go",
+            "internal/api/events.go",
+            "internal/mcp/client.go",
+            "internal/api/fake.go",
+            "internal/core/permissions.go",
+            "internal/query/loop.go",
+            "internal/api/anthropic/client.go",
+            "internal/api/openai/client.go",
+            "internal/api/request.go"
+          ],
+          "top_symbols": [
+            "internal/core/messages.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/api/fake.go::FakeProvider",
+            "internal/mcp/client.go::client.call",
+            "internal/api/events.go::StreamEvent.JSON",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/request.go::CacheControl",
+            "internal/mcp/client.go::pendingResp"
+          ],
+          "pack_files": 56
+        },
+        {
+          "id": "forge-d25bc1912b12",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 1,
+            "mrr": 0.2,
+            "pack_tokens": 4086
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/messages.go",
+            "internal/tui/model.go",
+            "internal/tui/program.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/update.go",
+            "internal/tui/session_save_test.go",
+            "internal/core/permissions.go",
+            "internal/core/session.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/tui/model.go::Model",
+            "internal/tui/program.go::Model.startQueryLoop",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/mcp/protocol.go::RPCError",
+            "internal/plugins/client.go::RPCError",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop"
+          ],
+          "pack_files": 61
+        },
+        {
+          "id": "forge-d7040be54d71",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 4085
+          },
+          "top_files": [
+            "internal/mcp/client.go",
+            "internal/plugins/client.go",
+            "internal/core/messages.go",
+            "internal/api/anthropic/client.go",
+            "internal/api/openai/client.go",
+            "internal/core/session.go",
+            "internal/core/errors.go",
+            "internal/api/events.go",
+            "internal/api/request.go",
+            "internal/api/provider.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop",
+            "internal/mcp/client.go::client.call",
+            "internal/plugins/client.go::client.call",
+            "internal/mcp/client.go::client",
+            "internal/plugins/client.go::client",
+            "internal/mcp/client.go::pendingResp",
+            "internal/plugins/client.go::pendingResp",
+            "internal/core/session.go::ListSessions",
+            "internal/mcp/protocol.go::RPCError"
+          ],
+          "pack_files": 59
+        },
+        {
+          "id": "forge-d8928323ceaf",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 3909
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "internal/core/permissions.go",
+            "internal/tools/editutil/count.go",
+            "internal/query/loop_test.go",
+            "internal/tools/bash.go",
+            "internal/tools/tool.go",
+            "internal/query/loop.go",
+            "internal/api/events.go",
+            "cmd/forge/headless.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/query/loop_test.go::recordingTool.PermissionLevel",
+            "internal/core/permissions.go::PermissionLevel",
+            "internal/tools/bash.go::BashTool.PermissionLevel",
+            "internal/tools/tool.go::AllTools",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/messages.go::UsageInfo",
+            "internal/api/events.go::StreamEvent",
+            "internal/core/messages.go::ContentBlock"
+          ],
+          "pack_files": 34
+        },
+        {
+          "id": "forge-eade154b6319",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 4094
+          },
+          "top_files": [
+            "internal/core/messages.go",
+            "cmd/forge/main.go",
+            "examples/plugins/echo/main.go",
+            "internal/core/config.go",
+            "internal/plugins/plugin.go",
+            "internal/core/permissions.go",
+            "internal/tui/program.go",
+            "internal/tools/tool.go",
+            "internal/core/cost.go",
+            "internal/api/request.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin.go::ToolResult",
+            "internal/tools/tool.go::ToolResult",
+            "internal/core/messages.go::ToolResult",
+            "internal/core/config.go::PermissionMode",
+            "cmd/forge/main.go::main",
+            "examples/plugins/echo/main.go::main",
+            "internal/core/permissions.go::PermissionDecision",
+            "internal/api/request.go::SystemPrompt",
+            "internal/core/cost.go::CostTracker",
+            "internal/core/permissions.go::AutoPermissionHandler.CheckPermission"
+          ],
+          "pack_files": 59
+        }
+      ]
+    },
+    {
+      "name": "b2",
+      "aggregate": {
+        "file_recall@1": {
+          "mean": 0.293464,
+          "ci_lo": 0.166667,
+          "ci_hi": 0.437908,
+          "n": 34
+        },
+        "file_recall@10": {
+          "mean": 0.846487,
+          "ci_lo": 0.75,
+          "ci_hi": 0.929167,
+          "n": 34
+        },
+        "file_recall@3": {
+          "mean": 0.593791,
+          "ci_lo": 0.463072,
+          "ci_hi": 0.73366,
+          "n": 34
+        },
+        "file_recall@5": {
+          "mean": 0.681373,
+          "ci_lo": 0.561765,
+          "ci_hi": 0.809804,
+          "n": 34
+        },
+        "func_recall@10": {
+          "mean": 0.55196,
+          "ci_lo": 0.421258,
+          "ci_hi": 0.684477,
+          "n": 34
+        },
+        "func_recall@5": {
+          "mean": 0.434677,
+          "ci_lo": 0.312122,
+          "ci_hi": 0.558824,
+          "n": 34
+        },
+        "gold_in_pack": {
+          "mean": 0.563235,
+          "ci_lo": 0.431863,
+          "ci_hi": 0.704412,
+          "n": 34
+        },
+        "mrr": {
+          "mean": 0.633878,
+          "ci_lo": 0.51732,
+          "ci_hi": 0.751525,
+          "n": 34
+        },
+        "pack_tokens": {
+          "mean": 8156.117647,
+          "ci_lo": 8145.794118,
+          "ci_hi": 8166.117647,
+          "n": 34
+        }
+      },
+      "tasks": [
+        {
+          "id": "forge-06ef5410774d",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.8,
+            "file_recall@3": 0.4,
+            "file_recall@5": 0.6,
+            "func_recall@10": 0.4444444444444444,
+            "func_recall@5": 0.2222222222222222,
+            "gold_in_pack": 0.2,
+            "mrr": 0.5,
+            "pack_tokens": 8176
+          },
+          "top_files": [
+            "PHASE_2.md",
+            "cmd/forge/headless.go",
+            "internal/query/loop.go",
+            "README.md",
+            "cmd/forge/main.go",
+            "internal/query/loop_test.go",
+            "internal/api/openai/client.go",
+            "internal/core/config.go",
+            "internal/core/errors.go",
+            "internal/api/openai/client_test.go"
+          ],
+          "top_symbols": [
+            "cmd/forge/headless.go::runHeadless",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/query/loop_test.go::TestRunQueryLoopPermissionDeniedAppendsToolError",
+            "internal/query/loop_test.go::TestRunQueryLoopToolRoundTrip",
+            "internal/api/fake.go::FakeProvider",
+            "internal/tools/tool.go::ToolContext",
+            "cmd/forge/headless.go::jsonRenderer",
+            "internal/query/loop_test.go::TestRunQueryLoopUsageAccumulates",
+            "cmd/forge/headless.go::jsonRenderer.run"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "forge-12567c61b30b",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8155
+          },
+          "top_files": [
+            "internal/query/loop.go",
+            "internal/query/loop_test.go",
+            "README.md",
+            "internal/api/fake.go",
+            "cmd/forge/headless.go",
+            "cmd/forge/headless_test.go",
+            "internal/tools/tool.go",
+            "internal/tui/update.go",
+            "internal/query/integration_test.go",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "internal/query/loop_test.go::TestRunQueryLoopPermissionDeniedAppendsToolError",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/loop_test.go::TestRunQueryLoopMaxTurnsCap",
+            "internal/query/loop.go::executeToolCalls",
+            "internal/query/loop_test.go::TestRunQueryLoopToolPanicRecovery",
+            "internal/query/integration_test.go::TestRunQueryLoopEndToEndNIM",
+            "internal/query/loop_test.go::TestRunQueryLoopToolRoundTrip",
+            "internal/query/loop.go::Config",
+            "internal/query/loop_test.go::TestRunQueryLoopEndTurnOnTextOnly",
+            "internal/query/loop_test.go::TestRunQueryLoopNoProviderStreamErrorIsHandled"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "forge-1619bf876323",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8173
+          },
+          "top_files": [
+            "internal/cli/cli.go",
+            "README.md",
+            "internal/core/core_test.go",
+            "internal/core/config.go",
+            "cmd/forge/headless.go",
+            "internal/api/anthropic/stream.go",
+            "cmd/forge/main.go",
+            "internal/cli/cli_test.go",
+            "cmd/forge/main_test.go",
+            "internal/core/errors.go"
+          ],
+          "top_symbols": [
+            "internal/cli/cli.go::Parser.Parse",
+            "internal/cli/cli.go::Args",
+            "cmd/forge/main_test.go::TestRun_Parse_PrintFlag",
+            "internal/core/core_test.go::TestParseOutputFormat",
+            "cmd/forge/main_test.go::TestRun_Parse_NoFlags",
+            "cmd/forge/headless.go::runHeadless",
+            "internal/cli/cli_test.go::TestInvalidFlags",
+            "internal/cli/cli_test.go::TestOutputFormatFlag",
+            "internal/core/config.go::ParseOutputFormat",
+            "cmd/forge/main.go::run"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-3eef3bc0c970",
+          "metrics": {
+            "file_recall@1": 0.1111111111111111,
+            "file_recall@10": 0.5555555555555556,
+            "file_recall@3": 0.2222222222222222,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.15789473684210525,
+            "func_recall@5": 0.05263157894736842,
+            "gold_in_pack": 0.3333333333333333,
+            "mrr": 1,
+            "pack_tokens": 8188
+          },
+          "top_files": [
+            "internal/api/provider.go",
+            "internal/api/anthropic/doc.go",
+            "internal/api/request.go",
+            "internal/api/anthropic/client.go",
+            "internal/api/anthropic/registry.go",
+            "internal/api/anthropic/stream.go",
+            "internal/api/openai/client.go",
+            "internal/core/cost.go",
+            "internal/query/loop.go",
+            "internal/api/openai/stream.go"
+          ],
+          "top_symbols": [
+            "internal/api/provider.go::LookupModel",
+            "internal/api/provider.go::ModelInfo",
+            "internal/api/request.go::Request",
+            "internal/api/anthropic/client.go::convertSystem",
+            "internal/api/request.go::SystemPrompt",
+            "internal/api/anthropic/registry.go::ContextWindowForModel",
+            "internal/api/request.go::CacheControl",
+            "internal/api/anthropic/stream.go::sseState.handleContentBlockDelta",
+            "internal/api/anthropic/client.go::wireSystemBlock",
+            "internal/core/messages.go::Thinking"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-3fdbdf3f8f85",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8172
+          },
+          "top_files": [
+            "cmd/forge/headless.go",
+            "cmd/forge/headless_test.go",
+            "internal/query/loop.go",
+            "internal/query/compaction.go",
+            "internal/tui/program.go",
+            "README.md",
+            "internal/query/loop_test.go",
+            "internal/query/compaction_breaker_test.go",
+            "internal/tui/update.go",
+            "internal/tui/model.go"
+          ],
+          "top_symbols": [
+            "cmd/forge/headless.go::runWithRetry",
+            "cmd/forge/headless_test.go::TestRunWithRetryEventualSuccess",
+            "internal/query/loop.go::RunQueryLoop",
+            "cmd/forge/headless_test.go::TestRunWithRetryRetryableExhausted",
+            "internal/query/compaction_breaker_test.go::TestRunQueryLoopCompactStatePersistsAcrossCalls",
+            "cmd/forge/headless.go::runHeadless",
+            "cmd/forge/headless_test.go::TestRunWithRetryNonRetryableReturnsImmediately",
+            "internal/query/compaction.go::CompactState",
+            "internal/query/loop.go::OutcomeEvent",
+            "cmd/forge/headless.go::jsonRenderer.run"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "forge-55d38966a5ef",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.14285714285714285,
+            "func_recall@5": 0.14285714285714285,
+            "gold_in_pack": 0.3333333333333333,
+            "mrr": 0.5,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "internal/api/openai/client.go",
+            "internal/api/provider.go",
+            "internal/api/request.go",
+            "internal/query/loop.go",
+            "README.md",
+            "internal/tui/program.go",
+            "internal/core/constants.go",
+            "cmd/forge/headless.go",
+            "internal/core/config.go",
+            "internal/core/messages.go"
+          ],
+          "top_symbols": [
+            "internal/api/request.go::Request",
+            "internal/api/provider.go::ModelInfo",
+            "internal/api/openai/client.go::buildRequestBody",
+            "internal/query/loop.go::RunQueryLoop",
+            "cmd/forge/headless.go::runHeadless",
+            "internal/api/openai/client.go::Client",
+            "internal/api/request.go::SystemPrompt",
+            "internal/api/openai/client.go::wireRequest",
+            "internal/tui/program.go::RunProgram",
+            "internal/api/openai/client.go::New"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "forge-5b71dbb4e67a",
+          "metrics": {
+            "file_recall@1": 0.3333333333333333,
+            "file_recall@10": 1,
+            "file_recall@3": 0.6666666666666666,
+            "file_recall@5": 1,
+            "func_recall@10": 0.75,
+            "func_recall@5": 0.75,
+            "gold_in_pack": 0.6666666666666666,
+            "mrr": 1,
+            "pack_tokens": 8175
+          },
+          "top_files": [
+            "internal/tui/session_save.go",
+            "internal/tui/session_save_test.go",
+            "internal/tui/program.go",
+            "internal/tui/model.go",
+            "internal/core/session.go",
+            "internal/core/session_test.go",
+            "internal/commands/resume_test.go",
+            "README.md",
+            "internal/tui/update.go",
+            "internal/commands/resume.go"
+          ],
+          "top_symbols": [
+            "internal/tui/session_save.go::saveResumedSessionOnExit",
+            "internal/tui/session_save.go::saveSessionOnExit",
+            "internal/tui/session_save_test.go::TestSaveResumedSessionOnExit_PreservesID",
+            "internal/tui/program.go::RunProgram",
+            "internal/tui/model.go::Model",
+            "internal/tui/session_save_test.go::TestSaveSessionOnExit_PopulatedModel",
+            "internal/commands/resume.go::resumeCmd",
+            "internal/core/session.go::SaveSession",
+            "internal/tui/session_save_test.go::TestSaveResumedSessionOnExit_EmptyMessages",
+            "internal/core/session.go::ConversationSession"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-5b8cce289ece",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8125
+          },
+          "top_files": [
+            "internal/query/compaction.go",
+            "internal/query/compaction_test.go",
+            "internal/query/loop.go",
+            "internal/tui/model.go",
+            "internal/core/constants.go",
+            "internal/tools/bash.go",
+            "internal/commands/baseline.go",
+            "internal/api/anthropic/client.go",
+            "internal/query/loop_test.go",
+            "internal/tui/program.go"
+          ],
+          "top_symbols": [
+            "internal/query/compaction.go::CompactConversation",
+            "internal/query/compaction_test.go::TestCompactConversationSummarizesHeadAndKeepsTail",
+            "internal/query/compaction_test.go::TestCompactConversationShorterThanTailIsNoOp",
+            "internal/commands/baseline.go::compactCmd.Help",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededAboveTriggerCompactsAndCounts",
+            "internal/query/compaction_test.go::TestCompactConversationSummaryFailureReturnsInput",
+            "internal/tools/bash.go::truncateOutput",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/commands/baseline.go::compactCmd.Execute",
+            "internal/query/loop_test.go::TestRunQueryLoopToolResultBlocksWinsOverText"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-5cc848996ee2",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8184
+          },
+          "top_files": [
+            "internal/core/settings.go",
+            "internal/core/settings_test.go",
+            "internal/core/config.go",
+            "internal/cli/settings_load.go",
+            "internal/cli/cli.go",
+            "README.md",
+            "internal/core/errors.go",
+            "internal/cli/settings_load_test.go",
+            "cmd/forge/main.go",
+            "internal/cli/cli_test.go"
+          ],
+          "top_symbols": [
+            "internal/core/settings.go::LoadSettings",
+            "internal/core/config.go::Config",
+            "internal/cli/settings_load.go::LoadLayeredSettings",
+            "internal/core/settings_test.go::TestLayerSettingsPriorityOrder",
+            "internal/core/config.go::Settings",
+            "internal/core/settings.go::SettingsLoadResult",
+            "internal/cli/settings_load.go::ApplySettings",
+            "internal/cli/cli.go::Args.ToConfig",
+            "internal/core/settings.go::LayerSettings",
+            "internal/core/config.go::DefaultSettings"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-5dcd315be6e1",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8159
+          },
+          "top_files": [
+            "internal/mcp/tools.go",
+            "internal/tools/tool_test.go",
+            "internal/tools/tool.go",
+            "internal/query/loop.go",
+            "internal/core/messages.go",
+            "internal/mcp/manager.go",
+            "internal/query/loop_test.go",
+            "internal/api/anthropic/client.go",
+            "internal/mcp/protocol.go",
+            "internal/mcp/tools_test.go"
+          ],
+          "top_symbols": [
+            "internal/tools/tool.go::ToolResult",
+            "internal/mcp/tools.go::mcpTool.Execute",
+            "internal/tools/tool_test.go::TestToolResult_JSONShapeStability",
+            "internal/mcp/tools.go::toolResultBlock",
+            "internal/mcp/tools.go::toolsCallResult.UnmarshalJSON",
+            "internal/mcp/tools.go::convertCallResult",
+            "internal/query/loop_test.go::TestRunQueryLoopToolResultBlocksWinsOverText",
+            "internal/mcp/manager.go::toolsListResult.UnmarshalJSON",
+            "internal/mcp/tools.go::toolsCallResult",
+            "internal/query/loop.go::executeToolCalls"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-641a12f97ce7",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 1,
+            "func_recall@5": 0.6666666666666666,
+            "gold_in_pack": 0,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 8171
+          },
+          "top_files": [
+            "internal/api/openai/stream.go",
+            "internal/core/constants.go",
+            "internal/api/openai/client.go",
+            "internal/query/integration_test.go",
+            "README.md",
+            "internal/api/events.go",
+            "internal/query/accumulator.go",
+            "internal/api/provider.go",
+            "cmd/forge/headless_test.go",
+            "internal/query/loop.go"
+          ],
+          "top_symbols": [
+            "internal/query/accumulator.go::accumulator.apply",
+            "internal/api/openai/client.go::buildRequestBody",
+            "internal/api/openai/stream.go::sseState",
+            "internal/api/openai/stream.go::chunk",
+            "internal/api/openai/stream.go::convertUsage",
+            "internal/api/openai/client.go::Client",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededBelowTriggerIsNoOp",
+            "internal/api/events.go::StreamEvent",
+            "internal/api/provider.go::ModelInfo",
+            "internal/api/openai/client.go::wireRequest"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "forge-68223187f4e0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 8105
+          },
+          "top_files": [
+            "internal/tools/bash_test.go",
+            "internal/tools/bash.go",
+            "cmd/forge/headless.go",
+            "README.md",
+            "cmd/forge/headless_test.go",
+            "internal/core/context.go",
+            "internal/query/loop.go",
+            "internal/core/constants.go",
+            "internal/api/openai/client.go",
+            "internal/core/errors.go"
+          ],
+          "top_symbols": [
+            "internal/tools/bash_test.go::TestBashTimeout",
+            "internal/tools/bash.go::BashTool.Execute",
+            "internal/tools/bash_test.go::TestBashRespectsParentContextCancel",
+            "cmd/forge/headless_test.go::TestRunWithRetryRetryableExhausted",
+            "internal/tools/bash_test.go::TestBashTruncation",
+            "internal/core/context_test.go::TestBuildSystemContextIncludesGit",
+            "cmd/forge/headless.go::runHeadless",
+            "cmd/forge/headless.go::runWithRetry",
+            "cmd/forge/headless_test.go::TestRunWithRetryEventualSuccess",
+            "internal/tools/bash_test.go::TestBashNonZeroExitIsError"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-75325ef263d5",
+          "metrics": {
+            "file_recall@1": 0.3333333333333333,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.6666666666666666,
+            "func_recall@5": 0.6666666666666666,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8165
+          },
+          "top_files": [
+            "internal/cli/settings_load.go",
+            "cmd/forge/main.go",
+            "internal/cli/cli.go",
+            "internal/core/config.go",
+            "internal/core/settings.go",
+            "README.md",
+            "cmd/forge/headless.go",
+            "internal/mcp/manager.go",
+            "internal/mcp/stdio.go",
+            "cmd/forge/main_test.go"
+          ],
+          "top_symbols": [
+            "cmd/forge/main.go::run",
+            "internal/core/config.go::Config",
+            "internal/cli/settings_load.go::ApplySettings",
+            "internal/core/config.go::Settings",
+            "internal/cli/cli.go::Args",
+            "cmd/forge/headless.go::runHeadless",
+            "internal/core/settings.go::LoadSettings",
+            "internal/cli/cli.go::Parser.Parse",
+            "internal/cli/settings_load.go::LoadLayeredSettings",
+            "internal/mcp/manager_test.go::TestManager_PartialConnectOnMultipleFailures"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-75a9193fa31c",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8116
+          },
+          "top_files": [
+            "internal/tui/update.go",
+            "internal/tui/program.go",
+            "internal/tui/model.go",
+            "internal/tui/loop_bridge_test.go",
+            "internal/query/loop.go",
+            "internal/tui/resume_picker.go",
+            "internal/tui/resume_picker_test.go",
+            "README.md",
+            "internal/tui/perm_dialog_test.go",
+            "cmd/forge/headless_test.go"
+          ],
+          "top_symbols": [
+            "internal/tui/update.go::Model.Update",
+            "internal/tui/program.go::waitForEvent",
+            "internal/tui/program.go::waitForPermRequest",
+            "internal/tui/program.go::Model.startQueryLoop",
+            "internal/tui/model.go::PermissionDialogState",
+            "internal/tui/program.go::programState",
+            "internal/tui/update.go::Model.openPermissionDialog",
+            "internal/tui/perm_dialog_test.go::openDialog",
+            "internal/tui/update.go::Model.handlePermissionDialogKey",
+            "internal/tui/loop_bridge_test.go::TestTUI_TurnFinishes"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-7887bab8a724",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 8180
+          },
+          "top_files": [
+            "README.md",
+            "internal/cli/cli.go",
+            "cmd/forge/headless.go",
+            "cmd/forge/main.go",
+            "internal/core/constants.go",
+            "internal/api/openai/client.go",
+            "internal/core/config.go",
+            "internal/tui/program.go",
+            "internal/api/provider.go",
+            "internal/api/anthropic/client.go"
+          ],
+          "top_symbols": [
+            "cmd/forge/headless.go::runHeadless",
+            "internal/tui/program.go::resolveAPIKey",
+            "internal/cli/cli.go::Args",
+            "cmd/forge/headless.go::resolveAPIKey",
+            "internal/cli/cli.go::Usage",
+            "internal/cli/cli.go::Parser.Parse",
+            "internal/cli/args_test.go::TestParseInterspersedFlags",
+            "internal/core/config.go::Config",
+            "internal/cli/cli.go::splitArgs",
+            "cmd/forge/main.go::run"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "forge-8060c0b5ff44",
+          "metrics": {
+            "file_recall@1": 0.2,
+            "file_recall@10": 0.8,
+            "file_recall@3": 0.4,
+            "file_recall@5": 0.4,
+            "func_recall@10": 0.8571428571428571,
+            "func_recall@5": 0.42857142857142855,
+            "gold_in_pack": 0.2,
+            "mrr": 1,
+            "pack_tokens": 8153
+          },
+          "top_files": [
+            "internal/query/compaction.go",
+            "README.md",
+            "internal/commands/baseline.go",
+            "internal/core/constants.go",
+            "internal/tui/model.go",
+            "internal/query/loop.go",
+            "internal/query/compaction_test.go",
+            "internal/tui/program.go",
+            "cmd/forge/headless.go",
+            "internal/tui/doc.go"
+          ],
+          "top_symbols": [
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/commands/command.go::CommandContext",
+            "internal/tui/model.go::Model",
+            "internal/commands/baseline.go::compactCmd.Help",
+            "internal/query/compaction_test.go::TestShouldAutoCompactCircuitBreaker",
+            "internal/tui/program.go::RunProgram",
+            "internal/query/compaction.go::CompactConversation",
+            "internal/query/loop.go::RunQueryLoop",
+            "internal/query/compaction.go::ShouldAutoCompact",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededAboveTrigger"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-9099b5e82071",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.08333333333333333,
+            "pack_tokens": 8070
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/doc.go",
+            "internal/tui/history.go",
+            "internal/commands/baseline.go",
+            "internal/core/settings.go",
+            "internal/query/loop.go",
+            "internal/tui/doc.go",
+            "internal/tools/editutil/count.go",
+            "internal/tui/model.go",
+            "internal/tui/history_test.go"
+          ],
+          "top_symbols": [
+            "internal/commands/baseline.go::exitCmd.Help",
+            "internal/commands/baseline.go::permissionsCmd",
+            "internal/core/config.go::Settings",
+            "internal/commands/baseline.go::permissionsCmd.Execute",
+            "internal/commands/baseline.go::clearCmd.Help",
+            "internal/core/config.go::Config",
+            "internal/commands/baseline.go::diffCmd.Help",
+            "internal/commands/baseline.go::costCmd.Execute",
+            "internal/commands/baseline.go::costCmd",
+            "internal/commands/baseline.go::statusCmd"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "forge-a58d2492d60c",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8140
+          },
+          "top_files": [
+            "internal/mcp/framing.go",
+            "internal/mcp/framing_test.go",
+            "internal/plugins/framing.go",
+            "internal/mcp/client_test.go",
+            "internal/tools/bash.go",
+            "internal/tools/glob.go",
+            "internal/tools/read.go",
+            "internal/core/session.go",
+            "internal/tui/update.go",
+            "internal/mcp/stdio.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/framing.go::readLine",
+            "internal/mcp/framing.go::writeFrame",
+            "internal/mcp/framing_test.go::TestReadFrame_OversizeFrame",
+            "internal/mcp/framing.go::readFrame",
+            "internal/tui/history_test.go::TestHistoryAppendCapsAtMax",
+            "internal/plugins/framing.go::readFrame",
+            "internal/mcp/framing_test.go::TestWriteReadRoundTrip",
+            "internal/tui/history.go::Model.historyAppend",
+            "internal/plugins/plugin_test.go::roundTrip",
+            "internal/query/accumulator.go::accumulator.rebuild"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "forge-a5b9b68b9675",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.6666666666666666,
+            "file_recall@3": 0,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.2,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.25,
+            "pack_tokens": 8186
+          },
+          "top_files": [
+            "cmd/forge/headless.go",
+            "internal/mcp/stdio_test.go",
+            "internal/mcp/smoke_test.go",
+            "internal/mcp/manager.go",
+            "internal/tui/program.go",
+            "internal/mcp/transport.go",
+            "internal/mcp/stdio.go",
+            ".github/workflows/ci.yml",
+            "internal/query/loop.go",
+            "internal/mcp/client_test.go"
+          ],
+          "top_symbols": [
+            "cmd/forge/headless.go::outputRenderer",
+            "cmd/forge/headless.go::runHeadless",
+            "internal/mcp/transport.go::Transport",
+            "internal/mcp/stdio_test.go::TestStdioTransport_SendSerializesWrites",
+            "internal/mcp/manager.go::Manager.Connect",
+            "internal/mcp/stdio.go::StdioTransport.Start",
+            "internal/query/loop.go::RunQueryLoop",
+            "cmd/forge/main_test.go::TestRun_InvalidFlag",
+            "internal/commands/registry.go::parseSubcommand",
+            "internal/mcp/stdio.go::StdioTransport.Stderr"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-a5e6e6819fc0",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.018518518518518517,
+            "pack_tokens": 8141
+          },
+          "top_files": [
+            "internal/core/session.go",
+            "internal/query/loop.go",
+            "internal/tui/model.go",
+            "internal/core/constants.go",
+            "internal/tools/editutil/count.go",
+            "internal/api/doc.go",
+            "internal/core/config.go",
+            "internal/api/openai/client.go",
+            "internal/api/request.go",
+            "internal/tui/history_test.go"
+          ],
+          "top_symbols": [
+            "internal/tui/model.go::permRequest",
+            "internal/api/openai/client.go::buildRequestBody",
+            "internal/api/openai/client.go::wireTool",
+            "internal/api/openai/client.go::wireRequest",
+            "internal/api/openai/client.go::wireToolCall",
+            "internal/api/openai/client.go::wireCallFunc",
+            "internal/api/openai/client.go::wireMessage",
+            "internal/api/openai/client.go::wireToolFunction",
+            "internal/api/openai/client.go::convertTools",
+            "internal/api/openai/client.go::convertMessages"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-a68c41600a02",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.6666666666666666,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.4,
+            "func_recall@5": 0.4,
+            "gold_in_pack": 0.3333333333333333,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 8185
+          },
+          "top_files": [
+            "internal/core/config.go",
+            "internal/core/settings.go",
+            "internal/cli/settings_load.go",
+            "README.md",
+            "internal/core/settings_test.go",
+            "internal/cli/cli.go",
+            "internal/cli/cli_test.go",
+            "internal/commands/baseline.go",
+            "internal/cli/settings_load_test.go",
+            "internal/core/constants.go"
+          ],
+          "top_symbols": [
+            "internal/core/config.go::Settings",
+            "internal/core/config.go::Config",
+            "internal/cli/settings_load.go::ApplySettings",
+            "internal/core/settings.go::overlaySettings",
+            "internal/cli/settings_load.go::LoadLayeredSettings",
+            "internal/core/settings_test.go::TestLayerSettingsPriorityOrder",
+            "internal/core/settings_test.go::TestLayerSettingsNeverOverlaysTrustedProjects",
+            "internal/cli/settings_load_test.go::TestLoadLayeredSettingsMergesInOrder",
+            "internal/cli/cli.go::Args",
+            "internal/core/settings.go::SettingsLoadResult"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "forge-a7da1650649f",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 8172
+          },
+          "top_files": [
+            "internal/query/compaction.go",
+            "internal/query/compaction_test.go",
+            "internal/query/loop.go",
+            "internal/core/constants.go",
+            "README.md",
+            "internal/tui/program.go",
+            "cmd/forge/headless.go",
+            "internal/tui/update.go",
+            "internal/core/config.go",
+            "internal/query/loop_test.go"
+          ],
+          "top_symbols": [
+            "internal/query/compaction.go::CompactState",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededFailureIncrementsCounter",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededResetsFailureCounterOnSuccess",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededAboveTriggerCompactsAndCounts",
+            "internal/query/compaction_test.go::TestShouldAutoCompactCircuitBreaker",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededNoMessages",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededBelowTriggerIsNoOp",
+            "internal/query/compaction.go::ShouldAutoCompact",
+            "internal/query/compaction_test.go::TestAutoCompactIfNeededNilStateTolerated"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-a81fac97db23",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.125,
+            "pack_tokens": 8141
+          },
+          "top_files": [
+            "internal/mcp/smoke_test.go",
+            "internal/mcp/client_test.go",
+            "internal/plugins/loader.go",
+            "internal/mcp/manager.go",
+            ".github/workflows/ci.yml",
+            "internal/mcp/client.go",
+            "internal/mcp/stdio.go",
+            "internal/plugins/plugin.go",
+            "internal/mcp/stdio_test.go",
+            "internal/mcp/framing_test.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client_test.go::fakeTransport",
+            "internal/mcp/transport.go::Transport",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/plugins/loader.go::loadPlugin",
+            "examples/plugins/echo/main.go::main",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/stdio.go::StdioTransport.Recv",
+            "internal/mcp/framing.go::writeFrame",
+            "internal/plugins/framing.go::writeFrame",
+            "internal/mcp/framing_test.go::TestReadFrame_IgnoresUnknownHeaders"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-a90340e4f83f",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0.25,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.7142857142857143,
+            "func_recall@5": 0.42857142857142855,
+            "gold_in_pack": 0.5,
+            "mrr": 0.5,
+            "pack_tokens": 8150
+          },
+          "top_files": [
+            "internal/core/constants.go",
+            "internal/query/compaction.go",
+            "internal/api/provider.go",
+            "README.md",
+            "internal/query/summarize.go",
+            "internal/commands/baseline.go",
+            "internal/core/cost.go",
+            "internal/api/request.go",
+            "internal/query/loop.go",
+            "cmd/forge/headless.go"
+          ],
+          "top_symbols": [
+            "internal/query/compaction.go::CompactConversation",
+            "internal/api/provider.go::ModelInfo",
+            "internal/query/loop.go::Config",
+            "internal/query/summarize.go::SummarizeHead",
+            "internal/core/cost_test.go::TestPricingForKnownModel",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/commands/baseline.go::compactCmd.Help",
+            "internal/api/selector/selector.go::Select",
+            "internal/api/request.go::Request",
+            "internal/core/config.go::Config"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-aaa0a5147ba8",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.6666666666666666,
+            "func_recall@5": 0.6666666666666666,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8184
+          },
+          "top_files": [
+            "internal/tools/grep.go",
+            "internal/tools/read.go",
+            "internal/tools/read_test.go",
+            "internal/tools/grep_test.go",
+            "internal/query/loop.go",
+            "internal/tools/bash.go",
+            "internal/core/messages.go",
+            "internal/tools/write.go",
+            "internal/api/request.go",
+            "internal/tools/glob.go"
+          ],
+          "top_symbols": [
+            "internal/tools/read.go::ReadTool.Execute",
+            "internal/tools/grep.go::GrepTool.Execute",
+            "internal/tools/read_test.go::TestReadOffsetAndLimit",
+            "internal/tools/grep.go::grepFile",
+            "internal/tools/write.go::WriteTool.Execute",
+            "internal/tools/grep.go::grepRenderContent",
+            "internal/tools/grep_test.go::TestGrepHeadLimitAndOffset",
+            "internal/tools/grep_test.go::TestGrepContentMode",
+            "internal/tools/read_test.go::TestReadBinaryFileIsError",
+            "internal/tools/read_test.go::TestReadBasicFile"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-ab408d9ccb2e",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.625,
+            "file_recall@3": 0.25,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.25,
+            "func_recall@5": 0.1875,
+            "gold_in_pack": 0.25,
+            "mrr": 0.5,
+            "pack_tokens": 8154
+          },
+          "top_files": [
+            "internal/tui/doc.go",
+            "internal/tui/model.go",
+            "internal/tui/update.go",
+            "internal/tui/program.go",
+            "internal/core/config.go",
+            "internal/core/permissions.go",
+            "internal/cli/cli.go",
+            "cmd/forge/main.go",
+            "internal/tools/tool.go",
+            "internal/query/loop.go"
+          ],
+          "top_symbols": [
+            "internal/tui/update.go::Model.handlePermissionDialog",
+            "internal/tui/model.go::PermissionDialogState",
+            "internal/tui/update.go::Model.Update",
+            "internal/tui/model.go::Model",
+            "internal/core/permissions.go::AutoPermissionHandler",
+            "internal/core/permissions.go::PermissionRequest",
+            "internal/tui/program.go::Model.startQueryLoop",
+            "internal/tools/tool.go::ToolContext",
+            "cmd/forge/main.go::runInteractivePlaceholder",
+            "internal/core/config.go::Settings"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-ae5b70146c20",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 0.5,
+            "mrr": 0.125,
+            "pack_tokens": 8187
+          },
+          "top_files": [
+            "internal/mcp/smoke_test.go",
+            "internal/mcp/stdio_spec_test.go",
+            "internal/mcp/framing.go",
+            ".github/workflows/ci.yml",
+            "internal/mcp/framing_test.go",
+            "internal/plugins/plugin_test.go",
+            "internal/plugins/framing.go",
+            "internal/mcp/stdio.go",
+            "internal/plugins/transport.go",
+            "internal/mcp/transport.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin_test.go::TestServer_SpeaksContentLengthFraming",
+            "internal/plugins/framing.go::writeFrame",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/mcp/stdio_spec_test.go::TestStdioSpecPeer_Interop",
+            "internal/mcp/transport.go::Transport",
+            "internal/mcp/http.go::HTTPTransport.Start",
+            "internal/plugins/framing_test.go::TestFraming_ZeroLength",
+            "internal/plugins/plugin.go::PluginServer.ServeIO",
+            "internal/mcp/manager.go::Manager.newTransport"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "forge-b0cad387b298",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.1,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 8079
+          },
+          "top_files": [
+            "internal/tui/doc.go",
+            "internal/query/loop.go",
+            "internal/tools/editutil/count.go",
+            "README.md",
+            "internal/core/settings.go",
+            "internal/commands/doc.go",
+            "internal/commands/command.go",
+            "internal/core/permissions.go",
+            "cmd/forge/main.go",
+            "internal/query/doc.go"
+          ],
+          "top_symbols": [
+            "internal/commands/baseline.go::exitCmd",
+            "cmd/forge/main.go::runInteractivePlaceholder",
+            "internal/commands/baseline.go::thinkingCmd.Help",
+            "internal/commands/command.go::CommandContext",
+            "internal/core/permissions.go::PermissionRequest",
+            "internal/query/loop.go::Event",
+            "internal/core/messages.go::MessageContent.GetFirstText",
+            "internal/query/loop.go::Outcome",
+            "internal/query/loop.go::sendEvent",
+            "internal/query/loop.go::StreamEventForward"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-ca89a7608f16",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.25,
+            "pack_tokens": 8182
+          },
+          "top_files": [
+            "internal/mcp/client_test.go",
+            "internal/mcp/stdio.go",
+            "internal/mcp/stdio_test.go",
+            "internal/plugins/transport.go",
+            "internal/mcp/smoke_test.go",
+            "internal/plugins/plugin_test.go",
+            "internal/mcp/client.go",
+            "internal/plugins/plugin.go",
+            "internal/plugins/client.go",
+            "internal/tui/program.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/client_test.go::fakeTransport",
+            "internal/plugins/transport.go::StdioTransport",
+            "internal/mcp/stdio_test.go::TestStdioTransport_CloseWhileRecvInFlight",
+            "internal/plugins/transport.go::StdioTransport.Send",
+            "internal/mcp/client_test.go::fakeTransport.Send",
+            "internal/mcp/client_test.go::fakeTransport.queue",
+            "internal/mcp/stdio.go::StdioTransport.Recv",
+            "internal/plugins/plugin.go::PluginServer.ServeIO",
+            "internal/mcp/stdio.go::StdioTransport",
+            "internal/mcp/transport.go::Transport"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-ce7d9dca1843",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.6666666666666666,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 0.75,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.3333333333333333,
+            "mrr": 0.5,
+            "pack_tokens": 8126
+          },
+          "top_files": [
+            "internal/mcp/tools.go",
+            "internal/query/loop.go",
+            "internal/mcp/protocol.go",
+            "internal/core/messages.go",
+            "internal/mcp/client_test.go",
+            "internal/api/anthropic/client.go",
+            "internal/mcp/tools_test.go",
+            "internal/api/fake.go",
+            "internal/api/openai/client.go",
+            "internal/mcp/manager.go"
+          ],
+          "top_symbols": [
+            "internal/mcp/tools.go::toolResultBlock",
+            "internal/mcp/tools.go::mcpTool",
+            "internal/mcp/tools.go::mcpTool.Execute",
+            "internal/mcp/tools.go::convertCallResult",
+            "internal/core/messages.go::ContentBlock",
+            "internal/api/fake.go::FakeProvider",
+            "internal/query/loop.go::executeToolCalls",
+            "internal/mcp/manager.go::toolsListResult",
+            "internal/api/fake.go::FakeProvider.Stream",
+            "internal/query/loop.go::jsonOrText"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "forge-d25bc1912b12",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 8169
+          },
+          "top_files": [
+            "internal/tui/program.go",
+            "internal/tui/update.go",
+            "internal/tui/model.go",
+            "internal/query/loop.go",
+            "README.md",
+            "internal/query/compaction.go",
+            "cmd/forge/headless_test.go",
+            "internal/mcp/client.go",
+            "internal/query/loop_test.go",
+            "internal/commands/command.go"
+          ],
+          "top_symbols": [
+            "internal/tui/program.go::Model.startQueryLoop",
+            "internal/tui/update.go::Model.handleLoopFinished",
+            "internal/tui/model.go::Model",
+            "internal/tui/program.go::programState",
+            "internal/tui/update.go::Model.Update",
+            "internal/query/compaction.go::AutoCompactIfNeeded",
+            "internal/commands/command.go::CommandContext",
+            "internal/api/fake.go::FakeProvider",
+            "internal/tui/model.go::loopFinishedMsg",
+            "internal/query/loop.go::RunQueryLoop"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "forge-d7040be54d71",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.5,
+            "pack_tokens": 8163
+          },
+          "top_files": [
+            "internal/mcp/client_test.go",
+            "internal/mcp/client.go",
+            ".github/workflows/ci.yml",
+            "internal/core/session_test.go",
+            "internal/core/session.go",
+            "internal/commands/resume_test.go",
+            "internal/plugins/plugin_test.go",
+            "internal/mcp/stdio.go",
+            "internal/plugins/client.go",
+            "internal/plugins/transport.go"
+          ],
+          "top_symbols": [
+            "internal/plugins/plugin_test.go::TestClient_TransportDeathFailsPendingCalls",
+            "internal/mcp/client_test.go::TestClient_OrphanResponseExitsReadLoop",
+            "internal/core/session.go::ListSessions",
+            "internal/commands/resume_test.go::TestResume_ByIndex_Success",
+            "internal/core/session_test.go::TestListSessions_SortedByUpdatedAtDesc",
+            "internal/mcp/client.go::client.readLoop",
+            "internal/plugins/client.go::client.readLoop",
+            "internal/mcp/client_test.go::fakeTransport",
+            "internal/mcp/client_test.go::fakeTransport.queue",
+            "internal/commands/resume.go::resumeByIndex"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "forge-d8928323ceaf",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 8112
+          },
+          "top_files": [
+            "README.md",
+            "internal/core/context.go",
+            "internal/tools/tool.go",
+            "internal/core/constants.go",
+            "internal/tools/editutil/count.go",
+            "internal/query/loop.go",
+            "internal/core/context_test.go",
+            "internal/core/permissions.go",
+            "internal/tui/doc.go",
+            "cmd/forge/main.go"
+          ],
+          "top_symbols": [
+            "internal/tools/tool.go::ToolContext",
+            "internal/tools/editutil/count.go::CountOccurrences",
+            "internal/core/prompt.go::BaseSystemPrompt",
+            "internal/core/context_test.go::TestBuildUserContextRespectsSkipMemory",
+            "internal/core/context.go::build_user_context",
+            "internal/core/context_test.go::TestBuildSystemContextIncludesGit",
+            "internal/core/permissions.go::PermissionLevel.String",
+            "internal/core/context.go::findMemoryFiles",
+            "cmd/forge/headless.go::runHeadless",
+            "internal/core/context_test.go::TestFindMemoryFilesWalksUpward"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "forge-eade154b6319",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 0,
+            "mrr": 0.2,
+            "pack_tokens": 8178
+          },
+          "top_files": [
+            "cmd/forge/headless.go",
+            "internal/api/selector/selector_test.go",
+            "internal/cli/cli.go",
+            "internal/api/selector/selector.go",
+            "internal/tui/program.go",
+            "cmd/forge/main.go",
+            "README.md",
+            "internal/api/openai/client.go",
+            ".github/workflows/ci.yml",
+            "internal/core/config.go"
+          ],
+          "top_symbols": [
+            "cmd/forge/headless.go::resolveAPIBase",
+            "internal/api/selector/selector_test.go::TestSelect_MissingAPIKeyFails",
+            "internal/tui/program.go::buildProvider",
+            "cmd/forge/headless.go::runHeadless",
+            "internal/tui/program.go::resolveAPIKey",
+            "internal/api/selector/selector.go::Select",
+            "internal/api/selector/selector_test.go::baseConfig",
+            "internal/cli/cli.go::Args",
+            "internal/api/selector/selector.go::detectFamily",
+            "cmd/forge/main.go::resolveCwd"
+          ],
+          "pack_files": 5
+        }
+      ]
+    }
+  ],
+  "paired": [
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "file_recall@1",
+      "mean_diff": 0.112092,
+      "ci_lo": 0.035294,
+      "ci_hi": 0.20915,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "file_recall@3",
+      "mean_diff": 0.20433,
+      "ci_lo": 0.104085,
+      "ci_hi": 0.322222,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "file_recall@5",
+      "mean_diff": 0.390931,
+      "ci_lo": 0.267157,
+      "ci_hi": 0.52549,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "file_recall@10",
+      "mean_diff": 0.624428,
+      "ci_lo": 0.483905,
+      "ci_hi": 0.763725,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "func_recall@5",
+      "mean_diff": 0.202676,
+      "ci_lo": 0.103992,
+      "ci_hi": 0.313725,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "func_recall@10",
+      "mean_diff": 0.224851,
+      "ci_lo": 0.127512,
+      "ci_hi": 0.33888,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "mrr",
+      "mean_diff": 0.372444,
+      "ci_lo": 0.262082,
+      "ci_hi": 0.489868,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.730801,
+      "ci_lo": 0.603758,
+      "ci_hi": 0.854167,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-1k",
+      "metric": "pack_tokens",
+      "mean_diff": 1018.029412,
+      "ci_lo": 1016.117647,
+      "ci_hi": 1019.823529,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "file_recall@1",
+      "mean_diff": 0.112092,
+      "ci_lo": 0.035294,
+      "ci_hi": 0.20915,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "file_recall@3",
+      "mean_diff": 0.20433,
+      "ci_lo": 0.104085,
+      "ci_hi": 0.322222,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "file_recall@5",
+      "mean_diff": 0.390931,
+      "ci_lo": 0.267157,
+      "ci_hi": 0.52549,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "file_recall@10",
+      "mean_diff": 0.624428,
+      "ci_lo": 0.483905,
+      "ci_hi": 0.763725,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "func_recall@5",
+      "mean_diff": 0.202676,
+      "ci_lo": 0.103992,
+      "ci_hi": 0.313725,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "func_recall@10",
+      "mean_diff": 0.224851,
+      "ci_lo": 0.127512,
+      "ci_hi": 0.33888,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "mrr",
+      "mean_diff": 0.372444,
+      "ci_lo": 0.262082,
+      "ci_hi": 0.489868,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.935866,
+      "ci_lo": 0.881536,
+      "ci_hi": 0.983252,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b1-4k",
+      "metric": "pack_tokens",
+      "mean_diff": 4060,
+      "ci_lo": 4019.294118,
+      "ci_hi": 4088.794118,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "file_recall@1",
+      "mean_diff": 0.293464,
+      "ci_lo": 0.166667,
+      "ci_hi": 0.437908,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "file_recall@3",
+      "mean_diff": 0.593791,
+      "ci_lo": 0.463072,
+      "ci_hi": 0.73366,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "file_recall@5",
+      "mean_diff": 0.681373,
+      "ci_lo": 0.561765,
+      "ci_hi": 0.809804,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "file_recall@10",
+      "mean_diff": 0.846487,
+      "ci_lo": 0.75,
+      "ci_hi": 0.929167,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "func_recall@5",
+      "mean_diff": 0.434677,
+      "ci_lo": 0.312122,
+      "ci_hi": 0.558824,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "func_recall@10",
+      "mean_diff": 0.55196,
+      "ci_lo": 0.421258,
+      "ci_hi": 0.684477,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "mrr",
+      "mean_diff": 0.633878,
+      "ci_lo": 0.51732,
+      "ci_hi": 0.751525,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.563235,
+      "ci_lo": 0.431863,
+      "ci_hi": 0.704412,
+      "n": 34
+    },
+    {
+      "a": "b0",
+      "b": "b2",
+      "metric": "pack_tokens",
+      "mean_diff": 8156.117647,
+      "ci_lo": 8145.794118,
+      "ci_hi": 8166.117647,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "file_recall@1",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "file_recall@3",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "file_recall@5",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "file_recall@10",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "func_recall@5",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "func_recall@10",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "mrr",
+      "mean_diff": 0,
+      "ci_lo": 0,
+      "ci_hi": 0,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.205065,
+      "ci_lo": 0.097222,
+      "ci_hi": 0.318627,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b1-4k",
+      "metric": "pack_tokens",
+      "mean_diff": 3041.970588,
+      "ci_lo": 3001.588235,
+      "ci_hi": 3070.558824,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "file_recall@1",
+      "mean_diff": 0.181373,
+      "ci_lo": 0.060784,
+      "ci_hi": 0.317647,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "file_recall@3",
+      "mean_diff": 0.389461,
+      "ci_lo": 0.222794,
+      "ci_hi": 0.558824,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "file_recall@5",
+      "mean_diff": 0.290441,
+      "ci_lo": 0.148284,
+      "ci_hi": 0.442402,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "file_recall@10",
+      "mean_diff": 0.222059,
+      "ci_lo": 0.089216,
+      "ci_hi": 0.367647,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "func_recall@5",
+      "mean_diff": 0.232001,
+      "ci_lo": 0.058298,
+      "ci_hi": 0.400686,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "func_recall@10",
+      "mean_diff": 0.327108,
+      "ci_lo": 0.144048,
+      "ci_hi": 0.508698,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "mrr",
+      "mean_diff": 0.261434,
+      "ci_lo": 0.134475,
+      "ci_hi": 0.3914,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "gold_in_pack",
+      "mean_diff": -0.167565,
+      "ci_lo": -0.330964,
+      "ci_hi": -0.004412,
+      "n": 34
+    },
+    {
+      "a": "b1-1k",
+      "b": "b2",
+      "metric": "pack_tokens",
+      "mean_diff": 7138.088235,
+      "ci_lo": 7127.617647,
+      "ci_hi": 7148,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "file_recall@1",
+      "mean_diff": 0.181373,
+      "ci_lo": 0.060784,
+      "ci_hi": 0.317647,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "file_recall@3",
+      "mean_diff": 0.389461,
+      "ci_lo": 0.222794,
+      "ci_hi": 0.558824,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "file_recall@5",
+      "mean_diff": 0.290441,
+      "ci_lo": 0.148284,
+      "ci_hi": 0.442402,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "file_recall@10",
+      "mean_diff": 0.222059,
+      "ci_lo": 0.089216,
+      "ci_hi": 0.367647,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "func_recall@5",
+      "mean_diff": 0.232001,
+      "ci_lo": 0.058298,
+      "ci_hi": 0.400686,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "func_recall@10",
+      "mean_diff": 0.327108,
+      "ci_lo": 0.144048,
+      "ci_hi": 0.508698,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "mrr",
+      "mean_diff": 0.261434,
+      "ci_lo": 0.134475,
+      "ci_hi": 0.3914,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "gold_in_pack",
+      "mean_diff": -0.372631,
+      "ci_lo": -0.513072,
+      "ci_hi": -0.226552,
+      "n": 34
+    },
+    {
+      "a": "b1-4k",
+      "b": "b2",
+      "metric": "pack_tokens",
+      "mean_diff": 4096.117647,
+      "ci_lo": 4067.5,
+      "ci_hi": 4135.323529,
+      "n": 34
+    }
+  ]
+}
