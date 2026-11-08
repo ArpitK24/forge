@@ -198,4 +198,8 @@ func TestSanitizeCommitMessage(t *testing.T) {
 	if want := "add Foo to <file>\n\nSee <file> and myfoo.go."; got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
+	got = SanitizeCommitMessage("move framing into internal/plugins/ and internal/plugins, not internal/pluginsx", []string{"internal/plugins/plugin.go"})
+	if want := "move framing into <file> and <file>, not internal/pluginsx"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
 }

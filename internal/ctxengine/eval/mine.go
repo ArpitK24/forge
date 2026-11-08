@@ -41,9 +41,9 @@ type MineOptions struct {
 // The problem statement is the commit message, sanitized against the
 // most direct leak: the conventional-commit prefix ("fix(tui):"), PR
 // numbers, trailers, and every literal mention of a file the commit
-// touches (full path or base name) are removed or replaced by
-// "<file>". Function and type names are kept, as an issue reporter
-// would name them.
+// touches (full path, base name, or a multi-segment directory such as
+// "internal/plugins") are removed or replaced by "<file>". Function
+// and type names are kept, as an issue reporter would name them.
 func MineGitTasks(ctx context.Context, gitDir string, opt MineOptions) ([]Task, error) {
 	if opt.MaxGoldFiles <= 0 {
 		opt.MaxGoldFiles = 10
@@ -309,6 +309,13 @@ func SanitizeCommitMessage(msg string, touched []string) string {
 	for _, p := range touched {
 		names[p] = true
 		names[path.Base(p)] = true
+		// Directories that name a package ("internal/plugins") point at
+		// the gold file almost as directly as its path. Single-segment
+		// directories ("internal", "cmd") are too generic to mask.
+		for d := path.Dir(p); strings.Contains(d, "/"); d = path.Dir(d) {
+			names[d+"/"] = true
+			names[d] = true
+		}
 	}
 	var ns []string
 	for n := range names {
