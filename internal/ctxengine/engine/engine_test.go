@@ -116,7 +116,8 @@ func TestObserveIgnoresReadsErrorsAndOutsidePaths(t *testing.T) {
 	ctx := context.Background()
 	e.Observe(ctx, core.ToolUse{Name: core.ToolRead, Input: json.RawMessage(`{"file_path":"a.go"}`)}, "", false)
 	e.Observe(ctx, core.ToolUse{Name: core.ToolEdit, Input: json.RawMessage(`{"file_path":"b.go"}`)}, "", true)
-	e.Observe(ctx, core.ToolUse{Name: core.ToolEdit, Input: json.RawMessage(`{"file_path":"/etc/passwd"}`)}, "", false)
+	outside := filepath.Join(t.TempDir(), "outside.go") // absolute on every OS
+	e.Observe(ctx, core.ToolUse{Name: core.ToolEdit, Input: json.RawMessage(`{"file_path":` + mustQuote(outside) + `}`)}, "", false)
 	e.Observe(ctx, core.ToolUse{Name: core.ToolEdit, Input: json.RawMessage(`not json`)}, "", false)
 	e.Observe(ctx, core.ToolUse{Name: core.ToolEdit, Input: json.RawMessage(`{"file_path":"sub/c.go"}`)}, "", false)
 	if len(e.pending) != 1 || !e.pending["sub/c.go"] {
