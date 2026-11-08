@@ -91,7 +91,7 @@ func syntheticTasks() ([]Task, fakeSource) {
 
 func TestRunDeterministic(t *testing.T) {
 	tasks, src := syntheticTasks()
-	cfg := RunConfig{Dataset: "synthetic", Baselines: []string{"b0", "b1-1k", "b1-4k", "b2"}, Budget: 300, Resamples: 500, Seed: 3, Jobs: 4}
+	cfg := RunConfig{Dataset: "synthetic", Baselines: []string{"b0", "b1-1k", "b1-4k", "b2", "m1"}, Budget: 300, Resamples: 500, Seed: 3, Jobs: 4}
 	var outs [][]byte
 	for i := 0; i < 3; i++ {
 		c := cfg
