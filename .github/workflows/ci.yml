@@ -83,6 +83,10 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.15.0
+          # Build from the Go module proxy instead of downloading the
+          # release tarball from github.com, which returned HTTP 504
+          # repeatedly on 2026-11-08 and failed this required check.
+          install-mode: goinstall
 
       - name: Race detector + coverage
         # The race detector needs cgo. The shipped binaries stay
