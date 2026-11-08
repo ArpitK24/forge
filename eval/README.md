@@ -1,4 +1,4 @@
-# Context-engine evaluation (Milestone 0)
+# Context-engine evaluation (Milestones 0–1)
 
 This directory holds the data for `forge eval`, the hidden harness that
 measures Forge's context engine (design doc §13–14). Milestone 0 is
@@ -10,13 +10,14 @@ eval/
   README.md                 this file
   tasks/internal.jsonl      34 retrieval tasks mined from Forge's own history (committed)
   splits/verified-dev.txt   the 100 SWE-bench Verified dev-split ids (committed)
-  baselines/internal.json   B0/B1/B2 results on the internal tasks (committed, checked in CI)
-  baselines/verified-dev.json  B0/B1/B2 results on the Verified dev split (committed)
+  baselines/internal.json   B0/B1/B2/M1 results on the internal tasks (committed, checked in CI)
+  baselines/verified-dev.json  B0/B1/B2/M1 results on the Verified dev split (committed)
 ```
 
-The code lives in `internal/ctxengine/` (`symbols`, `tokens`, `retrieve`,
-`eval`). It imports only the standard library and never imports
-`internal/tools`.
+The code lives in `internal/ctxengine/` (`symbols`, `tokens`, `index`,
+`retrieve`, `engine`, `eval`). Its only third-party dependency is the
+pure-Go SQLite driver `modernc.org/sqlite` (used by `index`), and it never
+imports `internal/tools`.
 
 ## Quick start
 
@@ -32,7 +33,7 @@ git fetch origin '+refs/pull/*/head:refs/remotes/origin/pr/*'
 # SWE-bench: download the datasets once (Hugging Face datasets-server, ~10 s)
 ./forge eval fetch-swebench --dataset all
 # then score the 100-task Verified dev split (clones ~10 repos into the cache on first use)
-./forge eval retrieval --dataset verified-dev --baseline b0,b1,b2 --budget 8192 --out vdev.json
+./forge eval retrieval --dataset verified-dev --baseline b0,b1,b2,m1 --budget 8192 --out vdev.json
 ```
 
 `forge eval retrieval` flags:
@@ -41,7 +42,7 @@ git fetch origin '+refs/pull/*/head:refs/remotes/origin/pr/*'
 |---|---|---|
 | `--dataset` | `internal` | `internal`, `lite` (300), `verified` (500), `verified-dev` (100) |
 | `--tasks` | | read tasks from any JSONL file instead |
-| `--baseline` | `b0,b1,b2` | `b1` expands to `b1-1k,b1-4k` |
+| `--baseline` | `b0,b1,b2,m1` | `b1` expands to `b1-1k,b1-4k` |
 | `--budget` | `8192` | pack token budget |
 | `--out` | stdout | JSON report |
 | `--cache-dir` | `<user cache>/forge/eval` | datasets and bare repo clones |
@@ -159,6 +160,8 @@ were inserted. Then:
 | `b1-1k`, `b1-4k` | Aider-style repo map in pure Go. Definition tags from `symbols`, reference tags = identifier occurrences; an edge R→D for each identifier D defines and R references, weighted `mul·√refs` (×10 mentioned in the issue, ×10 long compound names, ×0.1 `_private`, ×0.1 defined in >5 files). PageRank (d=0.85) personalized toward files whose path, base name or stem the issue mentions, or that define a mentioned identifier. Files are ranked by PageRank; definitions by the rank their in-edges carry. The map lists top definitions' first lines under their file headers up to 1k or 4k tokens. Go and Python files only. |
 | `b2` | Full-file grep. BM25 (k1=1.2, b=0.75) over query terms; documents are path terms + content terms; identifiers are split on snake_case and camelCase (acronyms kept, compound kept as an extra term), stopwords dropped. Symbols are ranked by a second BM25 over symbol bodies. Whole files are packed greedily in rank order, skipping any that would overflow the budget. |
 
+| `m1` | Milestone 1 retriever (`retrieve/m1.go`), the ranker behind `--context-engine`. The corpus is loaded into an in-memory copy of the real index (`index` package: SQLite/FTS5, the same code that maintains `.forge/index/index.db`). Chunks are symbols (spans from `symbols`, so ids match the gold sets; Go signatures from `go/parser`), each code file's top-level "header", and 60-line windows of files without an extractor. FTS5 `bm25()` over three columns (path ×1, symbol name ×2, body ×1) of identifier-split terms; files score a decayed sum of their 3 best chunks (1, 0.5, 0.25); files the session read or edited, Grep paths/patterns and `file:line` references in tool output add an activity boost (decay 0.7 per turn; recorded trajectories are not in the eval yet, so it is 0 here). The pack takes chunk bodies in score order from the top 10 files while they fit and score at least 0.6 of the best chunk (a body over 25% of the budget is shown as its signature), then up to 5 signature lines per file for further matches. `gold_in_pack` counts a file only when at least one body from it is packed; signature-only files do not count. |
+
 All baselines index the same corpus: files with a source, build or prose
 extension, ≤1 MiB, not binary, outside `vendor/` and `node_modules/`.
 Snapshots are read straight from a bare clone (`git ls-tree` +
@@ -198,7 +201,62 @@ set twice and fails on any difference.
 ## Baseline results (budget 8192, bytes/4 tokens)
 
 See `baselines/*.json` for CIs and per-task rankings; the PR that added
-this directory carries the tables.
+this directory carries the B0/B1/B2 tables.
+
+## Milestone 1 results
+
+Exit criteria (design doc §14): file recall@5 at or above B2 with 30%
+fewer pack tokens; single-file reindex under 50 ms p95; cold index of the
+Forge repo under 5 s.
+
+verified-dev (100 tasks; func recall over the 95 with gold functions):
+
+| | file R@1 | R@3 | R@5 | R@10 | func R@5 | func R@10 | MRR | gold-in-pack | pack tokens |
+|---|---|---|---|---|---|---|---|---|---|
+| b1-4k | 0.030 | 0.085 | 0.150 | 0.242 | 0.011 | 0.011 | 0.107 | 0.685† | 4090 |
+| b2 | 0.145 | 0.318 | 0.373 | 0.506 | 0.308 | 0.359 | 0.292 | 0.155 | 8188 |
+| **m1** | **0.240** | **0.408** | **0.431** | **0.576** | **0.342** | **0.428** | **0.385** | **0.483** | **5118** |
+| m1 − b2 (95% paired CI) | +0.095 [0.020, 0.175] | +0.090 [0.020, 0.160] | +0.058 [−0.018, 0.135] | +0.070 [0.005, 0.135] | +0.034 [−0.019, 0.089] | +0.069 [0.018, 0.128] | +0.093 [0.038, 0.155] | +0.328 [0.235, 0.422] | −3070 [−3665, −2480] |
+
+internal (34 tasks):
+
+| | file R@1 | R@3 | R@5 | R@10 | func R@5 | func R@10 | MRR | gold-in-pack | pack tokens |
+|---|---|---|---|---|---|---|---|---|---|
+| b1-4k | 0.112 | 0.204 | 0.391 | 0.624 | 0.203 | 0.225 | 0.372 | 0.936† | 4060 |
+| b2 | 0.293 | 0.594 | 0.681 | 0.846 | 0.435 | 0.552 | 0.634 | 0.563 | 8156 |
+| **m1** | 0.231 | **0.636** | **0.715** | 0.838 | **0.438** | **0.575** | 0.630 | **0.736** | **4096** |
+| m1 − b2 (95% paired CI) | −0.062 [−0.154, 0.011] | +0.042 [−0.056, 0.136] | +0.034 [−0.005, 0.083] | −0.009 [−0.048, 0.028] | +0.003 [−0.018, 0.023] | +0.024 [−0.017, 0.069] | −0.004 [−0.074, 0.065] | +0.173 [0.045, 0.307] | −4060 [−4795, −3257] |
+
+† B1's map lists signatures only, so its gold-in-pack is not comparable.
+
+* **Recall@5 vs B2:** met on both sets (0.431 vs 0.373 on dev, 0.715 vs
+  0.681 internal). The paired CIs for R@5 include 0, so "at or above" is
+  shown, "significantly above" is not; R@1, R@3, R@10, MRR and func R@10
+  are significantly better on dev.
+* **30% fewer pack tokens:** met: 5118 vs 8188 on dev (−37.5%), 4096 vs
+  8156 internal (−49.8%), while gold-in-pack roughly triples on dev.
+* **Index speed** (`go test -run TestIndexPerf -v ./internal/ctxengine/index`,
+  set `FORGE_INDEX_PERF=1` to enforce): met. On a 2-vCPU arm64 sandbox,
+  cold index of this repo (211 files, 2,341 chunks) takes 0.28–0.31 s
+  (target 5 s), and single-file reindex over 200 edits of the 40 largest
+  Go files is p50 ≈3 ms, p95 10.5–15.6 ms (target 50 ms) across three
+  runs. The reindex timing covers hash, parse and the SQLite transaction
+  (the file is read from memory, so disk stat/read is excluded). There is
+  no fsnotify watcher yet: the engine syncs once per session and then
+  reindexes files the agent edits (`Refresh`) before the next turn; edits
+  made outside Forge mid-session are picked up at the next session.
+
+**What was tuned, and on what.** Ranking parameters (column weights,
+file aggregation) were set before looking at results and kept after a
+small sweep on the internal set showed only noise-level differences.
+The one parameter chosen with the dev split in view is the packer's
+score cutoff: 0.3 → 0.5 → 0.6 of the best chunk gave 7875 → 6505 → 5118
+pack tokens on dev with gold-in-pack 0.513 → 0.493 → 0.483; 0.6 is the
+committed value. Recall metrics do not depend on it. Nothing was tuned
+on held-out Verified tasks.
+
+**Not yet measured:** the activity signal (no recorded trajectories in
+the eval sets; it is unit-tested only) and end-to-end solve rate.
 
 ## Leakage notes
 

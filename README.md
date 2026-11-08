@@ -219,6 +219,7 @@ All three carry the loop's real terminal `outcome` (`end_turn`, `max_tokens`, `c
 | `--resume` | Resume a saved session (Phase 3.1) | — |
 | `--cwd` | Working directory for tool execution | `$PWD` |
 | `--no-auto-compact` | Disable the auto-compaction trigger math | on |
+| `--context-engine` | Experimental: index the project into `.forge/index/` and add ranked repository context to every turn | off |
 | `--no-project-memory` | Skip `FORGE.md` discovery | off |
 | `--mcp-config` | JSON file of MCP servers to connect at startup | — |
 | `--plugin-dir` | Directory to scan for plugins, instead of the default (repeatable) | `~/.forge/plugins` |
@@ -237,7 +238,7 @@ Forge also reads JSON settings files. Later layers override earlier ones, and **
 2. `<project>/.forge/settings.json` — project settings, usually committed
 3. `<project>/.forge/settings.local.json` — per-checkout overrides
 
-A missing file simply contributes nothing. Supported keys: `model`, `max_tokens`, `verbose`, `theme`, `auto_compact` (settings can only turn it *off*; `--no-auto-compact` always wins), `permission_mode` (currently a number: `0` default, `1` accept-edits, `2` bypass-permissions, `3` plan), `mcp_servers`, `permission_rules`, and `trusted_projects` (global file only).
+A missing file simply contributes nothing. Supported keys: `model`, `max_tokens`, `verbose`, `theme`, `auto_compact` (settings can only turn it *off*; `--no-auto-compact` always wins), `context_engine` (experimental, default `false`; settings can only turn it *on*), `permission_mode` (currently a number: `0` default, `1` accept-edits, `2` bypass-permissions, `3` plan), `mcp_servers`, `permission_rules`, and `trusted_projects` (global file only).
 
 **Project settings are untrusted by default.** Both project files live inside the repository, so anyone who can commit to it controls them. Forge therefore ignores `permission_mode`, `mcp_servers` (which launch processes at startup), `permission_rules` and `trusted_projects` from them and prints a warning naming the ignored keys. To allow those keys for a repository you trust, list its absolute path in your **global** `~/.forge/settings.json`:
 
@@ -267,6 +268,7 @@ Even for a trusted project, an explicit `--permission-mode` / `--dangerously-ski
 │   ├── tools/                  built-in tools (Bash, Read, Write, Edit, Glob, Grep)
 │   │   └── editutil/           shared file-rewrite helpers
 │   ├── query/                  RunQueryLoop, auto-compaction, transient-error retry
+│   ├── ctxengine/              context engine: index (SQLite/FTS5), retrievers, engine, eval harness
 │   ├── tui/                    bubbletea Model, View, Update, permission dialog
 │   ├── commands/               slash-command framework + baseline commands
 │   └── integration tests, fixtures, …

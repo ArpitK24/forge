@@ -61,6 +61,19 @@ All notable changes to Forge are documented here. The format follows
   cleared when the retry succeeds.
 
 ### Added
+- Context engine, Milestone 1 (experimental, **off by default**): a local
+  code index at `.forge/index/index.db` (SQLite through the pure-Go
+  `modernc.org/sqlite` driver, so builds stay `CGO_ENABLED=0`) with
+  symbol-level chunks, FTS5 BM25 search with camelCase/snake_case term
+  splitting, incremental sync (mtime+size, then content hash) and
+  synchronous reindexing of files the agent edits. Enable it with
+  `--context-engine` or `"context_engine": true` in settings to add a
+  ranked `<forge-context>` block of symbol bodies and signatures to every
+  turn. With it off, requests are byte-identical to before.
+- `query.Config.Context`: an optional `ContextProvider` hook (assemble
+  before each request, observe each tool call).
+- Retrieval eval: new `m1` retriever in `forge eval retrieval` (run by
+  default and in CI); baselines in `eval/baselines/` now include it.
 - CI quality job: gofmt check, golangci-lint, race detector, coverage
   report; Docker image build.
 - Dockerfile, Makefile, GoReleaser config, security policy, contributing
