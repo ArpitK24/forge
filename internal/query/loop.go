@@ -44,6 +44,12 @@ type Config struct {
 	// Empty = the session's own Model, which is always valid
 	// for the active provider (a hard-coded NIM model is not).
 	SummaryModel string
+	// Context, when non-nil, is the context engine (design doc
+	// §4): it assembles ranked repository context before every
+	// turn and observes every executed tool call. nil (the
+	// default) keeps today's behaviour byte for byte: the system
+	// prompt is sent unchanged and nothing is observed.
+	Context ContextProvider
 }
 
 // OutcomeKind enumerates the loop's terminal states. Spec §5.1.
@@ -281,11 +287,17 @@ func RunQueryLoop(
 		// 3. Build the request. The system prompt is already
 		// assembled by the caller; we wrap it as a single
 		// string system block. Tools are passed through.
+		// With a context engine the ranked pack is appended to
+		// the system text; nil sends it exactly as before.
+		system := cfg.SystemPrompt + cfg.AppendSystemPrompt
+		if cfg.Context != nil {
+			system = assembleContext(ctx, cfg.Context, messages, system, eventCh)
+		}
 		req := api.Request{
 			Model:       cfg.Model,
 			MaxTokens:   cfg.MaxTokens,
 			Messages:    messages,
-			System:      api.SystemString(cfg.SystemPrompt + cfg.AppendSystemPrompt),
+			System:      api.SystemString(system),
 			Tools:       toolDefinitionsFrom(toolsList),
 			Temperature: cfg.Temperature,
 			Thinking:    convertThinkingConfig(cfg.Thinking),
@@ -423,7 +435,7 @@ func RunQueryLoop(
 			// Denied and unknown tools come back as is_error
 			// tool_results so the model can recover; MaxTurns
 			// bounds a model that keeps retrying them.
-			results, ok := executeToolCalls(ctx, toolCtx, toolsList, assistantMsg, eventCh)
+			results, ok := executeToolCalls(ctx, toolCtx, toolsList, assistantMsg, eventCh, cfg.Context)
 			if !ok {
 				// stop_reason was tool_use but the message
 				// carried no tool calls: nothing to answer.
@@ -488,6 +500,7 @@ func executeToolCalls(
 	toolsList []tools.Tool,
 	assistant core.Message,
 	eventCh chan<- Event,
+	observer ContextProvider,
 ) (core.Message, bool) {
 	uses := assistant.ToolUses()
 	if len(uses) == 0 {
@@ -554,6 +567,9 @@ func executeToolCalls(
 		// Spec §3.1 + §16: "errors never panic the process".
 		// Wrap Execute in a recover().
 		result := safeExecute(ctx, tool, tu.Input, tc)
+		if observer != nil {
+			observeTool(ctx, observer, tu, result)
+		}
 
 		// Emit ToolEnd.
 		endResultText := result.Text
