@@ -92,6 +92,33 @@ func LoadSettings(path string) (SettingsLoadResult, error) {
 	return res, nil
 }
 
+// ReadSettingsFile reads one settings layer from path without the
+// side effects of LoadSettings: it never creates directories and
+// never substitutes DefaultSettings(). A missing file returns the
+// zero Settings and found=false; an empty file returns the zero
+// Settings and found=true. That makes the result safe to overlay:
+// an absent layer contributes nothing instead of resetting the
+// layers below it to compiled-in defaults.
+//
+// Malformed JSON returns a *Error{Kind: KindConfig}; any other read
+// failure a *Error{Kind: KindIO}.
+func ReadSettingsFile(path string) (s Settings, found bool, err error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return Settings{}, false, nil
+		}
+		return Settings{}, false, Wrap(KindIO, err, "read settings file")
+	}
+	if len(data) == 0 {
+		return Settings{}, true, nil
+	}
+	if err := json.Unmarshal(data, &s); err != nil {
+		return Settings{}, true, Wrap(KindConfig, err, "parse "+filepath.Base(path))
+	}
+	return s, true, nil
+}
+
 // Save writes the settings to the given path. Creates parent
 // directories as needed. The file is written with mode 0600
 // (owner read/write only) since it may contain API keys in
@@ -166,7 +193,8 @@ func settingsIsEmpty(s Settings) bool {
 		s.Theme != "" ||
 		s.AutoCompact != nil ||
 		len(s.McpServers) != 0 ||
-		len(s.PermissionRules) != 0 {
+		len(s.PermissionRules) != 0 ||
+		len(s.TrustedProjects) != 0 {
 		return false
 	}
 	return true
@@ -206,4 +234,6 @@ func overlaySettings(dst *Settings, src Settings) {
 	if len(src.PermissionRules) > 0 {
 		dst.PermissionRules = src.PermissionRules
 	}
+	// TrustedProjects is deliberately NOT overlaid: only the global
+	// layer (the base of LayerSettings) may declare trust.
 }

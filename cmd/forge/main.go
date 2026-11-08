@@ -92,12 +92,15 @@ func run(program string, args []string) error {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(2)
 	}
-	settings, err := cli.LoadLayeredSettings(resolveCwd(parsed.Cwd))
+	layered, err := cli.LoadLayered(resolveCwd(parsed.Cwd))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "warning: could not load settings:", err)
-		settings = core.Settings{}
+		layered = cli.LayeredSettings{}
 	}
-	cfg = cli.ApplySettings(cfg, settings)
+	for _, w := range layered.Warnings {
+		fmt.Fprintln(os.Stderr, "warning:", w)
+	}
+	cfg = cli.ApplySettings(cfg, layered.Settings)
 
 	// --dump-system-prompt: prints the real assembled prompt.
 	if parsed.DumpSystemPrompt {

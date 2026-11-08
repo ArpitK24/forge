@@ -6,7 +6,18 @@ All notable changes to Forge are documented here. The format follows
 
 ## [Unreleased]
 
+### Security
+- Settings: a repository's `.forge/settings.json` or `.forge/settings.local.json`
+  can no longer raise the permission mode, add permission rules, or launch MCP
+  servers. These keys are ignored (with a warning) unless the project's absolute
+  path is listed in `trusted_projects` in `~/.forge/settings.json`. An explicit
+  `--permission-mode` flag now always wins over every settings file.
+
 ### Fixed
+- Settings layering: a missing project or local settings file no longer resets
+  global/project values to compiled-in defaults, and loading settings no longer
+  creates `.forge/` in the working directory.
+- `--no-auto-compact` works again; settings can only turn auto-compaction off.
 - Plugins: host and plugin now both speak Content-Length framing, so plugins
   initialise; tool descriptions and schemas are kept; tool params are no
   longer double-encoded.

@@ -229,6 +229,26 @@ Flags can go before or after the prompt, so `forge -p "fix the tests" --model <i
 
 `forge --help` (or `forge.exe --help` on Windows) is the canonical, always-up-to-date reference.
 
+### Settings files
+
+Forge also reads JSON settings files. Later layers override earlier ones, and **CLI flags always win over every file**:
+
+1. `~/.forge/settings.json` — your global defaults (trusted)
+2. `<project>/.forge/settings.json` — project settings, usually committed
+3. `<project>/.forge/settings.local.json` — per-checkout overrides
+
+A missing file simply contributes nothing. Supported keys: `model`, `max_tokens`, `verbose`, `theme`, `auto_compact` (settings can only turn it *off*; `--no-auto-compact` always wins), `permission_mode` (currently a number: `0` default, `1` accept-edits, `2` bypass-permissions, `3` plan), `mcp_servers`, `permission_rules`, and `trusted_projects` (global file only).
+
+**Project settings are untrusted by default.** Both project files live inside the repository, so anyone who can commit to it controls them. Forge therefore ignores `permission_mode`, `mcp_servers` (which launch processes at startup), `permission_rules` and `trusted_projects` from them and prints a warning naming the ignored keys. To allow those keys for a repository you trust, list its absolute path in your **global** `~/.forge/settings.json`:
+
+```json
+{
+  "trusted_projects": ["/home/me/src/my-repo"]
+}
+```
+
+Even for a trusted project, an explicit `--permission-mode` / `--dangerously-skip-permissions` or `--mcp-config` flag still wins.
+
 ---
 
 ## Project layout
