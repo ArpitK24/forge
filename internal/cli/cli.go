@@ -14,6 +14,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -24,7 +25,8 @@ import (
 // All fields are exported so cmd/forge/main.go can wire them into a
 // *core.Config without ceremony.
 type Args struct {
-	// PositionalPrompt is the first non-flag argument, if any. It is
+	// PositionalPrompt is every non-flag argument joined with single
+	// spaces (flags may appear before or after it). It is
 	// the "headless one-shot prompt" mode from spec §7.3: when present
 	// (or piped on stdin) and the binary is not in interactive TUI
 	// mode, this becomes the first user message.
@@ -184,17 +186,22 @@ func (p *Parser) Parse() (*Args, error) {
 	p.fs.StringVar(&outputFormatStr, "output-format", "",
 		"one of: text, json, stream-json")
 
-	if err := p.fs.Parse(p.args); err != nil {
+	// The stdlib flag package stops at the first positional argument,
+	// so `forge -p "fix tests" --model x` would leave --model unparsed.
+	// Move every flag (and its value) ahead of the positionals first,
+	// keeping their relative order, then parse once.
+	flags, positionals := splitArgs(p.fs, p.args)
+	if err := p.fs.Parse(flags); err != nil {
 		return nil, err
 	}
+	// splitArgs only routes recognised flag shapes to flags, so
+	// anything Parse leaves behind is a positional too.
+	positionals = slices.Concat(p.fs.Args(), positionals)
 
-	// Positional: the first remaining argument after flag parsing is
-	// the prompt. (We don't support multi-word positional prompts in
-	// Phase 1 — users with multi-word prompts can use single quotes
-	// in their shell.)
-	if rest := p.fs.Args(); len(rest) > 0 {
-		a.PositionalPrompt = rest[0]
-	}
+	// Positional: every remaining word, joined with single spaces, is
+	// the prompt, so `forge fix the tests` and `forge "fix the tests"`
+	// behave the same.
+	a.PositionalPrompt = strings.Join(positionals, " ")
 
 	// Stdin-piped prompt: if there's no positional prompt and stdin
 	// is not a terminal, we'll read the prompt from stdin in main.go.
@@ -247,6 +254,54 @@ func (p *Parser) Parse() (*Args, error) {
 	}
 
 	return a, nil
+}
+
+// splitArgs separates args into flag tokens (each flag with its value,
+// in their original order) and positional words, so flags may appear
+// anywhere on the command line, before or after the prompt.
+//
+// Rules, matching the flag package's own syntax:
+//   - "--" ends flag parsing; every later argument is positional.
+//   - "-" on its own is positional.
+//   - "-name=value" / "--name=value" is one flag token.
+//   - "-name" / "--name" for a boolean flag is one token; for any other
+//     flag it takes the next argument as its value (even if that value
+//     looks like a flag or is "--").
+//   - Unknown flags are kept as flags so Parse reports them, rather
+//     than having them silently become part of the prompt.
+func splitArgs(fs *flag.FlagSet, args []string) (flags, positionals []string) {
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if arg == "--" {
+			positionals = append(positionals, args[i+1:]...)
+			break
+		}
+		if len(arg) < 2 || arg[0] != '-' {
+			positionals = append(positionals, arg)
+			continue
+		}
+		flags = append(flags, arg)
+		name := strings.TrimPrefix(strings.TrimPrefix(arg, "-"), "-")
+		if strings.Contains(name, "=") {
+			continue
+		}
+		f := fs.Lookup(name)
+		if f == nil || isBoolFlag(f) {
+			continue
+		}
+		if i+1 < len(args) {
+			i++
+			flags = append(flags, args[i])
+		}
+	}
+	return flags, positionals
+}
+
+// isBoolFlag reports whether f is a boolean flag, i.e. one the flag
+// package accepts without a value.
+func isBoolFlag(f *flag.Flag) bool {
+	bf, ok := f.Value.(interface{ IsBoolFlag() bool })
+	return ok && bf.IsBoolFlag()
 }
 
 // loadMCPConfig reads the JSON file at a.MCPConfig and returns the
@@ -333,9 +388,10 @@ func Usage(program string) string {
 	var b strings.Builder
 	b.WriteString(program + " — " + core.AppTagline + "\n\n")
 	b.WriteString("Usage:\n")
-	b.WriteString("  " + program + " [flags] [prompt]\n")
-	b.WriteString("  " + program + " [flags] -p [prompt]      # headless one-shot\n")
-	b.WriteString("  " + program + " [flags] acp            # ACP server mode (Phase 4)\n\n")
+	b.WriteString("  " + program + " [flags] [prompt...]           # interactive TUI, or one-shot with a prompt\n")
+	b.WriteString("  " + program + " -p [flags] [prompt...]        # headless one-shot (prompt may be piped on stdin)\n\n")
+	b.WriteString("Flags may appear before or after the prompt. Unquoted words are\n")
+	b.WriteString("joined into a single prompt; use -- to pass words that start with -.\n\n")
 	b.WriteString("Flags:\n")
 	b.WriteString("  -p, --print                      force non-interactive mode\n")
 	b.WriteString("  -m, --model <id>                 override the model id\n")
@@ -349,7 +405,8 @@ func Usage(program string) string {
 	b.WriteString("  -v, --verbose                    enable debug-level logging\n")
 	b.WriteString("      --api-key <key>              explicit API key override\n")
 	b.WriteString("      --api-base <url>             API base URL override (default: NIM)\n")
-	b.WriteString("      --max-tokens <n>             override the per-response output token cap\n")
+	fmt.Fprintf(&b, "      --max-tokens <n>             per-response output token cap (default %d, max %d)\n",
+		core.DefaultMaxTokens, core.MaxTokensHardCeiling)
 	b.WriteString("      --cwd <path>                 working directory override\n")
 	b.WriteString("      --dangerously-skip-permissions\n")
 	b.WriteString("                                   shortcut for --permission-mode=bypass-permissions\n")
@@ -359,10 +416,13 @@ func Usage(program string) string {
 	b.WriteString("      --no-auto-compact            disable automatic context compaction\n")
 	b.WriteString("  -h, --help                       print this help and exit\n")
 	b.WriteString("      --version                    print version and exit\n")
+	b.WriteString("  --                               end of flags; everything after is the prompt\n")
 	b.WriteString("\nEnvironment:\n")
 	b.WriteString("  FORGE_API_KEY                    default API key (overridden by --api-key)\n")
-	b.WriteString("  ANTHROPIC_API_KEY                Anthropic-specific default\n")
-	b.WriteString("  FORGE_API_BASE                   API base URL override\n")
+	b.WriteString("  NVIDIA_API_KEY                   API key fallback when FORGE_API_KEY is unset\n")
+	b.WriteString("  OPENAI_API_KEY                   API key fallback when the above are unset\n")
+	b.WriteString("  FORGE_API_BASE                   API base URL override, headless mode (overridden by --api-base)\n")
+	b.WriteString("  FORGE_CWD                        working directory (overridden by --cwd)\n")
 	b.WriteString("  FORGE_DEBUG                      any non-empty value enables debug logging\n")
 	return b.String()
 }

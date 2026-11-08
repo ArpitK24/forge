@@ -208,20 +208,24 @@ All three carry the loop's real terminal `outcome` (`end_turn`, `max_tokens`, `c
 | `-p`, `--print` | Run headless with a positional prompt (or read from stdin) | — |
 | `--api-key` | API key (overrides all env vars) | — |
 | `--api-base` | API base URL | NIM default |
-| `--model` | Model id to send in every request | `meta/llama-3.3-70b-instruct` |
-| `--max-tokens` | Per-response output cap (hard ceiling: 32k) | 4096 |
+| `-m`, `--model` | Model id to send in every request | `meta/llama-3.3-70b-instruct` |
+| `--max-tokens` | Per-response output cap (hard ceiling: 200,000) | 8192 |
 | `--max-turns` | Cap on agentic turns per session | 10 |
 | `--output-format` | One of `text`, `json`, `stream-json` | `text` |
 | `--permission-mode` | `default` / `accept-edits` / `bypass-permissions` / `plan` | `default` |
 | `--dangerously-skip-permissions` | Shorthand for `--permission-mode=bypass-permissions` | — |
-| `--system-prompt` | Replace the default system prompt | — |
+| `-s`, `--system-prompt` | Replace the default system prompt | — |
 | `--append-system-prompt` | Append to the default system prompt | — |
 | `--resume` | Resume a saved session (Phase 3.1) | — |
 | `--cwd` | Working directory for tool execution | `$PWD` |
 | `--no-auto-compact` | Disable the auto-compaction trigger math | on |
 | `--no-project-memory` | Skip `FORGE.md` discovery | off |
+| `--mcp-config` | JSON file of MCP servers to connect at startup | — |
+| `--plugin-dir` | Directory to scan for plugins, instead of the default (repeatable) | `~/.forge/plugins` |
 | `--dump-system-prompt` | Print the assembled system prompt and exit | — |
 | `-v`, `--verbose` | Raise log level to DEBUG | WARN |
+
+Flags can go before or after the prompt, so `forge -p "fix the tests" --model <id>` and `forge --model <id> -p "fix the tests"` are the same. Unquoted words are joined into one prompt (`forge -p fix the tests`). Everything after `--` is prompt text, even if it starts with `-`.
 
 `forge --help` (or `forge.exe --help` on Windows) is the canonical, always-up-to-date reference.
 
