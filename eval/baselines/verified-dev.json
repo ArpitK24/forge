@@ -13616,6 +13616,3957 @@
           "pack_files": 8
         }
       ]
+    },
+    {
+      "name": "m1",
+      "aggregate": {
+        "file_recall@1": {
+          "mean": 0.24,
+          "ci_lo": 0.16,
+          "ci_hi": 0.33,
+          "n": 100
+        },
+        "file_recall@10": {
+          "mean": 0.575833,
+          "ci_lo": 0.483333,
+          "ci_hi": 0.666667,
+          "n": 100
+        },
+        "file_recall@3": {
+          "mean": 0.408333,
+          "ci_lo": 0.318333,
+          "ci_hi": 0.5,
+          "n": 100
+        },
+        "file_recall@5": {
+          "mean": 0.430833,
+          "ci_lo": 0.34,
+          "ci_hi": 0.5225,
+          "n": 100
+        },
+        "func_recall@10": {
+          "mean": 0.428128,
+          "ci_lo": 0.33139,
+          "ci_hi": 0.528083,
+          "n": 95
+        },
+        "func_recall@5": {
+          "mean": 0.341604,
+          "ci_lo": 0.25,
+          "ci_hi": 0.441581,
+          "n": 95
+        },
+        "gold_in_pack": {
+          "mean": 0.483333,
+          "ci_lo": 0.386667,
+          "ci_hi": 0.575,
+          "n": 100
+        },
+        "mrr": {
+          "mean": 0.384916,
+          "ci_lo": 0.308521,
+          "ci_hi": 0.466788,
+          "n": 100
+        },
+        "pack_tokens": {
+          "mean": 5117.95,
+          "ci_lo": 4523.22,
+          "ci_hi": 5708.69,
+          "n": 100
+        }
+      },
+      "tasks": [
+        {
+          "id": "astropy__astropy-13453",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.014285714285714285,
+            "pack_tokens": 530
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.md",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            ".github/ISSUE_TEMPLATE/feature_request.md",
+            "CONTRIBUTING.md",
+            "docs/development/workflow/get_devel_version.rst",
+            "astropy/io/ascii/tests/test_html.py",
+            "docs/install.rst",
+            "docs/development/workflow/git_edit_workflow_examples.rst",
+            "docs/development/workflow/development_workflow.rst",
+            "docs/development/astropy-package-template.rst"
+          ],
+          "top_symbols": [
+            "astropy/io/ascii/tests/test_html.py::test_write_no_multicols",
+            "astropy/io/ascii/tests/test_html.py::test_multicolumn_write",
+            "astropy/io/ascii/tests/test_html.py::test_multicolumn_write_escape",
+            "astropy/table/connect.py::TableWrite",
+            "astropy/units/core.py::Unit",
+            "astropy/io/ascii/tests/test_write.py::test_write_csv_with_comments",
+            "astropy/io/ascii/basic.py::Csv",
+            "astropy/io/ascii/tests/test_html.py::test_raw_html_write",
+            "astropy/table/table.py::Table.round",
+            "astropy/io/ascii/tests/test_write.py::check_write_table"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "astropy__astropy-13579",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.03225806451612903,
+            "pack_tokens": 530
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.md",
+            "astropy/wcs/wcsapi/tests/test_fitswcs.py",
+            "astropy/wcs/wcsapi/wrappers/tests/test_sliced_wcs.py",
+            "astropy/visualization/wcsaxes/tests/test_wcsapi.py",
+            ".github/ISSUE_TEMPLATE/feature_request.md",
+            "astropy/visualization/wcsaxes/tests/test_misc.py",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            "astropy/wcs/tests/test_utils.py",
+            "astropy/wcs/tests/test_wcs.py",
+            "docs/wcs/wcsapi.rst"
+          ],
+          "top_symbols": [
+            "astropy/visualization/wcsaxes/tests/test_wcsapi.py::wcs_4d",
+            "astropy/wcs/tests/test_wcs.py::test_footprint_contains",
+            "astropy/coordinates/tests/test_sky_coord.py::test_contained_by",
+            "astropy/wcs/tests/test_utils.py::test_fit_wcs_from_points_CRPIX_bounds",
+            "astropy/nddata/tests/test_ccddata.py::test_read_wcs_not_creatable",
+            "astropy/wcs/wcsapi/tests/test_fitswcs.py::test_different_ctypes",
+            "astropy/visualization/wcsaxes/tests/test_wcsapi.py::test_edge_axes",
+            "astropy/wcs/wcsapi/tests/test_fitswcs.py::test_spectralcoord_frame",
+            "astropy/wcs/utils.py::celestial_frame_to_wcs",
+            "astropy/wcs/wcsapi/tests/test_fitswcs.py::test_spectral_1d"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "astropy__astropy-14309",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 0,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 530
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.md",
+            "astropy/io/registry/base.py",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            "docs/development/workflow/get_devel_version.rst",
+            ".github/ISSUE_TEMPLATE/feature_request.md",
+            "docs/development/workflow/development_workflow.rst",
+            "astropy/io/fits/connect.py",
+            "CONTRIBUTING.md",
+            "docs/install.rst",
+            "docs/development/workflow/git_edit_workflow_examples.rst"
+          ],
+          "top_symbols": [
+            "astropy/io/registry/base.py::_UnifiedIORegistryBase.identify_format",
+            "astropy/io/fits/connect.py::is_fits",
+            "astropy/io/registry/base.py::_UnifiedIORegistryBase.register_identifier",
+            "astropy/io/registry/compat.py::_make_io_func",
+            "astropy/io/registry/base.py::_UnifiedIORegistryBase._get_valid_format",
+            "astropy/io/registry/base.py::_UnifiedIORegistryBase.get_formats",
+            "astropy/io/registry/base.py::_UnifiedIORegistryBase._update__doc__",
+            "astropy/io/fits/convenience.py::printdiff",
+            "astropy/io/registry/tests/test_registries.py::TestUnifiedIORegistryBase.test_compat_identify_format",
+            "astropy/io/registry/core.py::UnifiedOutputRegistry.get_writer"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "astropy__astropy-14539",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "astropy/io/fits/tests/test_fitsdiff.py",
+            "astropy/io/fits/hdu/table.py",
+            "docs/io/fits/usage/unfamiliar.rst",
+            "docs/io/fits/appendix/history.rst",
+            "astropy/io/fits/tests/test_table.py",
+            "astropy/io/fits/diff.py",
+            "astropy/io/fits/tests/test_diff.py",
+            "docs/io/fits/index.rst",
+            "CHANGES.rst",
+            "astropy/io/fits/scripts/fitsdiff.py"
+          ],
+          "top_symbols": [
+            "astropy/io/fits/tests/test_fitsdiff.py::TestFITSDiff_script.test_rtol_diff",
+            "astropy/io/fits/hdu/table.py::BinTableHDU._load_data",
+            "astropy/io/fits/tests/test_fitsdiff.py::TestFITSDiff_script.test_not_quiet",
+            "astropy/io/fits/diff.py::FITSDiff._report",
+            "astropy/io/fits/tests/test_table.py::TestVLATables.test_variable_length_table_format_pd_from_list",
+            "astropy/io/fits/tests/test_table.py::TestVLATables.test_variable_length_table_format_pd_from_object_array",
+            "astropy/io/fits/tests/test_diff.py::TestDiff.test_different_table_rows",
+            "astropy/io/fits/diff.py::TableDataDiff.__init__",
+            "astropy/io/fits/tests/test_diff.py::TestDiff.test_different_table_data",
+            "astropy/io/fits/tests/test_table.py::TestVLATables.test_variable_length_columns"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "astropy__astropy-8707",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 8191
+          },
+          "top_files": [
+            "astropy/io/fits/header.py",
+            "CHANGES.rst",
+            "astropy/io/fits/hdu/hdulist.py",
+            "docs/io/fits/appendix/history.rst",
+            "docs/io/fits/appendix/header_transition.rst",
+            "astropy/io/fits/hdu/base.py",
+            "docs/development/codeguide.rst",
+            "docs/table/access_table.rst",
+            "astropy/io/fits/tests/test_header.py",
+            "docs/io/fits/appendix/faq.rst"
+          ],
+          "top_symbols": [
+            "astropy/io/fits/hdu/hdulist.py::HDUList.fromstring",
+            "astropy/io/fits/header.py::Header._from_blocks",
+            "astropy/io/fits/header.py::Header.fromfile",
+            "astropy/io/fits/hdu/base.py::_BaseHDU.fromstring",
+            "astropy/io/fits/header.py::Header.fromstring",
+            "astropy/io/fits/tests/test_hdulist.py::TestHDUListFunctions.test_hdul_fromstring",
+            "astropy/table/connect.py::TableWrite",
+            "astropy/io/fits/hdu/hdulist.py::fitsopen",
+            "astropy/units/quantity.py::Quantity",
+            "astropy/io/fits/file.py::_File.__init__"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "django__django-10554",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.5,
+            "pack_tokens": 3242
+          },
+          "top_files": [
+            "django/db/models/query.py",
+            "django/db/models/sql/compiler.py",
+            "django/db/backends/utils.py",
+            "django/db/models/sql/subqueries.py",
+            "tests/queries/test_iterator.py",
+            "tests/backends/tests.py",
+            "django/db/utils.py",
+            "docs/ref/models/querysets.txt",
+            "django/db/backends/sqlite3/operations.py",
+            "tests/queries/tests.py"
+          ],
+          "top_symbols": [
+            "django/db/models/query.py::FlatValuesListIterable.__iter__",
+            "django/db/models/query.py::ValuesListIterable.__iter__",
+            "django/db/models/sql/compiler.py::SQLCompiler.results_iter",
+            "django/db/models/sql/compiler.py::SQLCompiler.execute_sql",
+            "django/db/models/query.py::QuerySet.__iter__",
+            "django/db/models/query.py::ValuesIterable.__iter__",
+            "django/db/models/query.py::QuerySet._iterator",
+            "django/db/utils.py::DatabaseErrorWrapper.__exit__",
+            "django/db/models/query.py::ModelIterable.__iter__",
+            "django/db/models/query.py::BaseIterable.__init__"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "django__django-10914",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.0078125,
+            "pack_tokens": 4499
+          },
+          "top_files": [
+            "docs/ref/settings.txt",
+            "docs/ref/files/uploads.txt",
+            "django/core/files/uploadedfile.py",
+            "tests/file_storage/tests.py",
+            "docs/topics/http/file-uploads.txt",
+            "tests/files/tests.py",
+            "django/core/files/storage.py",
+            "django/core/files/temp.py",
+            "django/core/files/uploadhandler.py",
+            "docs/ref/models/fields.txt"
+          ],
+          "top_symbols": [
+            "django/core/files/uploadedfile.py::TemporaryUploadedFile.__init__",
+            "tests/file_storage/tests.py::FileStoragePermissions.test_file_upload_permissions",
+            "tests/file_storage/tests.py::FileStoragePermissions.test_file_upload_default_permissions",
+            "django/core/files/storage.py::FileSystemStorage.file_permissions_mode",
+            "tests/files/tests.py::FileTests.test_namedtemporaryfile_closes",
+            "django/core/files/uploadedfile.py::TemporaryUploadedFile.close",
+            "django/core/files/storage.py::FileSystemStorage._clear_cached_properties",
+            "tests/template_tests/test_loaders.py::FileSystemLoaderTests.test_permissions_error",
+            "tests/file_uploads/tests.py::FileUploadTests.test_broken_custom_upload_handler",
+            "django/core/files/uploadedfile.py::UploadedFile"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-10973",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.02127659574468085,
+            "pack_tokens": 8190
+          },
+          "top_files": [
+            "tests/admin_scripts/tests.py",
+            "tests/dbshell/test_postgresql.py",
+            "docs/topics/cache.txt",
+            "docs/releases/1.11.txt",
+            "docs/releases/1.9.txt",
+            "docs/intro/contributing.txt",
+            "docs/topics/templates.txt",
+            "docs/releases/1.8.txt",
+            "docs/internals/contributing/writing-code/unit-tests.txt",
+            "docs/releases/1.2.txt"
+          ],
+          "top_symbols": [
+            "tests/dbshell/test_postgresql.py::PostgreSqlDbshellCommandTestCase._run_it",
+            "tests/admin_scripts/tests.py::AdminScriptTestCase.run_test",
+            "tests/dbshell/test_oracle.py::OracleDbshellTests._run_dbshell",
+            "django/db/backends/sqlite3/base.py::none_guard",
+            "django/contrib/gis/db/backends/postgis/operations.py::PostGISOperations.function_names",
+            "tests/postgres_tests/test_integration.py::PostgresIntegrationTests.test_check",
+            "tests/queries/tests.py::ConditionalTests",
+            "tests/test_client_regress/auth_backends.py::CustomUserBackend",
+            "django/test/utils.py::setup_test_environment",
+            "tests/test_client_regress/tests.py::SessionTests.test_logout_with_custom_auth_backend"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-11066",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 5575
+          },
+          "top_files": [
+            "django/contrib/contenttypes/management/__init__.py",
+            "docs/ref/migration-operations.txt",
+            "docs/howto/writing-migrations.txt",
+            "django/db/migrations/migration.py",
+            "docs/topics/db/transactions.txt",
+            "tests/migrations/test_operations.py",
+            "tests/migrations/test_commands.py",
+            "django/db/migrations/operations/special.py",
+            "docs/intro/tutorial02.txt",
+            "docs/ref/django-admin.txt"
+          ],
+          "top_symbols": [
+            "django/contrib/contenttypes/management/__init__.py::RenameContentType._rename",
+            "django/contrib/contenttypes/management/__init__.py::inject_rename_contenttypes_operations",
+            "django/contrib/contenttypes/management/__init__.py::RenameContentType.rename_backward",
+            "django/contrib/contenttypes/management/__init__.py::RenameContentType.rename_forward",
+            "django/db/migrations/migration.py::Migration.unapply",
+            "tests/migrations/test_operations.py::OperationTests.test_alter_model_table_m2m",
+            "tests/migrations/test_commands.py::MakeMigrationsTests.test_makemigrations_consistency_checks_respect_routers",
+            "django/db/migrations/migration.py::Migration.apply",
+            "django/db/migrations/recorder.py::MigrationRecorder.ensure_schema",
+            "tests/backends/sqlite/tests.py::SchemaTests.test_table_rename_inside_atomic_block"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "django__django-11119",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.1111111111111111,
+            "pack_tokens": 8187
+          },
+          "top_files": [
+            "tests/template_tests/syntax_tests/test_autoescape.py",
+            "tests/template_tests/filter_tests/test_autoescape.py",
+            "docs/howto/custom-template-tags.txt",
+            "tests/template_tests/syntax_tests/test_basic.py",
+            "tests/template_tests/syntax_tests/test_extends.py",
+            "tests/template_tests/filter_tests/test_phone2numeric.py",
+            "tests/template_tests/syntax_tests/test_filter_syntax.py",
+            "django/template/base.py",
+            "django/template/engine.py",
+            "tests/template_tests/filter_tests/test_default.py"
+          ],
+          "top_symbols": [
+            "tests/template_tests/syntax_tests/test_autoescape.py::AutoescapeTagTests.test_autoescape_tag08",
+            "tests/template_tests/syntax_tests/test_basic.py::BasicSyntaxTests.test_basic_syntax09",
+            "tests/template_tests/filter_tests/test_phone2numeric.py::Phone2numericTests.test_phone2numeric02",
+            "tests/template_tests/syntax_tests/test_autoescape.py::AutoescapeTagTests.test_autoescape_filters01",
+            "tests/template_tests/syntax_tests/test_autoescape.py::AutoescapeTagTests.test_autoescape_literals01",
+            "django/template/engine.py::Engine.render_to_string",
+            "tests/template_tests/syntax_tests/test_autoescape.py::AutoescapeTagTests.test_autoescape_tag01",
+            "tests/template_tests/syntax_tests/test_autoescape.py::AutoescapeTagTests.test_autoescape_tag09",
+            "tests/template_tests/syntax_tests/test_autoescape.py::AutoescapeTagTests.test_autoescape_tag10",
+            "tests/template_tests/filter_tests/test_autoescape.py::AutoescapeStringfilterTests.test_autoescape_stringfilter01"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-11133",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 7877
+          },
+          "top_files": [
+            "docs/ref/request-response.txt",
+            "django/http/response.py",
+            "tests/model_fields/test_binaryfield.py",
+            "django/db/models/fields/__init__.py",
+            "tests/httpwrappers/tests.py",
+            "docs/topics/http/views.txt",
+            "docs/ref/models/querysets.txt",
+            "docs/ref/contrib/gis/gdal.txt",
+            "docs/howto/outputting-csv.txt",
+            "django/contrib/gis/shortcuts.py"
+          ],
+          "top_symbols": [
+            "tests/migrations/test_operations.py::OperationTests.test_add_binaryfield",
+            "django/http/response.py::HttpResponse.write",
+            "django/http/response.py::HttpResponseBase.make_bytes",
+            "tests/model_fields/test_binaryfield.py::BinaryFieldTests.test_filter_memoryview",
+            "tests/model_fields/test_binaryfield.py::BinaryFieldTests.test_set_and_retrieve",
+            "django/db/models/fields/__init__.py::BinaryField._check_str_default_value",
+            "django/http/response.py::HttpResponse.content",
+            "tests/utils_tests/test_functional.py::FunctionalTests.test_lazy_object_to_string",
+            "django/db/models/fields/__init__.py::BinaryField.to_python",
+            "django/http/response.py::HttpResponse"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-11265",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 4005
+          },
+          "top_files": [
+            "django/db/models/sql/query.py",
+            "tests/filtered_relation/tests.py",
+            "django/db/models/query_utils.py",
+            "django/db/models/query.py",
+            "docs/ref/models/querysets.txt",
+            "tests/filtered_relation/models.py",
+            "django/db/models/sql/compiler.py",
+            "tests/generic_relations/tests.py",
+            "django/db/models/expressions.py",
+            "docs/ref/models/expressions.txt"
+          ],
+          "top_symbols": [
+            "django/db/models/sql/query.py::Query.build_filter",
+            "tests/filtered_relation/tests.py::FilteredRelationTests.test_values",
+            "django/db/models/sql/query.py::Query._add_q",
+            "tests/filtered_relation/tests.py::FilteredRelationTests.test_with_join",
+            "django/db/models/sql/query.py::Query.build_filtered_relation_q",
+            "tests/filtered_relation/tests.py::FilteredRelationTests.test_with_join_and_complex_condition",
+            "django/db/models/sql/query.py::Query.split_exclude",
+            "tests/filtered_relation/tests.py::FilteredRelationTests.test_extra",
+            "django/db/models/sql/query.py::Query.solve_lookup_type",
+            "tests/filtered_relation/tests.py::FilteredRelationTests.test_difference"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "django__django-11299",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.009259259259259259,
+            "pack_tokens": 8091
+          },
+          "top_files": [
+            "tests/migrations/test_operations.py",
+            "django/db/backends/sqlite3/schema.py",
+            "django/db/backends/base/schema.py",
+            "tests/schema/tests.py",
+            "tests/migrations/test_autodetector.py",
+            "django/db/backends/sqlite3/introspection.py",
+            "django/db/backends/oracle/schema.py",
+            "tests/admin_scripts/app_waiting_migration/migrations/0001_initial.py",
+            "docs/intro/tutorial02.txt",
+            "tests/admin_scripts/another_app_waiting_migration/migrations/0001_initial.py"
+          ],
+          "top_symbols": [
+            "tests/migrations/test_add_many_to_many_field_initial/0001_initial.py::Migration",
+            "tests/migrations/test_migrations_no_default/0001_initial.py::Migration",
+            "tests/migrations/deprecated_field_migrations/0001_initial.py::Migration",
+            "tests/postgres_tests/array_default_migrations/0001_initial.py::Migration",
+            "tests/admin_scripts/app_waiting_migration/migrations/0001_initial.py::Migration",
+            "tests/migrations/migrations_test_apps/lookuperror_a/migrations/0001_initial.py::Migration",
+            "tests/migrations/migrations_test_apps/lookuperror_b/migrations/0001_initial.py::Migration",
+            "tests/migrations/migrations_test_apps/lookuperror_c/migrations/0001_initial.py::Migration",
+            "tests/postgres_tests/migrations/0002_create_test_models.py::Migration",
+            "tests/migrations/migrations_test_apps/mutate_state_b/migrations/0001_initial.py::Migration"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-11555",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8160
+          },
+          "top_files": [
+            "django/db/models/sql/compiler.py",
+            "docs/ref/models/querysets.txt",
+            "docs/internals/contributing/bugs-and-features.txt",
+            "docs/topics/db/models.txt",
+            "django/db/models/sql/query.py",
+            "django/db/models/expressions.py",
+            "docs/topics/db/optimization.txt",
+            "docs/ref/models/expressions.txt",
+            "docs/internals/contributing/writing-code/working-with-git.txt",
+            "docs/topics/db/queries.txt"
+          ],
+          "top_symbols": [
+            "django/db/models/sql/compiler.py::SQLCompiler.get_order_by",
+            "django/db/models/sql/query.py::Query.add_ordering",
+            "django/db/models/sql/compiler.py::SQLCompiler.find_ordering_name",
+            "django/db/models/expressions.py::OrderBy.as_mysql",
+            "django/db/models/expressions.py::OrderBy.as_sqlite",
+            "tests/model_inheritance_regress/tests.py::ModelInheritanceTest.test_inherited_fields",
+            "django/contrib/admin/views/main.py::ChangeList.get_ordering_field_columns",
+            "django/db/models/expressions.py::OrderBy",
+            "django/db/models/sql/query.py::get_order_dir",
+            "django/db/models/expressions.py::OrderBy.reverse_ordering"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-11603",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.25,
+            "pack_tokens": 3487
+          },
+          "top_files": [
+            "tests/expressions/tests.py",
+            "docs/releases/1.11.txt",
+            "tests/aggregation/tests.py",
+            "django/db/models/aggregates.py",
+            "docs/topics/db/aggregation.txt",
+            "docs/ref/models/expressions.txt",
+            "tests/aggregation_regress/tests.py",
+            "django/db/backends/sqlite3/operations.py",
+            "tests/postgres_tests/test_aggregates.py",
+            "tests/expressions_window/tests.py"
+          ],
+          "top_symbols": [
+            "django/db/backends/sqlite3/operations.py::DatabaseOperations.check_expression_support",
+            "tests/expressions/tests.py::ReprTests.test_filtered_aggregates",
+            "tests/expressions/tests.py::ReprTests.test_aggregates",
+            "tests/aggregation/tests.py::AggregateTestCase.test_multiple_aggregates",
+            "tests/aggregation/tests.py::AggregateTestCase.test_complex_aggregations_require_kwarg",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_aggregate",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_aggregate_annotation",
+            "tests/postgres_tests/test_aggregates.py::TestStatisticsAggregate.test_regr_avgx_general",
+            "tests/postgres_tests/test_aggregates.py::TestStatisticsAggregate.test_regr_avgy_general",
+            "django/contrib/gis/gdal/envelope.py::Envelope.__eq__"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "django__django-11740",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.010416666666666666,
+            "pack_tokens": 5561
+          },
+          "top_files": [
+            "docs/ref/models/fields.txt",
+            "tests/prefetch_related/models.py",
+            "tests/model_formsets/models.py",
+            "docs/topics/db/models.txt",
+            "tests/admin_views/models.py",
+            "tests/null_fk/models.py",
+            "tests/migrations/test_operations.py",
+            "django/db/models/fields/__init__.py",
+            "tests/null_fk_ordering/models.py",
+            "tests/model_forms/models.py"
+          ],
+          "top_symbols": [
+            "django/contrib/auth/migrations/0001_initial.py::Migration",
+            "django/contrib/admin/migrations/0001_initial.py::Migration",
+            "tests/postgres_tests/migrations/0002_create_test_models.py::Migration",
+            "django/contrib/redirects/migrations/0001_initial.py::Migration",
+            "tests/admin_scripts/another_app_waiting_migration/migrations/0001_initial.py::Migration",
+            "django/contrib/admin/models.py::LogEntry",
+            "django/contrib/flatpages/migrations/0001_initial.py::Migration",
+            "tests/prefetch_related/models.py::Article",
+            "tests/serializers/models/natural.py::NaturalPKWithDefault",
+            "django/contrib/contenttypes/migrations/0001_initial.py::Migration"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-11880",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.07692307692307693,
+            "pack_tokens": 8187
+          },
+          "top_files": [
+            "docs/topics/forms/modelforms.txt",
+            "django/forms/models.py",
+            "docs/ref/forms/api.txt",
+            "docs/ref/forms/validation.txt",
+            "django/db/models/fields/__init__.py",
+            "docs/releases/1.7.txt",
+            "docs/ref/forms/models.txt",
+            "docs/ref/forms/fields.txt",
+            "docs/ref/models/fields.txt",
+            "tests/model_forms/tests.py"
+          ],
+          "top_symbols": [
+            "django/forms/models.py::BaseModelForm._update_errors",
+            "django/forms/models.py::modelform_factory",
+            "django/db/models/fields/__init__.py::Field.formfield",
+            "django/forms/models.py::fields_for_model",
+            "django/forms/fields.py::Field.__init__",
+            "tests/model_forms/tests.py::ModelFormCustomErrorTests.test_custom_error_messages",
+            "tests/model_inheritance_regress/tests.py::ModelInheritanceTest.test_inherited_unique_field_with_form",
+            "django/forms/models.py::ModelFormMetaclass.__new__",
+            "tests/forms_tests/tests/test_error_messages.py::FormsErrorMessagesTestCase.test_urlfield",
+            "tests/model_forms/tests.py::TestFieldOverridesByFormMeta.test_error_messages_overrides"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "django__django-12050",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1943
+          },
+          "top_files": [
+            "django/db/models/sql/query.py",
+            "docs/ref/models/querysets.txt",
+            "django/db/models/lookups.py",
+            "django/db/models/query.py",
+            "docs/topics/db/queries.txt",
+            "docs/ref/models/fields.txt",
+            "tests/lookup/tests.py",
+            "tests/urlpatterns/tests.py",
+            "docs/ref/forms/fields.txt",
+            "docs/ref/databases.txt"
+          ],
+          "top_symbols": [
+            "django/db/models/sql/query.py::Query.resolve_lookup_value",
+            "django/db/models/lookups.py::FieldGetDbPrepValueIterableMixin.get_prep_lookup",
+            "tests/basic/tests.py::ModelLookupTest.test_does_not_exist",
+            "django/db/models/query.py::QuerySet.values_list",
+            "django/contrib/admin/options.py::ModelAdmin.get_search_results",
+            "tests/null_queries/tests.py::NullQueriesTests.test_none_as_null",
+            "django/db/models/lookups.py::FieldGetDbPrepValueIterableMixin.resolve_expression_parameter",
+            "django/db/models/query.py::ValuesListIterable",
+            "django/db/models/lookups.py::FieldGetDbPrepValueIterableMixin.batch_process_rhs",
+            "django/db/models/sql/query.py::Query.build_filter"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "django__django-12155",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.6666666666666666,
+            "func_recall@5": 0.6666666666666666,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 159
+          },
+          "top_files": [
+            "django/contrib/admindocs/utils.py",
+            "tests/admin_docs/test_utils.py",
+            "tests/admin_docs/test_views.py",
+            "docs/internals/contributing/writing-code/coding-style.txt",
+            "docs/internals/contributing/writing-documentation.txt",
+            "docs/_ext/djangodocs.py",
+            "django/template/base.py",
+            "django/views/templates/technical_500.html",
+            "docs/topics/i18n/translation.txt",
+            "docs/topics/templates.txt"
+          ],
+          "top_symbols": [
+            "django/contrib/admindocs/utils.py::trim_docstring",
+            "tests/admin_docs/test_utils.py::TestUtils.test_trim_docstring",
+            "django/contrib/admindocs/utils.py::parse_docstring",
+            "tests/admin_docs/test_views.py::TestModelDetailView.test_model_docstring_renders_correctly",
+            "tests/admin_docs/test_utils.py::TestUtils.test_publish_parts",
+            "tests/admin_docs/test_views.py::TestModelDetailView.test_descriptions_render_correctly",
+            "docs/_ext/djangodocs.py::ConsoleDirective.run",
+            "django/template/base.py::Template.get_exception_info",
+            "django/contrib/admindocs/utils.py::create_reference_role",
+            "django/contrib/admindocs/utils.py::default_reference_role"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "django__django-12209",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.1,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "tests/prefetch_related/models.py",
+            "tests/model_formsets/models.py",
+            "tests/model_forms/models.py",
+            "docs/ref/models/instances.txt",
+            "tests/admin_views/models.py",
+            "tests/serializers/models/natural.py",
+            "docs/topics/db/models.txt",
+            "docs/topics/serialization.txt",
+            "docs/ref/models/fields.txt",
+            "django/db/models/base.py"
+          ],
+          "top_symbols": [
+            "tests/serializers/models/natural.py::NaturalPKWithDefault",
+            "tests/prefetch_related/models.py::Article",
+            "tests/prefetch_related/models.py::Pet",
+            "tests/admin_widgets/models.py::Honeycomb",
+            "tests/model_forms/models.py::UUIDPK",
+            "tests/admin_views/models.py::ParentWithUUIDPK",
+            "tests/model_formsets/models.py::UUIDPKChildOfAutoPKParent",
+            "tests/model_formsets/models.py::UUIDPKParent",
+            "tests/model_forms/models.py::ExplicitPK",
+            "tests/model_formsets/models.py::UUIDPKChild"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-12406",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.05,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "docs/ref/forms/widgets.txt",
+            "tests/forms_tests/widget_tests/test_radioselect.py",
+            "tests/forms_tests/tests/test_forms.py",
+            "tests/model_forms/tests.py",
+            "django/forms/widgets.py",
+            "tests/model_forms/test_modelchoicefield.py",
+            "django/contrib/admin/options.py",
+            "docs/ref/forms/api.txt",
+            "tests/forms_tests/tests/tests.py",
+            "docs/ref/forms/fields.txt"
+          ],
+          "top_symbols": [
+            "tests/forms_tests/tests/test_forms.py::FormsTestCase.test_forms_with_radio",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_constructor_attrs",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_render",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_render_as_subwidget",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_class_attrs",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_render_attrs",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_nested_choices",
+            "tests/forms_tests/widget_tests/test_radioselect.py::RadioSelectTest.test_doesnt_localize_input_value",
+            "tests/forms_tests/tests/test_i18n.py::FormsI18nTests.test_non_ascii_choices",
+            "django/forms/widgets.py::RadioSelect"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "django__django-12708",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8123
+          },
+          "top_files": [
+            "django/db/backends/base/schema.py",
+            "tests/schema/tests.py",
+            "tests/migrations/test_autodetector.py",
+            "docs/ref/schema-editor.txt",
+            "django/db/backends/mysql/schema.py",
+            "tests/migrations/test_commands.py",
+            "docs/ref/models/options.txt",
+            "docs/ref/migration-operations.txt",
+            "django/db/migrations/autodetector.py",
+            "django/db/backends/sqlite3/schema.py"
+          ],
+          "top_symbols": [
+            "django/db/backends/mysql/schema.py::DatabaseSchemaEditor._delete_composed_index",
+            "django/db/backends/base/schema.py::BaseDatabaseSchemaEditor.alter_index_together",
+            "django/db/backends/base/schema.py::BaseDatabaseSchemaEditor._delete_composed_index",
+            "django/db/backends/base/schema.py::BaseDatabaseSchemaEditor.alter_unique_together",
+            "tests/migrations/test_autodetector.py::AutodetectorTests.test_same_app_circular_fk_dependency_with_unique_together_and_indexes",
+            "tests/schema/tests.py::SchemaTests.test_remove_index_together_does_not_remove_meta_indexes",
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor._remake_table",
+            "tests/migrations/test_commands.py::MigrateTests.test_sqlmigrate_forwards",
+            "tests/migrations/test_base.py::OperationTestBase.set_up_test_model",
+            "tests/migrations/test_commands.py::MigrateTests.test_sqlmigrate_backwards"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-12965",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 8190
+          },
+          "top_files": [
+            "docs/ref/databases.txt",
+            "docs/ref/models/querysets.txt",
+            "django/db/models/sql/query.py",
+            "django/db/backends/mysql/compiler.py",
+            "django/db/backends/mysql/schema.py",
+            "django/db/models/sql/compiler.py",
+            "docs/releases/security.txt",
+            "django/db/models/query.py",
+            "django/db/backends/oracle/operations.py",
+            "django/contrib/gis/db/backends/mysql/introspection.py"
+          ],
+          "top_symbols": [
+            "django/db/backends/mysql/compiler.py::SQLDeleteCompiler.as_sql",
+            "django/contrib/gis/db/backends/mysql/introspection.py::MySQLIntrospection.supports_spatial_index",
+            "django/db/models/sql/query.py::Query.bump_prefix",
+            "django/db/backends/oracle/operations.py::DatabaseOperations.bulk_insert_sql",
+            "django/db/backends/mysql/schema.py::DatabaseSchemaEditor.sql_delete_check",
+            "django/db/models/sql/query.py::Query.combine",
+            "django/db/models/sql/compiler.py::SQLUpdateCompiler.pre_sql_setup",
+            "django/db/models/query.py::QuerySet.delete",
+            "tests/indexes/tests.py::SchemaIndexesMySQLTests.test_no_index_for_foreignkey",
+            "django/db/models/sql/query.py::Query.change_aliases"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "django__django-13112",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.047619047619047616,
+            "pack_tokens": 4275
+          },
+          "top_files": [
+            "tests/model_forms/models.py",
+            "tests/admin_views/models.py",
+            "django/db/models/fields/__init__.py",
+            "docs/topics/db/models.txt",
+            "tests/schema/models.py",
+            "tests/queries/models.py",
+            "django/contrib/flatpages/models.py",
+            "tests/modeladmin/models.py",
+            "tests/contenttypes_tests/models.py",
+            "docs/intro/tutorial02.txt"
+          ],
+          "top_symbols": [
+            "django/contrib/auth/migrations/0001_initial.py::Migration",
+            "django/contrib/admin/migrations/0001_initial.py::Migration",
+            "django/contrib/redirects/migrations/0001_initial.py::Migration",
+            "django/contrib/flatpages/migrations/0001_initial.py::Migration",
+            "tests/model_forms/models.py::Article",
+            "django/contrib/flatpages/models.py::FlatPage",
+            "tests/modeladmin/models.py::ValidationTestModel",
+            "django/contrib/admin/models.py::LogEntry",
+            "django/db/models/fields/__init__.py::Field.__init__",
+            "tests/admin_views/models.py::RelatedPrepopulated"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-13212",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0.07142857142857142,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.07142857142857142,
+            "pack_tokens": 8190
+          },
+          "top_files": [
+            "tests/forms_tests/field_tests/test_urlfield.py",
+            "docs/ref/forms/fields.txt",
+            "docs/ref/validators.txt",
+            "tests/validators/tests.py",
+            "docs/ref/forms/validation.txt",
+            "docs/ref/templates/builtins.txt",
+            "tests/forms_tests/field_tests/test_combofield.py",
+            "tests/forms_tests/field_tests/test_emailfield.py",
+            "docs/internals/howto-release-django.txt",
+            "docs/releases/security.txt"
+          ],
+          "top_symbols": [
+            "tests/forms_tests/field_tests/test_urlfield.py::URLFieldTest.test_urlfield_1",
+            "tests/validators/tests.py::TestValidators.test_max_length_validator_message",
+            "tests/forms_tests/field_tests/test_combofield.py::ComboFieldTest.test_combofield_1",
+            "tests/forms_tests/field_tests/test_combofield.py::ComboFieldTest.test_combofield_2",
+            "tests/forms_tests/field_tests/test_emailfield.py::EmailFieldTest.test_emailfield_1",
+            "tests/forms_tests/field_tests/test_urlfield.py::URLFieldTest.test_urlfield_2",
+            "tests/validators/tests.py::TestValidators.test_single_message",
+            "tests/auth_tests/test_forms.py::PasswordResetFormTest.test_custom_email_subject",
+            "tests/forms_tests/field_tests/test_emailfield.py::EmailFieldTest.test_emailfield_not_required",
+            "django/core/validators.py::RegexValidator.__call__"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-13297",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.037037037037037035,
+            "pack_tokens": 4503
+          },
+          "top_files": [
+            "django/db/backends/sqlite3/operations.py",
+            "docs/ref/contrib/syndication.txt",
+            "django/db/backends/sqlite3/schema.py",
+            "docs/ref/class-based-views/mixins-single-object.txt",
+            "docs/topics/class-based-views/mixins.txt",
+            "docs/ref/class-based-views/base.txt",
+            "django/db/backends/sqlite3/base.py",
+            "docs/ref/unicode.txt",
+            "docs/intro/tutorial04.txt",
+            "tests/backends/sqlite/tests.py"
+          ],
+          "top_symbols": [
+            "django/db/backends/sqlite3/operations.py::DatabaseOperations._quote_params_for_last_executed_query",
+            "django/db/backends/sqlite3/operations.py::DatabaseOperations.last_executed_query",
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor.quote_value",
+            "django/db/backends/mysql/operations.py::DatabaseOperations.last_executed_query",
+            "django/contrib/postgres/utils.py::prefix_validation_error",
+            "django/db/backends/base/operations.py::BaseDatabaseOperations.last_executed_query",
+            "django/db/backends/sqlite3/operations.py::DatabaseOperations.adapt_datetimefield_value",
+            "django/db/backends/sqlite3/base.py::SQLiteCursorWrapper.execute",
+            "django/db/backends/oracle/operations.py::DatabaseOperations.last_executed_query",
+            "django/db/backends/sqlite3/operations.py::DatabaseOperations.adapt_timefield_value"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "django__django-13346",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "docs/topics/db/queries.txt",
+            "docs/ref/models/querysets.txt",
+            "django/db/models/fields/json.py",
+            "docs/ref/databases.txt",
+            "docs/ref/contrib/postgres/fields.txt",
+            "tests/model_fields/test_jsonfield.py",
+            "tests/expressions/tests.py",
+            "docs/ref/models/fields.txt",
+            "docs/releases/3.1.txt",
+            "django/db/models/functions/comparison.py"
+          ],
+          "top_symbols": [
+            "tests/expressions/tests.py::IterableLookupInnerExpressionsTests.test_complex_expressions_do_not_introduce_sql_injection_via_untrusted_string_inclusion",
+            "tests/model_fields/test_jsonfield.py::TestMethods.test_get_transforms",
+            "django/db/models/fields/json.py::KeyTransformTextLookupMixin",
+            "django/db/models/fields/json.py::HasKeyLookup.as_sql",
+            "django/db/models/fields/json.py::KeyTransform.as_postgresql",
+            "tests/schema/tests.py::SchemaTests.column_classes",
+            "django/db/backends/sqlite3/introspection.py::DatabaseIntrospection.get_constraints",
+            "django/db/models/functions/comparison.py::Least",
+            "django/db/models/fields/json.py::KeyTransform.as_sqlite",
+            "django/db/models/functions/comparison.py::Greatest"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-13569",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.015873015873015872,
+            "pack_tokens": 7955
+          },
+          "top_files": [
+            "django/db/models/sql/compiler.py",
+            "django/db/models/expressions.py",
+            "django/db/models/sql/query.py",
+            "docs/topics/db/aggregation.txt",
+            "tests/aggregation_regress/tests.py",
+            "docs/ref/models/expressions.txt",
+            "tests/aggregation/tests.py",
+            "django/db/models/query.py",
+            "docs/ref/models/querysets.txt",
+            "tests/annotations/tests.py"
+          ],
+          "top_symbols": [
+            "django/db/models/sql/compiler.py::SQLCompiler.get_group_by",
+            "django/db/models/sql/compiler.py::SQLCompiler.get_order_by",
+            "django/db/models/expressions.py::BaseExpression.get_group_by_cols",
+            "django/db/models/sql/query.py::Query.__init__",
+            "django/db/models/sql/query.py::Query.set_group_by",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_aggregate_duplicate_columns_select_related",
+            "django/db/models/sql/compiler.py::SQLCompiler.get_extra_select",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_more_more",
+            "django/db/models/query.py::QuerySet.aggregate",
+            "django/db/models/sql/query.py::Query.rewrite_cols"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "django__django-13809",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 6807
+          },
+          "top_files": [
+            "docs/ref/django-admin.txt",
+            "django/core/management/commands/runserver.py",
+            "django/contrib/staticfiles/management/commands/runserver.py",
+            "django/core/management/commands/testserver.py",
+            "docs/intro/tutorial01.txt",
+            "django/core/management/commands/check.py",
+            "docs/faq/help.txt",
+            "tests/user_commands/tests.py",
+            "docs/howto/custom-management-commands.txt",
+            "django/core/management/base.py"
+          ],
+          "top_symbols": [
+            "django/core/management/commands/runserver.py::Command",
+            "django/core/management/commands/testserver.py::Command",
+            "django/contrib/staticfiles/management/commands/runserver.py::Command",
+            "django/core/management/commands/check.py::Command",
+            "tests/user_commands/tests.py::CommandTests.test_call_command_unrecognized_option",
+            "tests/user_commands/management/commands/dance.py::Command",
+            "tests/admin_scripts/management/commands/base_command.py::Command",
+            "tests/admin_scripts/management/commands/noargs_command.py::Command",
+            "tests/admin_scripts/management/commands/app_command.py::Command",
+            "tests/admin_scripts/management/commands/label_command.py::Command"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-13821",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.07692307692307693,
+            "pack_tokens": 7444
+          },
+          "top_files": [
+            "docs/ref/databases.txt",
+            "docs/ref/contrib/gis/install/geolibs.txt",
+            "docs/ref/models/querysets.txt",
+            "docs/releases/1.11.txt",
+            "docs/faq/install.txt",
+            "docs/releases/2.2.txt",
+            "docs/internals/release-process.txt",
+            "django/db/backends/sqlite3/features.py",
+            "tests/backends/sqlite/tests.py",
+            "docs/topics/migrations.txt"
+          ],
+          "top_symbols": [
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor.__enter__",
+            "tests/backends/sqlite/tests.py::Tests.test_aggregation",
+            "django/db/backends/sqlite3/features.py::DatabaseFeatures",
+            "django/db/backends/sqlite3/operations.py::DatabaseOperations.check_expression_support",
+            "django/db/backends/sqlite3/features.py::DatabaseFeatures.supports_atomic_references_rename",
+            "django/db/backends/sqlite3/base.py::check_sqlite_version",
+            "tests/backends/sqlite/tests.py::SchemaTests.test_disable_constraint_checking_failure_disallowed",
+            "django/contrib/gis/db/models/functions.py::SQLiteDecimalToFloatMixin.as_sqlite",
+            "tests/indexes/tests.py::PartialIndexTests",
+            "tests/forms_tests/widget_tests/test_selectdatewidget.py::SelectDateWidgetTest.test_years_rendered_without_separator"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-13837",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 3258
+          },
+          "top_files": [
+            "django/utils/autoreload.py",
+            "tests/utils_tests/test_autoreload.py",
+            "django/core/management/__init__.py",
+            "docs/releases/1.4.txt",
+            "docs/intro/tutorial01.txt",
+            "docs/ref/django-admin.txt",
+            "docs/ref/settings.txt",
+            "docs/ref/models/fields.txt",
+            "docs/topics/testing/advanced.txt",
+            "tests/admin_scripts/tests.py"
+          ],
+          "top_symbols": [
+            "django/utils/autoreload.py::get_child_arguments",
+            "django/utils/autoreload.py::iter_modules_and_files",
+            "tests/utils_tests/test_autoreload.py::TestChildArguments.test_run_as_module",
+            "tests/utils_tests/test_autoreload.py::TestChildArguments.test_entrypoint_fallback",
+            "django/core/management/__init__.py::ManagementUtility.execute",
+            "tests/utils_tests/test_autoreload.py::TestIterModulesAndFiles.test_zip_reload",
+            "tests/utils_tests/test_autoreload.py::TestChildArguments.test_warnoptions",
+            "tests/utils_tests/test_autoreload.py::TestChildArguments.test_exe_fallback",
+            "tests/utils_tests/test_autoreload.py::TestChildArguments.test_raises_runtimeerror",
+            "django/core/management/__init__.py::find_commands"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "django__django-13964",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.038461538461538464,
+            "pack_tokens": 8190
+          },
+          "top_files": [
+            "docs/ref/models/fields.txt",
+            "tests/migrations/test_autodetector.py",
+            "docs/topics/serialization.txt",
+            "tests/model_formsets/models.py",
+            "tests/many_to_one/tests.py",
+            "tests/admin_inlines/models.py",
+            "tests/migrations/test_operations.py",
+            "docs/ref/models/instances.txt",
+            "docs/topics/db/models.txt",
+            "tests/model_meta/models.py"
+          ],
+          "top_symbols": [
+            "tests/many_to_one/tests.py::ManyToOneTests.test_fk_assignment_and_related_object_cache",
+            "tests/migrations/test_autodetector.py::AutodetectorTests",
+            "tests/model_formsets/models.py::UUIDPKChildOfAutoPKParent",
+            "tests/admin_inlines/models.py::ChildModel1",
+            "tests/admin_inlines/models.py::ChildModel2",
+            "tests/model_formsets/models.py::ChildWithEditablePK",
+            "tests/migrations/test_autodetector.py::AutodetectorTests.test_set_alter_order_with_respect_to_index_constraint_foo_together",
+            "tests/model_formsets/models.py::UUIDPKChild",
+            "tests/migrations/test_operations.py::OperationTests.test_rename_field_reloads_state_on_fk_target_changes",
+            "tests/migrations/test_autodetector.py::AutodetectorTests.test_rename_model_with_fks_in_different_position"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-14089",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 7990
+          },
+          "top_files": [
+            "django/utils/datastructures.py",
+            "docs/ref/models/querysets.txt",
+            "docs/ref/migration-operations.txt",
+            "tests/utils_tests/test_datastructures.py",
+            "docs/ref/django-admin.txt",
+            "docs/ref/contrib/syndication.txt",
+            "docs/releases/2.2.txt",
+            "docs/releases/1.7.txt",
+            "docs/releases/1.10.txt",
+            "docs/ref/contrib/admin/index.txt"
+          ],
+          "top_symbols": [
+            "django/utils/datastructures.py::OrderedSet.add",
+            "django/utils/datastructures.py::OrderedSet",
+            "tests/utils_tests/test_datastructures.py::OrderedSetTests.test_len",
+            "tests/utils_tests/test_datastructures.py::OrderedSetTests.test_remove",
+            "tests/utils_tests/test_datastructures.py::OrderedSetTests.test_bool",
+            "tests/utils_tests/test_datastructures.py::OrderedSetTests.test_contains",
+            "django/utils/datastructures.py::OrderedSet.__bool__",
+            "django/utils/datastructures.py::OrderedSet.__iter__",
+            "django/utils/datastructures.py::OrderedSet.__len__",
+            "django/utils/datastructures.py::OrderedSet.__contains__"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-14238",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 7098
+          },
+          "top_files": [
+            "django/db/models/options.py",
+            "tests/apps/tests.py",
+            "django/apps/config.py",
+            "docs/ref/applications.txt",
+            "django/db/models/base.py",
+            "tests/model_options/test_default_pk.py",
+            "django/db/models/fields/__init__.py",
+            "django/core/management/__init__.py",
+            "docs/releases/3.2.txt",
+            "tests/app_loading/tests.py"
+          ],
+          "top_symbols": [
+            "django/db/models/options.py::Options._get_default_pk_class",
+            "django/db/models/base.py::Model._check_default_pk",
+            "tests/apps/tests.py::AppConfigTests.test_app_default_auto_field",
+            "django/apps/config.py::AppConfig.import_models",
+            "django/db/models/fields/__init__.py::AutoFieldMeta._subclasses",
+            "tests/apps/tests.py::AppConfigTests.test_default_auto_field_setting",
+            "tests/model_options/test_default_pk.py::TestDefaultPK.test_app_default_auto_field_non_auto",
+            "django/apps/config.py::AppConfig.__init__",
+            "tests/model_options/test_default_pk.py::TestDefaultPK.test_app_default_auto_field",
+            "django/core/management/__init__.py::ManagementUtility.execute"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-14351",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.014492753623188406,
+            "pack_tokens": 1507
+          },
+          "top_files": [
+            "django/db/models/sql/query.py",
+            "django/db/models/sql/compiler.py",
+            "docs/ref/models/querysets.txt",
+            "django/db/models/query.py",
+            "docs/topics/db/aggregation.txt",
+            "tests/annotations/tests.py",
+            "tests/aggregation_regress/tests.py",
+            "tests/queries/tests.py",
+            "docs/ref/models/expressions.txt",
+            "django/db/models/fields/related_lookups.py"
+          ],
+          "top_symbols": [
+            "django/db/models/sql/query.py::Query.__init__",
+            "django/db/models/sql/query.py::Query.clone",
+            "django/db/models/sql/compiler.py::SQLCompiler.as_sql",
+            "django/db/models/sql/query.py::Query.combine",
+            "django/db/models/sql/query.py::Query.resolve_expression",
+            "django/db/models/sql/query.py::Query.get_aggregation",
+            "django/db/models/sql/compiler.py::SQLCompiler.get_select",
+            "django/db/models/sql/compiler.py::SQLCompiler.get_combinator_sql",
+            "django/db/models/sql/query.py::Query.trim_start",
+            "django/db/models/sql/compiler.py::SQLCompiler.get_related_selections"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "django__django-14404",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 4952
+          },
+          "top_files": [
+            "tests/requests/tests.py",
+            "django/core/handlers/wsgi.py",
+            "django/contrib/admin/sites.py",
+            "docs/internals/contributing/writing-code/working-with-git.txt",
+            "tests/admin_views/tests.py",
+            "django/core/handlers/asgi.py",
+            "tests/middleware/tests.py",
+            "docs/ref/request-response.txt",
+            "tests/test_client/tests.py",
+            "django/middleware/locale.py"
+          ],
+          "top_symbols": [
+            "django/core/handlers/wsgi.py::get_script_name",
+            "tests/requests/tests.py::RequestsTests.test_wsgirequest_path_with_force_script_name_trailing_slash",
+            "django/contrib/admin/sites.py::AdminSite.catch_all_view",
+            "tests/requests/tests.py::RequestsTests.test_wsgirequest_with_force_script_name",
+            "django/core/handlers/wsgi.py::WSGIRequest.__init__",
+            "django/middleware/locale.py::LocaleMiddleware.process_response",
+            "django/middleware/common.py::CommonMiddleware.should_redirect_with_slash",
+            "django/core/handlers/asgi.py::ASGIHandler.get_script_prefix",
+            "tests/middleware/tests.py::ConditionalGetMiddlewareTest.test_if_modified_since_and_redirect",
+            "django/http/request.py::HttpRequest.get_full_path_info"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-14725",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.02702702702702703,
+            "pack_tokens": 7757
+          },
+          "top_files": [
+            "docs/topics/forms/modelforms.txt",
+            "docs/ref/contrib/admin/index.txt",
+            "docs/topics/auth/default.txt",
+            "docs/topics/class-based-views/generic-editing.txt",
+            "tests/admin_views/tests.py",
+            "docs/topics/forms/formsets.txt",
+            "docs/topics/class-based-views/generic-display.txt",
+            "django/contrib/admin/options.py",
+            "docs/ref/class-based-views/generic-editing.txt",
+            "docs/ref/contrib/messages.txt"
+          ],
+          "top_symbols": [
+            "django/contrib/auth/admin.py::UserAdmin._add_view",
+            "tests/admin_views/tests.py::AdminViewPermissionsTest.test_change_view_with_view_only_inlines",
+            "tests/admin_changelist/tests.py::ChangeListTests.test_multiuser_edit",
+            "django/contrib/admin/options.py::ModelAdmin._changeform_view",
+            "tests/admin_views/tests.py::AdminViewPermissionsTest.test_change_view_with_view_and_add_inlines",
+            "django/contrib/auth/models.py::Group",
+            "django/db/models/fields/__init__.py::Field.contribute_to_class",
+            "tests/admin_views/tests.py::AdminCustomSaveRelatedTests.test_should_be_able_to_edit_related_objects_on_add_view",
+            "tests/admin_views/tests.py::AdminViewPermissionsTest.test_add_view_with_view_only_inlines",
+            "tests/generic_inline_admin/tests.py::GenericAdminViewTest.test_basic_edit_POST"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-15278",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 1031
+          },
+          "top_files": [
+            "django/db/backends/sqlite3/base.py",
+            "django/db/backends/sqlite3/schema.py",
+            "django/db/backends/base/schema.py",
+            "docs/ref/migration-operations.txt",
+            "django/db/backends/sqlite3/operations.py",
+            "django/db/backends/mysql/base.py",
+            "docs/howto/writing-migrations.txt",
+            "django/db/backends/sqlite3/introspection.py",
+            "docs/ref/databases.txt",
+            "docs/releases/1.7.2.txt"
+          ],
+          "top_symbols": [
+            "django/db/backends/sqlite3/base.py::SQLiteCursorWrapper.execute",
+            "django/db/backends/sqlite3/base.py::SQLiteCursorWrapper.convert_query",
+            "django/db/backends/sqlite3/base.py::SQLiteCursorWrapper.executemany",
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor.alter_field",
+            "django/db/backends/sqlite3/base.py::SQLiteCursorWrapper",
+            "django/db/backends/sqlite3/base.py::DatabaseWrapper.get_new_connection",
+            "django/db/backends/sqlite3/base.py::DatabaseWrapper.create_cursor",
+            "django/db/backends/base/schema.py::BaseDatabaseSchemaEditor.add_field",
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor",
+            "django/db/backends/mysql/base.py::CursorWrapper.execute"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "django__django-15315",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.07692307692307693,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "docs/internals/contributing/committing-code.txt",
+            "docs/releases/1.0-porting-guide.txt",
+            "tests/migrations/test_autodetector.py",
+            "tests/invalid_models_tests/test_ordinary_fields.py",
+            "tests/model_forms/models.py",
+            "docs/ref/models/instances.txt",
+            "docs/ref/models/querysets.txt",
+            "tests/schema/models.py",
+            "tests/admin_views/models.py",
+            "tests/migrations/test_operations.py"
+          ],
+          "top_symbols": [
+            "tests/migrations/test_autodetector.py::AutodetectorTests.test_add_model_with_field_removed_from_base_model",
+            "tests/model_forms/models.py::ImageFile",
+            "tests/invalid_models_tests/test_ordinary_fields.py::CharFieldTests.test_bad_max_length_value",
+            "tests/model_indexes/models.py::Book",
+            "tests/invalid_models_tests/test_ordinary_fields.py::CharFieldTests.test_bad_db_index_value",
+            "tests/schema/models.py::BookWithSlug",
+            "tests/migrations/test_autodetector.py::AutodetectorTests.test_create_model_and_unique_together",
+            "tests/migrations/test_autodetector.py::AutodetectorTests",
+            "tests/admin_filters/models.py::Department",
+            "tests/admin_views/models.py::UndeletableObject"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-15368",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.1,
+            "pack_tokens": 8189
+          },
+          "top_files": [
+            "django/db/models/sql/compiler.py",
+            "django/db/models/expressions.py",
+            "tests/queries/test_bulk_update.py",
+            "django/db/models/sql/query.py",
+            "tests/basic/tests.py",
+            "docs/ref/models/expressions.txt",
+            "docs/topics/db/optimization.txt",
+            "docs/ref/models/querysets.txt",
+            "django/db/models/aggregates.py",
+            "django/db/models/query.py"
+          ],
+          "top_symbols": [
+            "django/db/models/sql/compiler.py::SQLInsertCompiler.prepare_value",
+            "django/db/models/aggregates.py::Aggregate.resolve_expression",
+            "django/db/models/sql/compiler.py::SQLUpdateCompiler.as_sql",
+            "django/db/models/expressions.py::RawSQL.resolve_expression",
+            "tests/queries/test_bulk_update.py::BulkUpdateTests.test_custom_db_columns",
+            "tests/basic/tests.py::ModelRefreshTests.test_refresh_fk",
+            "django/db/models/sql/query.py::Query.check_filterable",
+            "django/db/models/sql/subqueries.py::UpdateQuery.add_update_fields",
+            "django/contrib/gis/db/models/aggregates.py::GeoAggregate.resolve_expression",
+            "tests/queries/test_bulk_update.py::BulkUpdateTests.test_nullable_fk_after_related_save"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "django__django-15503",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.030303030303030304,
+            "pack_tokens": 8174
+          },
+          "top_files": [
+            "docs/topics/db/queries.txt",
+            "docs/ref/models/querysets.txt",
+            "docs/ref/settings.txt",
+            "docs/intro/tutorial02.txt",
+            "tests/model_fields/test_jsonfield.py",
+            "django/db/backends/sqlite3/features.py",
+            "django/db/backends/sqlite3/introspection.py",
+            "docs/releases/1.8.txt",
+            "docs/ref/models/database-functions.txt",
+            "docs/ref/models/fields.txt"
+          ],
+          "top_symbols": [
+            "tests/model_fields/test_jsonfield.py::TestQuerying.test_lookups_with_key_transform",
+            "django/db/backends/sqlite3/features.py::DatabaseFeatures",
+            "django/db/backends/sqlite3/introspection.py::DatabaseIntrospection.get_field_type",
+            "tests/expressions/tests.py::IterableLookupInnerExpressionsTests.test_expressions_not_introduce_sql_injection_via_untrusted_string_inclusion",
+            "tests/test_runner/tests.py::SQLiteInMemoryTestDbs.test_transaction_support",
+            "django/db/backends/sqlite3/base.py::DatabaseWrapper.get_database_version",
+            "tests/gis_tests/inspectapp/tests.py::get_ogr_db_string",
+            "tests/model_forms/tests.py::ModelMultipleChoiceFieldTests.test_model_multiple_choice_field",
+            "django/db/backends/sqlite3/introspection.py::DatabaseIntrospection.get_table_description",
+            "django/db/backends/sqlite3/features.py::DatabaseFeatures.can_return_columns_from_insert"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-15561",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.09090909090909091,
+            "pack_tokens": 8187
+          },
+          "top_files": [
+            "django/db/backends/oracle/schema.py",
+            "docs/howto/writing-migrations.txt",
+            "tests/backends/sqlite/tests.py",
+            "docs/releases/1.7.2.txt",
+            "django/db/backends/sqlite3/schema.py",
+            "django/db/backends/mysql/schema.py",
+            "django/db/migrations/operations/fields.py",
+            "docs/ref/migration-operations.txt",
+            "tests/migrations/test_autodetector.py",
+            "tests/migrations/test_operations.py"
+          ],
+          "top_symbols": [
+            "django/db/backends/oracle/schema.py::DatabaseSchemaEditor.alter_field",
+            "tests/backends/sqlite/tests.py::SchemaTests.test_table_rename_inside_atomic_block",
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor.alter_db_table",
+            "django/db/migrations/operations/fields.py::AlterField.reduce",
+            "django/db/backends/sqlite3/schema.py::DatabaseSchemaEditor.alter_field",
+            "tests/migrations/test_commands.py::MigrateTests.test_sqlmigrate_backwards",
+            "tests/backends/sqlite/tests.py::SchemaTests.test_field_rename_inside_atomic_block",
+            "django/db/backends/mysql/schema.py::DatabaseSchemaEditor.sql_delete_check",
+            "tests/migrations/test_autodetector.py::AutodetectorTests.test_alter_db_table_with_model_change",
+            "django/db/backends/sqlite3/features.py::DatabaseFeatures"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-15863",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.03571428571428571,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "docs/topics/templates.txt",
+            "tests/template_tests/filter_tests/test_floatformat.py",
+            "tests/admin_checks/tests.py",
+            "docs/releases/1.8.txt",
+            "docs/ref/templates/api.txt",
+            "docs/internals/contributing/writing-code/working-with-git.txt",
+            "tests/i18n/tests.py",
+            "tests/template_backends/test_django.py",
+            "tests/test_client_regress/tests.py",
+            "tests/admin_views/tests.py"
+          ],
+          "top_symbols": [
+            "tests/template_tests/filter_tests/test_floatformat.py::FunctionTests.test_low_decimal_precision",
+            "tests/i18n/tests.py::FormattingTests.test_localized_off_numbers",
+            "tests/test_client_regress/tests.py::ContextTests.test_15368",
+            "tests/admin_checks/tests.py::SystemChecksTestCase.test_context_processor_dependencies",
+            "tests/admin_checks/tests.py::SystemChecksTestCase.test_several_templates_backends",
+            "tests/admin_checks/tests.py::SystemChecksTestCase.test_context_processor_dependencies_model_backend_subclass",
+            "tests/template_loader/tests.py::TemplateLoaderTests",
+            "tests/context_processors/tests.py::RequestContextProcessorTests",
+            "django/template/engine.py::Engine.get_default",
+            "tests/template_tests/test_autoreloader.py::TemplateReloadTests"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "django__django-16032",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 1707
+          },
+          "top_files": [
+            "tests/annotations/tests.py",
+            "tests/aggregation/tests.py",
+            "tests/aggregation_regress/tests.py",
+            "docs/topics/db/aggregation.txt",
+            "django/db/models/query.py",
+            "django/db/models/sql/query.py",
+            "tests/expressions/tests.py",
+            "tests/aggregation/test_filter_argument.py",
+            "tests/queries/test_qs_combinators.py",
+            "tests/db_functions/comparison/test_coalesce.py"
+          ],
+          "top_symbols": [
+            "tests/annotations/tests.py::NonAggregateAnnotationTestCase.test_annotation_filter_with_subquery",
+            "tests/aggregation/tests.py::AggregateTestCase.test_aggregation_exists_annotation",
+            "tests/aggregation/tests.py::AggregateTestCase.test_filtering",
+            "tests/aggregation/tests.py::AggregateTestCase.test_group_by_exists_annotation",
+            "tests/aggregation/tests.py::AggregateTestCase.test_group_by_subquery_annotation",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_annotation_disjunction",
+            "tests/annotations/tests.py::NonAggregateAnnotationTestCase.test_annotation_in_f_grouped_by_annotation",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_more_more",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_aggregate_fexpr",
+            "tests/aggregation/tests.py::AggregateTestCase.test_aggregation_default_compound_expression"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "django__django-16100",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 6543
+          },
+          "top_files": [
+            "tests/admin_changelist/tests.py",
+            "tests/admin_views/tests.py",
+            "django/contrib/admin/options.py",
+            "tests/admin_checks/tests.py",
+            "tests/admin_changelist/admin.py",
+            "docs/ref/contrib/admin/index.txt",
+            "tests/admin_views/admin.py",
+            "django/contrib/admin/checks.py",
+            "tests/modeladmin/test_checks.py",
+            "docs/releases/1.1.txt"
+          ],
+          "top_symbols": [
+            "tests/admin_changelist/tests.py::ChangeListTests.test_changelist_view_list_editable_changed_objects_uses_filter",
+            "tests/admin_views/tests.py::AdminViewListEditable.test_non_form_errors",
+            "tests/admin_changelist/tests.py::ChangeListTests.test_get_list_editable_queryset",
+            "tests/admin_changelist/tests.py::ChangeListTests.test_result_list_editable",
+            "tests/admin_views/tests.py::AdminViewListEditable.test_list_editable_popup",
+            "tests/admin_changelist/tests.py::ChangeListTests.test_get_list_editable_queryset_with_regex_chars_in_prefix",
+            "tests/admin_views/tests.py::AdminViewListEditable.test_list_editable_action_submit",
+            "tests/admin_views/tests.py::AdminViewListEditable.test_list_editable_ordering",
+            "django/contrib/admin/options.py::ModelAdmin.changelist_view",
+            "tests/admin_views/tests.py::AdminViewListEditable.test_list_editable_action_choices"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "django__django-16139",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 226
+          },
+          "top_files": [
+            "django/contrib/auth/forms.py",
+            "docs/internals/contributing/writing-code/working-with-git.txt",
+            "tests/auth_tests/test_forms.py",
+            "docs/internals/contributing/committing-code.txt",
+            "docs/topics/auth/customizing.txt",
+            "docs/internals/contributing/writing-code/submitting-patches.txt",
+            "docs/intro/contributing.txt",
+            "django/contrib/auth/admin.py",
+            "tests/auth_tests/test_views.py",
+            "docs/ref/contrib/admin/index.txt"
+          ],
+          "top_symbols": [
+            "django/contrib/auth/forms.py::UserChangeForm",
+            "django/contrib/auth/forms.py::UserChangeForm.__init__",
+            "tests/auth_tests/test_forms.py::UserChangeFormTest.test_bug_14242",
+            "django/contrib/auth/forms.py::ReadOnlyPasswordHashField.__init__",
+            "tests/auth_tests/test_views.py::ChangelistTests.test_user_change_password",
+            "django/contrib/auth/admin.py::UserAdmin._add_view",
+            "django/contrib/auth/forms.py::AdminPasswordChangeForm",
+            "django/contrib/auth/forms.py::UserCreationForm",
+            "tests/admin_views/tests.py::AdminCustomTemplateTests.test_change_password_template",
+            "django/contrib/flatpages/forms.py::FlatpageForm.__init__"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "django__django-16263",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.25,
+            "file_recall@3": 0,
+            "file_recall@5": 0.25,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.2,
+            "pack_tokens": 8191
+          },
+          "top_files": [
+            "docs/ref/models/querysets.txt",
+            "docs/topics/db/aggregation.txt",
+            "tests/aggregation_regress/tests.py",
+            "tests/aggregation/tests.py",
+            "django/db/models/sql/query.py",
+            "django/contrib/admin/views/main.py",
+            "django/db/models/query.py",
+            "docs/topics/db/optimization.txt",
+            "docs/ref/contrib/admin/index.txt",
+            "tests/queries/tests.py"
+          ],
+          "top_symbols": [
+            "django/contrib/admin/views/main.py::ChangeList.get_queryset",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_more_more",
+            "tests/aggregation/tests.py::AggregateTestCase.test_ticket11881",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_more",
+            "django/db/models/sql/query.py::Query",
+            "django/db/models/query.py::QuerySet.delete",
+            "tests/aggregation_regress/tests.py::AggregationTests.test_aggregate_duplicate_columns_select_related",
+            "django/db/models/sql/compiler.py::SQLUpdateCompiler.pre_sql_setup",
+            "tests/defer_regress/tests.py::DeferRegressionTest.test_basic",
+            "tests/multiple_database/tests.py::QueryTestCase.test_select_related"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "django__django-16315",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 1,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.6666666666666666,
+            "func_recall@5": 0.6666666666666666,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 8139
+          },
+          "top_files": [
+            "django/db/models/query.py",
+            "tests/bulk_create/tests.py",
+            "docs/ref/models/querysets.txt",
+            "tests/queries/test_bulk_update.py",
+            "django/db/backends/sqlite3/operations.py",
+            "tests/async/test_async_queryset.py",
+            "tests/basic/tests.py",
+            "django/db/models/sql/compiler.py",
+            "django/db/backends/postgresql/operations.py",
+            "tests/custom_columns/models.py"
+          ],
+          "top_symbols": [
+            "django/db/models/query.py::QuerySet.bulk_create",
+            "django/db/models/query.py::QuerySet._check_bulk_create_options",
+            "tests/bulk_create/tests.py::BulkCreateTests.test_update_conflicts_invalid_unique_fields",
+            "tests/bulk_create/tests.py::BulkCreateTests.test_update_conflicts_invalid_update_fields",
+            "tests/bulk_create/tests.py::BulkCreateTests.test_update_conflicts_pk_in_update_fields",
+            "tests/bulk_create/tests.py::BulkCreateTests._test_update_conflicts",
+            "tests/bulk_create/tests.py::BulkCreateTests.test_update_conflicts_nonexistent_update_fields",
+            "django/db/models/query.py::QuerySet.abulk_create",
+            "tests/bulk_create/tests.py::BulkCreateTests._test_update_conflicts_unique_two_fields",
+            "tests/bulk_create/tests.py::BulkCreateTests.test_update_conflicts_unique_fields_required"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "django__django-16612",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1255
+          },
+          "top_files": [
+            "django/contrib/admin/sites.py",
+            "tests/admin_views/tests.py",
+            "tests/redirects_tests/tests.py",
+            "tests/middleware/tests.py",
+            "django/middleware/common.py",
+            "django/contrib/flatpages/views.py",
+            "django/contrib/redirects/middleware.py",
+            "django/http/request.py",
+            "docs/topics/auth/default.txt",
+            "tests/generic_views/test_base.py"
+          ],
+          "top_symbols": [
+            "django/contrib/admin/sites.py::AdminSite.catch_all_view",
+            "tests/redirects_tests/tests.py::RedirectTests.test_redirect_with_append_slash_and_query_string",
+            "tests/admin_views/tests.py::AdminSiteFinalCatchAllPatternTests.test_missing_slash_append_slash_true_without_final_catch_all_view",
+            "tests/admin_views/tests.py::AdminSiteFinalCatchAllPatternTests.test_missing_slash_append_slash_true_unknown_url_without_final_catch_all_view",
+            "tests/admin_views/tests.py::AdminSiteFinalCatchAllPatternTests.test_missing_slash_append_slash_false_without_final_catch_all_view",
+            "django/contrib/flatpages/views.py::flatpage",
+            "tests/admin_views/tests.py::AdminSiteFinalCatchAllPatternTests.test_known_url_missing_slash_redirects_with_slash_if_not_auth_no_catch_all_view",
+            "tests/admin_views/tests.py::AdminSiteFinalCatchAllPatternTests.test_unknown_url_no_trailing_slash_if_not_auth_without_final_catch_all_view",
+            "tests/middleware/tests.py::CommonMiddlewareTest.test_append_slash_redirect_querystring_have_slash",
+            "tests/admin_views/tests.py::AdminSiteFinalCatchAllPatternTests"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "django__django-16631",
+          "metrics": {
+            "file_recall@1": 0.5,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0.5,
+            "gold_in_pack": 0.5,
+            "mrr": 1,
+            "pack_tokens": 5053
+          },
+          "top_files": [
+            "django/contrib/auth/base_user.py",
+            "docs/ref/settings.txt",
+            "django/contrib/auth/tokens.py",
+            "tests/auth_tests/test_tokens.py",
+            "docs/topics/auth/default.txt",
+            "tests/check_framework/test_security.py",
+            "docs/howto/deployment/checklist.txt",
+            "docs/topics/signing.txt",
+            "docs/topics/http/sessions.txt",
+            "tests/signing/tests.py"
+          ],
+          "top_symbols": [
+            "django/contrib/auth/base_user.py::AbstractBaseUser.get_session_auth_hash",
+            "django/contrib/auth/tokens.py::PasswordResetTokenGenerator._make_token_with_timestamp",
+            "tests/auth_tests/test_tokens.py::TokenGeneratorTest.test_check_token_secret_key_fallbacks",
+            "django/contrib/auth/tokens.py::PasswordResetTokenGenerator._make_hash_value",
+            "tests/auth_tests/test_tokens.py::TokenGeneratorTest.test_check_token_secret_key_fallbacks_override",
+            "django/utils/crypto.py::salted_hmac",
+            "django/contrib/auth/tokens.py::PasswordResetTokenGenerator._get_fallbacks",
+            "tests/signing/tests.py::TestSigner.test_sign_unsign_ignore_secret_key_fallbacks",
+            "tests/check_framework/test_security.py::CheckSecretKeyFallbacksTest.test_multiple_bad_keys",
+            "tests/check_framework/test_security.py::CheckSecretKeyFallbacksTest.test_multiple_keys"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "django__django-16901",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.00819672131147541,
+            "pack_tokens": 8191
+          },
+          "top_files": [
+            "docs/ref/models/querysets.txt",
+            "docs/releases/4.1.txt",
+            "docs/ref/databases.txt",
+            "docs/ref/models/indexes.txt",
+            "docs/ref/settings.txt",
+            "docs/releases/3.2.txt",
+            "docs/releases/2.0.txt",
+            "docs/releases/4.2.txt",
+            "docs/ref/models/expressions.txt",
+            "docs/releases/1.8.txt"
+          ],
+          "top_symbols": [
+            "tests/template_tests/test_parser.py::ParserTests.test_filter_args_count",
+            "django/core/management/commands/sqlmigrate.py::Command.add_arguments",
+            "tests/xor_lookups/tests.py::XorLookupsTests.test_filter",
+            "django/db/models/fields/__init__.py::DurationField",
+            "tests/xor_lookups/tests.py::XorLookupsTests.test_filter_negated",
+            "django/db/backends/postgresql/schema.py::DatabaseSchemaEditor.execute",
+            "tests/sites_tests/tests.py::CreateDefaultSiteTests.test_save_another",
+            "django/template/defaulttags.py::url",
+            "django/db/models/functions/text.py::ConcatPair",
+            "django/db/models/functions/datetime.py::Now.as_postgresql"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "matplotlib__matplotlib-22865",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 8164
+          },
+          "top_files": [
+            "lib/matplotlib/tests/test_colors.py",
+            "lib/matplotlib/tests/test_colorbar.py",
+            "lib/matplotlib/colorbar.py",
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            "lib/matplotlib/tests/test_contour.py",
+            "tutorials/colors/colorbar_only.py",
+            "lib/matplotlib/tests/test_axes.py",
+            "examples/specialty_plots/leftventricle_bulleye.py",
+            "doc/devel/contributing.rst",
+            "examples/axes_grid1/demo_edge_colorbar.py"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/tests/test_colors.py::test_boundarynorm_and_colorbarbase",
+            "lib/matplotlib/tests/test_colorbar.py::test_gridspec_make_colorbar",
+            "lib/matplotlib/tests/test_colorbar.py::test_nonorm",
+            "lib/matplotlib/tests/test_colors.py::test_cmap_and_norm_from_levels_and_colors",
+            "lib/matplotlib/tests/test_colorbar.py::test_colorbar_extension_inverted_axis",
+            "lib/matplotlib/tests/test_colorbar.py::test_colorbar_positioning",
+            "lib/matplotlib/tests/test_contour.py::test_contourf_log_extension",
+            "lib/matplotlib/colorbar.py::Colorbar.__init__",
+            "lib/matplotlib/tests/test_colorbar.py::test_colorbar_closed_patch",
+            "lib/matplotlib/colors.py::from_levels_and_colors"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "matplotlib__matplotlib-24177",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.006944444444444444,
+            "pack_tokens": 3321
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            "lib/matplotlib/tests/test_axes.py",
+            "lib/matplotlib/axes/_axes.py",
+            "doc/users/installing/index.rst",
+            "doc/devel/testing.rst",
+            "doc/devel/contributing.rst",
+            "doc/devel/triage.rst",
+            "examples/statistics/histogram_cumulative.py",
+            "doc/users/prev_whats_new/github_stats_3.0.0.rst",
+            "examples/lines_bars_and_markers/filled_step.py"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/axes/_axes.py::Axes.hist",
+            "lib/matplotlib/tests/test_axes.py::test_hist_step_filled",
+            "lib/matplotlib/tests/test_axes.py::test_hist_unequal_bins_density",
+            "lib/matplotlib/tests/test_axes.py::test_hist_step_geometry",
+            "lib/matplotlib/tests/test_axes.py::test_hist_step_horiz",
+            "lib/matplotlib/tests/test_axes.py::test_hist_step",
+            "lib/matplotlib/tests/test_axes.py::test_hist_step_bottom",
+            "lib/matplotlib/tests/test_axes.py::test_hist_step_bottom_geometry",
+            "lib/matplotlib/testing/compare.py::compare_images",
+            "lib/matplotlib/axes/_axes.py::Axes.hist2d"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "matplotlib__matplotlib-24870",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.5,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "src/tri/_tri.h",
+            "lib/matplotlib/contour.py",
+            "src/tri/_tri.cpp",
+            "lib/matplotlib/tests/test_contour.py",
+            "lib/matplotlib/colorbar.py",
+            "lib/matplotlib/tests/test_image.py",
+            "doc/api/prev_api_changes/api_changes_3.5.0/behaviour.rst",
+            "lib/matplotlib/pyplot.py",
+            "lib/mpl_toolkits/mplot3d/axes3d.py",
+            "lib/matplotlib/axes/_axes.py"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/contour.py::ContourSet.find_nearest_contour",
+            "lib/matplotlib/tests/test_contour.py::test_contour_Nlevels",
+            "lib/matplotlib/colorbar.py::Colorbar.add_lines",
+            "lib/matplotlib/contour.py::ContourSet._autolev",
+            "lib/matplotlib/colors.py::to_rgba_array",
+            "lib/matplotlib/tests/test_contour.py::test_contour_badlevel_fmt",
+            "lib/matplotlib/pyplot.py::subplots",
+            "lib/matplotlib/tests/test_image.py::test_jpeg_2d",
+            "lib/matplotlib/tests/test_contour.py::test_contour_manual",
+            "lib/matplotlib/contour.py::ContourLabeler.clabel"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "matplotlib__matplotlib-25311",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.004,
+            "pack_tokens": 485
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            "doc/users/prev_whats_new/github_stats_3.0.2.rst",
+            "lib/matplotlib/tests/test_pickle.py",
+            "doc/users/explain/figures.rst",
+            "doc/users/prev_whats_new/github_stats_3.2.0.rst",
+            "doc/users/prev_whats_new/changelog.rst",
+            "doc/api/prev_api_changes/api_changes_3.1.0.rst",
+            "doc/users/prev_whats_new/github_stats_3.3.0.rst",
+            "doc/users/prev_whats_new/github_stats_3.6.0.rst",
+            "lib/matplotlib/tests/test_legend.py"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/tests/test_pickle.py::test_no_pyplot",
+            "lib/matplotlib/tests/test_legend.py::test_legend_draggable",
+            "lib/matplotlib/tests/test_pickle.py::test_image",
+            "lib/matplotlib/pyplot.py::subplot",
+            "lib/matplotlib/tests/test_legend.py::test_legend_proper_window_extent",
+            "lib/matplotlib/tests/test_legend.py::test_reverse_legend_handles_and_labels",
+            "lib/matplotlib/tests/test_polar.py::test_polar_annotations",
+            "lib/matplotlib/tests/test_backend_qt.py::test_canvas_reinit",
+            "lib/matplotlib/tests/test_axes.py::test_margins_errors",
+            "galleries/examples/user_interfaces/mpl_with_glade3_sgskip.py::main"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "matplotlib__matplotlib-25960",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 0,
+            "mrr": 0.045454545454545456,
+            "pack_tokens": 944
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            "doc/devel/contribute.rst",
+            "doc/users/installing/index.rst",
+            "doc/devel/development_setup.rst",
+            "doc/devel/dependencies.rst",
+            "doc/users/prev_whats_new/github_stats_3.6.0.rst",
+            "galleries/users_explain/figure/backends.rst",
+            "galleries/users_explain/figure/figure_intro.rst",
+            "doc/devel/triage.rst",
+            "doc/users/prev_whats_new/github_stats_3.0.2.rst"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/sphinxext/plot_directive.py::_run_code",
+            "lib/matplotlib/tests/test_backends_interactive.py::_get_testable_interactive_backends",
+            "lib/matplotlib/figure.py::FigureBase.subfigures",
+            "tools/gh_api.py::get_auth_token",
+            "setupext.py::BackendMacOSX.get_extensions",
+            "setupext.py::BackendMacOSX",
+            "setupext.py::pkg_config_setup_extension",
+            "lib/matplotlib/tests/test_backend_pgf.py::compare_figure",
+            "lib/matplotlib/testing/compare.py::compare_images",
+            "lib/matplotlib/backends/backend_macosx.py::FigureCanvasMac.draw"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "matplotlib__matplotlib-26113",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 0,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 2413
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            "doc/devel/contributing.rst",
+            "lib/matplotlib/axes/_axes.py",
+            "lib/matplotlib/pyplot.py",
+            "doc/users/installing/index.rst",
+            "lib/matplotlib/tests/test_axes.py",
+            "doc/devel/documenting_mpl.rst",
+            "doc/devel/MEP/MEP12.rst",
+            "doc/devel/MEP/MEP11.rst",
+            "doc/devel/triage.rst"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/axes/_axes.py::Axes.hexbin",
+            "lib/matplotlib/pyplot.py::hexbin",
+            "lib/matplotlib/tests/test_axes.py::test_hexbin_linear",
+            "galleries/examples/widgets/annotated_cursor.py::AnnotatedCursor",
+            "lib/matplotlib/tests/test_axes.py::test_hexbin_log",
+            "lib/matplotlib/axes/_axes.py::Axes.imshow",
+            "lib/matplotlib/cbook.py::violin_stats",
+            "lib/matplotlib/axes/_axes.pyi::Axes.hexbin",
+            "lib/matplotlib/image.py::AxesImage",
+            "lib/matplotlib/axes/_axes.py::Axes.scatter"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "matplotlib__matplotlib-26208",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.022727272727272728,
+            "pack_tokens": 2253
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.yml",
+            "doc/api/prev_api_changes/api_changes_3.4.0/behaviour.rst",
+            "doc/users/installing/index.rst",
+            "lib/matplotlib/pyplot.py",
+            "doc/users/prev_whats_new/github_stats_3.0.2.rst",
+            "doc/api/prev_api_changes/api_changes_3.2.0/behavior.rst",
+            "doc/users/faq/troubleshooting_faq.rst",
+            "doc/users/prev_whats_new/changelog.rst",
+            "doc/users/prev_whats_new/dflt_style_changes.rst",
+            "doc/devel/contribute.rst"
+          ],
+          "top_symbols": [
+            "lib/matplotlib/axes/_axes.py::Axes",
+            "lib/matplotlib/pyplot.py::subplot",
+            "lib/matplotlib/axis.py::YAxis.set_default_intervals",
+            "lib/matplotlib/pyplot.py::twinx",
+            "lib/matplotlib/tests/test_axes.py::test_twinx_axis_scales",
+            "galleries/examples/subplots_axes_and_figures/fahrenheit_celsius_scales.py::make_plot",
+            "lib/matplotlib/tests/test_transforms.py::TestTransformPlotInterface.test_line_extents_for_non_affine_transData",
+            "lib/matplotlib/pyplot.py::subplots",
+            "lib/matplotlib/axis.py::XAxis.set_default_intervals",
+            "lib/matplotlib/axes/_base.py::_AxesBase.autoscale_view"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "psf__requests-1766",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 8182
+          },
+          "top_files": [
+            "docs/user/advanced.rst",
+            "docs/user/quickstart.rst",
+            "requests/utils.py",
+            "docs/user/authentication.rst",
+            "requests/packages/urllib3/util.py",
+            "requests/auth.py",
+            "test_requests.py",
+            "HISTORY.rst",
+            "requests/packages/urllib3/packages/ssl_match_hostname/_implementation.py",
+            "requests/packages/urllib3/connectionpool.py"
+          ],
+          "top_symbols": [
+            "requests/packages/urllib3/util.py::parse_url",
+            "requests/utils.py::parse_list_header",
+            "requests/utils.py::unquote_header_value",
+            "requests/packages/urllib3/fields.py::format_header_param",
+            "requests/packages/urllib3/packages/ssl_match_hostname/_implementation.py::_dnsname_match",
+            "requests/auth.py::HTTPDigestAuth.build_digest_header",
+            "requests/utils.py::requote_uri",
+            "test_requests.py::RequestsTestCase.test_DIGEST_AUTH_SETS_SESSION_COOKIES",
+            "test_requests.py::RequestsTestCase.test_DIGEST_AUTH_RETURNS_COOKIE",
+            "requests/sessions.py::Session.request"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "psf__requests-2931",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 4856
+          },
+          "top_files": [
+            "docs/user/quickstart.rst",
+            "requests/models.py",
+            "test_requests.py",
+            "README.rst",
+            "HISTORY.rst",
+            "requests/utils.py",
+            "requests/auth.py",
+            "docs/user/advanced.rst",
+            "docs/api.rst",
+            "AUTHORS.rst"
+          ],
+          "top_symbols": [
+            "requests/models.py::RequestEncodingMixin._encode_params",
+            "requests/models.py::PreparedRequest.prepare_url",
+            "requests/utils.py::to_native_string",
+            "test_requests.py::TestTimeout.test_encoded_methods",
+            "requests/auth.py::_basic_auth_str",
+            "requests/models.py::PreparedRequest.prepare_method",
+            "requests/models.py::PreparedRequest.prepare_headers",
+            "test_requests.py::TestRequests.test_autoset_header_values_are_native",
+            "test_requests.py::TestRequests.test_links",
+            "test_requests.py::UtilsTestCase.test_requote_uri_with_unquoted_percents"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "pydata__xarray-4094",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.058823529411764705,
+            "pack_tokens": 3986
+          },
+          "top_files": [
+            "xarray/util/print_versions.py",
+            "ci/requirements/py36.yml",
+            "ci/requirements/py37.yml",
+            "ci/requirements/py38.yml",
+            "ci/requirements/py37-windows.yml",
+            ".binder/environment.yml",
+            "doc/installing.rst",
+            "ci/requirements/py38-all-but-dask.yml",
+            "doc/reshaping.rst",
+            "xarray/tests/__init__.py"
+          ],
+          "top_symbols": [
+            "xarray/util/print_versions.py::get_sys_info",
+            "xarray/util/print_versions.py::show_versions",
+            "xarray/tests/test_dataset.py::TestDataset.test_to_stacked_array_to_unstacked_dataset_different_dimension",
+            "xarray/tests/test_dataset.py::TestDataset.test_to_stacked_array_to_unstacked_dataset",
+            "xarray/core/dataset.py::Dataset.to_stacked_array",
+            "xarray/util/print_versions.py::netcdf_and_hdf5_versions",
+            "xarray/core/dataarray.py::DataArray.to_unstacked_dataset",
+            "xarray/core/merge.py::unique_variable",
+            "xarray/core/dataset.py::Dataset.to_netcdf",
+            "xarray/backends/api.py::open_dataset"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "pydata__xarray-4695",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.0625,
+            "pack_tokens": 2875
+          },
+          "top_files": [
+            "xarray/util/print_versions.py",
+            "setup.cfg",
+            "ci/requirements/py36.yml",
+            "ci/requirements/py37.yml",
+            "ci/requirements/py38.yml",
+            ".binder/environment.yml",
+            "ci/requirements/py37-windows.yml",
+            "ci/requirements/py38-all-but-dask.yml",
+            "doc/installing.rst",
+            "ci/requirements/py36-min-all-deps.yml"
+          ],
+          "top_symbols": [
+            "xarray/util/print_versions.py::get_sys_info",
+            "xarray/util/print_versions.py::show_versions",
+            "xarray/util/print_versions.py::netcdf_and_hdf5_versions",
+            "xarray/core/dataarray.py::DataArray.reindex",
+            "xarray/core/dataarray.py::DataArray.reindex_like",
+            "xarray/core/dataset.py::Dataset.reindex_like",
+            "xarray/core/resample.py::Resample._upsample",
+            "xarray/tests/test_dataset.py::TestDataset.test_reindex",
+            "xarray/backends/api.py::open_dataarray",
+            "xarray/core/dataset.py::Dataset.reindex"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "pydata__xarray-4966",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8004
+          },
+          "top_files": [
+            "xarray/coding/variables.py",
+            "doc/io.rst",
+            "doc/whats-new.rst",
+            "doc/installing.rst",
+            "xarray/backends/api.py",
+            "setup.cfg",
+            "xarray/conventions.py",
+            "xarray/core/dataset.py",
+            "xarray/tests/test_backends.py",
+            "README.rst"
+          ],
+          "top_symbols": [
+            "xarray/coding/variables.py::UnsignedIntegerCoder.encode",
+            "xarray/backends/api.py::open_dataarray",
+            "xarray/core/dataset.py::Dataset.to_netcdf",
+            "xarray/backends/api.py::open_dataset",
+            "xarray/backends/apiv2.py::open_dataset",
+            "xarray/conventions.py::cf_encoder",
+            "xarray/coding/variables.py::UnsignedIntegerCoder.decode",
+            "xarray/conventions.py::decode_cf_variables",
+            "xarray/tests/test_backends.py::NetCDF4Base.test_0dimensional_variable",
+            "xarray/backends/netCDF4_.py::NetCDF4DataStore"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "pydata__xarray-7229",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.014285714285714285,
+            "pack_tokens": 961
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bugreport.yml",
+            "xarray/util/print_versions.py",
+            "doc/getting-started-guide/installing.rst",
+            "doc/user-guide/plotting.rst",
+            ".binder/environment.yml",
+            "ci/requirements/environment-windows.yml",
+            "setup.cfg",
+            "ci/requirements/environment.yml",
+            "doc/whats-new.rst",
+            "doc/user-guide/io.rst"
+          ],
+          "top_symbols": [
+            "xarray/util/print_versions.py::get_sys_info",
+            "xarray/util/print_versions.py::show_versions",
+            "xarray/tutorial.py::load_dataset",
+            "xarray/tests/test_plugins.py::test_lazy_import",
+            "xarray/tutorial.py::open_dataset",
+            "xarray/tests/test_backends.py::TestPseudoNetCDFFormat.test_uamiv_format_mfread",
+            "xarray/tests/test_backends.py::TestPseudoNetCDFFormat.test_uamiv_format_read",
+            "xarray/util/print_versions.py::netcdf_and_hdf5_versions",
+            "xarray/tests/test_dataset.py::TestDataset.test_filter_by_attrs",
+            "xarray/backends/netCDF4_.py::NetCDF4BackendEntrypoint"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "pylint-dev__pylint-4661",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0.5,
+            "file_recall@5": 0.5,
+            "gold_in_pack": 0.5,
+            "mrr": 0.5,
+            "pack_tokens": 6465
+          },
+          "top_files": [
+            "doc/tutorial.rst",
+            "pylint/config/__init__.py",
+            "doc/user_guide/ide-integration.rst",
+            "pylint/config/find_default_config_files.py",
+            "doc/user_guide/run.rst",
+            "tests/lint/unittest_lint.py",
+            "doc/faq.rst",
+            "doc/development_guide/contribute.rst",
+            "README.rst",
+            "tests/test_self.py"
+          ],
+          "top_symbols": [
+            "pylint/config/find_default_config_files.py::find_default_config_files",
+            "pylint/config/__init__.py::save_results",
+            "tests/lint/unittest_lint.py::test_pylintrc_parentdir_no_package",
+            "tests/lint/unittest_lint.py::test_pylintrc_parentdir",
+            "tests/lint/unittest_lint.py::fake_home",
+            "pylint/__init__.py::modify_sys_path",
+            "pylint/config/configuration_mixin.py::ConfigurationMixIn",
+            "tests/test_self.py::TestRunTC.test_do_not_import_files_from_local_directory_with_pythonpath",
+            "tests/test_self.py::TestRunTC.test_do_not_import_files_from_local_directory",
+            "pylint/pyreverse/main.py::Run.run"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "pylint-dev__pylint-8898",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.3333333333333333,
+            "file_recall@3": 0.3333333333333333,
+            "file_recall@5": 0.3333333333333333,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 0.3333333333333333,
+            "mrr": 0.5,
+            "pack_tokens": 4686
+          },
+          "top_files": [
+            "pylint/config/arguments_manager.py",
+            "pylint/config/argument.py",
+            "pylint/config/config_initialization.py",
+            "pylint/config/callback_actions.py",
+            "tests/config/test_config.py",
+            "pylint/testutils/lint_module_test.py",
+            ".github/ISSUE_TEMPLATE/BUG-REPORT.yml",
+            "doc/user_guide/usage/run.rst",
+            "pylint/config/deprecation_actions.py",
+            "pylint/pyreverse/main.py"
+          ],
+          "top_symbols": [
+            "pylint/config/arguments_manager.py::_ArgumentsManager._parse_configuration_file",
+            "pylint/config/arguments_manager.py::_ArgumentsManager._parse_command_line_configuration",
+            "pylint/config/config_initialization.py::_config_initialization",
+            "pylint/config/argument.py::_regexp_csv_transfomer",
+            "tests/config/test_config.py::test_csv_regex_error",
+            "pylint/config/arguments_manager.py::_ArgumentsManager.set_option",
+            "pylint/config/callback_actions.py::_LongHelpAction.__call__",
+            "pylint/config/argument.py::_regexp_paths_csv_transfomer",
+            "pylint/testutils/lint_module_test.py::LintModuleTest.__init__",
+            "pylint/config/arguments_manager.py::_ArgumentsManager.__init__"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "pytest-dev__pytest-5262",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 175
+          },
+          "top_files": [
+            "src/_pytest/capture.py",
+            ".github/ISSUE_TEMPLATE.md",
+            "doc/en/example/markers.rst",
+            "testing/test_capture.py",
+            "doc/en/tmpdir.rst",
+            "CHANGELOG.rst",
+            "doc/en/capture.rst",
+            "setup.py",
+            "src/_pytest/assertion/rewrite.py",
+            "src/_pytest/compat.py"
+          ],
+          "top_symbols": [
+            "src/_pytest/capture.py::EncodedFile.write",
+            "src/_pytest/capture.py::FDCaptureBinary.writeorg",
+            "src/_pytest/capture.py::safe_text_dupfile",
+            "src/_pytest/capture.py::capsysbinary",
+            "src/_pytest/capture.py::capfdbinary",
+            "testing/test_capture.py::test_typeerror_encodedfile_write",
+            "src/_pytest/capture.py::capfd",
+            "testing/test_capture.py::TestCaptureIO.test_write_bytes_to_buffer",
+            "testing/test_terminal.py::TestTerminalFunctional.test_header_trailer_info",
+            "src/_pytest/assertion/util.py::_diff_text"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "pytest-dev__pytest-5787",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.014492753623188406,
+            "pack_tokens": 1196
+          },
+          "top_files": [
+            "testing/code/test_excinfo.py",
+            "src/_pytest/_code/code.py",
+            "doc/en/usage.rst",
+            "testing/test_assertion.py",
+            "CHANGELOG.rst",
+            "doc/en/example/parametrize.rst",
+            "tox.ini",
+            "doc/en/example/markers.rst",
+            "testing/test_conftest.py",
+            "doc/en/cache.rst"
+          ],
+          "top_symbols": [
+            "testing/code/test_excinfo.py::TestFormattedExcinfo.test_exc_chain_repr_without_traceback",
+            "src/_pytest/_code/code.py::FormattedExcinfo.repr_excinfo",
+            "testing/test_assertion.py::test_exception_handling_no_traceback",
+            "testing/code/test_excinfo.py::TestFormattedExcinfo.test_exc_chain_repr",
+            "testing/test_session.py::SessionTests.test_basic_testitem_events",
+            "testing/code/test_excinfo.py::TestFormattedExcinfo.test_exc_chain_repr_cycle",
+            "testing/test_conftest.py::TestConftestValueAccessGlobal.test_basic_init",
+            "testing/test_conftest.py::test_conftest_exception_handling",
+            "src/_pytest/cacheprovider.py::pytest_addoption",
+            "src/_pytest/python_api.py::raises"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "pytest-dev__pytest-7205",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 238
+          },
+          "top_files": [
+            "src/_pytest/setuponly.py",
+            "src/_pytest/runner.py",
+            "src/_pytest/fixtures.py",
+            "src/_pytest/debugging.py",
+            "src/_pytest/python.py",
+            "src/_pytest/capture.py",
+            "testing/test_setuponly.py",
+            "testing/test_runner.py",
+            "src/_pytest/doctest.py",
+            "testing/test_capture.py"
+          ],
+          "top_symbols": [
+            "src/_pytest/setuponly.py::_show_fixture_action",
+            "src/_pytest/runner.py::call_runtest_hook",
+            "src/_pytest/fixtures.py::FixtureRequest._get_active_fixturedef",
+            "src/_pytest/setuponly.py::pytest_fixture_setup",
+            "src/_pytest/fixtures.py::pytest_fixture_setup",
+            "src/_pytest/setuponly.py::pytest_fixture_post_finalizer",
+            "src/_pytest/fixtures.py::FixtureDef.execute",
+            "src/_pytest/runner.py::CallInfo.from_call",
+            "src/_pytest/fixtures.py::FixtureRequest._compute_fixture_value",
+            "src/_pytest/fixtures.py::FixtureDef.__init__"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "pytest-dev__pytest-7982",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 2089
+          },
+          "top_files": [
+            "src/_pytest/pathlib.py",
+            "testing/test_conftest.py",
+            "doc/en/changelog.rst",
+            "testing/test_collection.py",
+            "testing/acceptance_test.py",
+            "testing/test_tmpdir.py",
+            "testing/test_mark.py",
+            "testing/test_cacheprovider.py",
+            "doc/en/goodpractices.rst",
+            "doc/en/announce/release-2.0.0.rst"
+          ],
+          "top_symbols": [
+            "src/_pytest/pathlib.py::visit",
+            "testing/test_conftest.py::test_conftest_symlink_files",
+            "testing/test_collection.py::test_collect_sub_with_symlinks",
+            "src/_pytest/pathlib.py::symlink_or_skip",
+            "testing/test_mark.py::TestKeywordSelection.test_no_match_directories_outside_the_suite",
+            "testing/acceptance_test.py::TestInvocationVariants.test_cmdline_python_package_symlink",
+            "testing/test_tmpdir.py::test_tmpdir_always_is_realpath",
+            "testing/acceptance_test.py::TestGeneralUsage.test_directory_skipped",
+            "testing/test_link_resolve.py::subst_path_linux",
+            "src/_pytest/pathlib.py::ensure_deletable"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "scikit-learn__scikit-learn-10908",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 3735
+          },
+          "top_files": [
+            "doc/modules/feature_extraction.rst",
+            "sklearn/feature_extraction/text.py",
+            "sklearn/feature_extraction/tests/test_text.py",
+            "doc/tutorial/text_analytics/working_with_text_data.rst",
+            "doc/whats_new/older_versions.rst",
+            "sklearn/feature_extraction/dict_vectorizer.py",
+            "doc/glossary.rst",
+            "doc/datasets/twenty_newsgroups.rst",
+            "doc/whats_new/v0.14.rst",
+            "sklearn/feature_extraction/tests/test_dict_vectorizer.py"
+          ],
+          "top_symbols": [
+            "sklearn/feature_extraction/text.py::CountVectorizer.transform",
+            "sklearn/feature_extraction/text.py::CountVectorizer.fit_transform",
+            "sklearn/feature_extraction/text.py::CountVectorizer",
+            "sklearn/feature_extraction/text.py::CountVectorizer._count_vocab",
+            "sklearn/feature_extraction/text.py::CountVectorizer.get_feature_names",
+            "sklearn/feature_extraction/text.py::TfidfVectorizer",
+            "sklearn/feature_extraction/text.py::CountVectorizer.inverse_transform",
+            "sklearn/feature_extraction/tests/test_text.py::test_countvectorizer_vocab_sets_when_pickling",
+            "sklearn/feature_extraction/text.py::VectorizerMixin._validate_vocabulary",
+            "sklearn/feature_extraction/tests/test_text.py::test_feature_names"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "scikit-learn__scikit-learn-13328",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 2849
+          },
+          "top_files": [
+            "sklearn/linear_model/huber.py",
+            "sklearn/utils/_show_versions.py",
+            "sklearn/linear_model/logistic.py",
+            "sklearn/linear_model/tests/test_huber.py",
+            "sklearn/linear_model/ridge.py",
+            "sklearn/neighbors/nca.py",
+            "sklearn/linear_model/stochastic_gradient.py",
+            "doc/developers/advanced_installation.rst",
+            "sklearn/svm/base.py",
+            "sklearn/linear_model/coordinate_descent.py"
+          ],
+          "top_symbols": [
+            "sklearn/linear_model/huber.py::_huber_loss_and_gradient",
+            "sklearn/linear_model/huber.py::HuberRegressor.fit",
+            "sklearn/linear_model/huber.py::HuberRegressor",
+            "sklearn/utils/_show_versions.py::_get_blas_info",
+            "sklearn/linear_model/logistic.py::_logistic_regression_path",
+            "sklearn/utils/__init__.py::axis0_safe_slice",
+            "sklearn/neighbors/nca.py::NeighborhoodComponentsAnalysis.fit",
+            "sklearn/linear_model/tests/test_huber.py::test_huber_gradient",
+            "sklearn/svm/base.py::_fit_liblinear",
+            "sklearn/_build_utils/__init__.py::get_blas_info"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "scikit-learn__scikit-learn-14710",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 0,
+            "mrr": 0.5,
+            "pack_tokens": 476
+          },
+          "top_files": [
+            "ISSUE_TEMPLATE.md",
+            "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py",
+            "doc/developers/tips.rst",
+            "sklearn/decomposition/online_lda.py",
+            "sklearn/metrics/classification.py",
+            "sklearn/ensemble/gradient_boosting.py",
+            "doc/developers/maintainer.rst",
+            "doc/support.rst",
+            "doc/developers/contributing.rst",
+            "doc/faq.rst"
+          ],
+          "top_symbols": [
+            "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::BaseHistGradientBoosting.fit",
+            "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::BaseHistGradientBoosting._check_early_stopping_scorer",
+            "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::HistGradientBoostingClassifier",
+            "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::HistGradientBoostingRegressor",
+            "sklearn/decomposition/online_lda.py::LatentDirichletAllocation",
+            "sklearn/ensemble/_hist_gradient_boosting/gradient_boosting.py::BaseHistGradientBoosting._get_small_trainset",
+            "sklearn/ensemble/gradient_boosting.py::BaseGradientBoosting.fit",
+            "sklearn/ensemble/gradient_boosting.py::BaseGradientBoosting._fit_stages",
+            "sklearn/metrics/classification.py::_check_targets",
+            "sklearn/metrics/classification.py::accuracy_score"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "scikit-learn__scikit-learn-25232",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.3333333333333333,
+            "func_recall@5": 0.3333333333333333,
+            "gold_in_pack": 0,
+            "mrr": 0.3333333333333333,
+            "pack_tokens": 6504
+          },
+          "top_files": [
+            "sklearn/impute/_base.py",
+            "doc/modules/impute.rst",
+            "sklearn/impute/_iterative.py",
+            "sklearn/impute/tests/test_impute.py",
+            "examples/impute/plot_missing_values.py",
+            ".github/ISSUE_TEMPLATE/feature_request.yml",
+            "doc/whats_new/v0.21.rst",
+            "doc/modules/preprocessing.rst",
+            "doc/whats_new/v0.20.rst",
+            "doc/whats_new/v0.24.rst"
+          ],
+          "top_symbols": [
+            "sklearn/impute/_base.py::SimpleImputer",
+            "sklearn/impute/_iterative.py::IterativeImputer",
+            "sklearn/impute/tests/test_impute.py::test_iterative_imputer_missing_at_transform",
+            "sklearn/impute/_base.py::SimpleImputer._dense_fit",
+            "sklearn/impute/tests/test_impute.py::test_imputation_shape",
+            "sklearn/impute/tests/test_impute.py::test_imputation_constant_error_invalid_type",
+            "sklearn/impute/tests/test_impute.py::test_iterative_imputer_keep_empty_features",
+            "sklearn/impute/_base.py::SimpleImputer._sparse_fit",
+            "sklearn/impute/_base.py::SimpleImputer._validate_input",
+            "sklearn/impute/tests/test_impute.py::test_simple_impute_pd_na"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "scikit-learn__scikit-learn-25931",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.041666666666666664,
+            "pack_tokens": 7839
+          },
+          "top_files": [
+            "doc/developers/advanced_installation.rst",
+            "doc/computing/parallelism.rst",
+            "build_tools/azure/install.sh",
+            "doc/faq.rst",
+            "doc/install.rst",
+            "doc/developers/cython.rst",
+            "doc/developers/minimal_reproducer.rst",
+            "doc/developers/tips.rst",
+            "sklearn/utils/__init__.py",
+            "doc/developers/contributing.rst"
+          ],
+          "top_symbols": [
+            "sklearn/utils/__init__.py::_in_unstable_openblas_configuration",
+            "sklearn/_build_utils/openmp_helpers.py::check_openmp_support",
+            "sklearn/cluster/_kmeans.py::_BaseKMeans._check_mkl_vcomp",
+            "sklearn/utils/_testing.py::create_memmap_backed_data",
+            "sklearn/utils/_show_versions.py::_get_deps_info",
+            "sklearn/datasets/_openml.py::fetch_openml",
+            "sklearn/ensemble/_iforest.py::IsolationForest",
+            "sklearn/datasets/_california_housing.py::fetch_california_housing",
+            "sklearn/datasets/_covtype.py::fetch_covtype",
+            "sklearn/inspection/_plot/tests/test_boundary_decision_display.py::test_dataframe_support"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "scikit-learn__scikit-learn-26194",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 7555
+          },
+          "top_files": [
+            "sklearn/metrics/tests/test_ranking.py",
+            "sklearn/metrics/_ranking.py",
+            "doc/modules/model_evaluation.rst",
+            "sklearn/metrics/_plot/roc_curve.py",
+            "doc/developers/contributing.rst",
+            "sklearn/metrics/_plot/tests/test_roc_curve_display.py",
+            "doc/developers/tips.rst",
+            "sklearn/metrics/tests/test_common.py",
+            "doc/developers/develop.rst",
+            "doc/developers/maintainer.rst"
+          ],
+          "top_symbols": [
+            "sklearn/metrics/_ranking.py::roc_curve",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_returns_consistency",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve_end_points",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve_confidence",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve_drop_intermediate",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve_hard",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve_fpr_tpr_increasing",
+            "sklearn/metrics/tests/test_ranking.py::test_roc_curve_one_label",
+            "sklearn/metrics/_ranking.py::roc_auc_score"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "sphinx-doc__sphinx-10449",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.005681818181818182,
+            "pack_tokens": 8160
+          },
+          "top_files": [
+            "doc/_static/conf.py.txt",
+            "doc/usage/configuration.rst",
+            "sphinx/cmd/quickstart.py",
+            "doc/tutorial/deploying.rst",
+            "doc/man/sphinx-apidoc.rst",
+            "doc/usage/restructuredtext/directives.rst",
+            "doc/tutorial/automatic-doc-generation.rst",
+            "doc/usage/quickstart.rst",
+            "doc/tutorial/getting-started.rst",
+            "sphinx/ext/apidoc.py"
+          ],
+          "top_symbols": [
+            "sphinx/cmd/quickstart.py::generate",
+            "sphinx/cmd/quickstart.py::ask_user",
+            "sphinx/ext/apidoc.py::get_parser",
+            "sphinx/config.py::Config",
+            "tests/test_quickstart.py::test_quickstart_all_answers",
+            "sphinx/cmd/quickstart.py::get_parser",
+            "sphinx/environment/__init__.py::BuildEnvironment.find_files",
+            "sphinx/ext/autosummary/generate.py::get_parser",
+            "sphinx/builders/html/__init__.py::StandaloneHTMLBuilder.prepare_writing",
+            "sphinx/setup_command.py::BuildDoc"
+          ],
+          "pack_files": 7
+        },
+        {
+          "id": "sphinx-doc__sphinx-10466",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "doc/tutorial/deploying.rst",
+            "doc/internals/contributing.rst",
+            "doc/usage/advanced/intl.rst",
+            ".github/ISSUE_TEMPLATE/bug-report.yml",
+            "doc/usage/installation.rst",
+            "doc/usage/configuration.rst",
+            "sphinx/builders/gettext.py",
+            "tests/test_build_html.py",
+            "utils/babel_runner.py",
+            "doc/tutorial/first-steps.rst"
+          ],
+          "top_symbols": [
+            "utils/babel_runner.py::compile_catalog_plusjs._run_domain_js",
+            "sphinx/builders/gettext.py::MessageCatalogBuilder.finish",
+            "tests/test_build_html.py::test_html_remote_images",
+            "sphinx/builders/gettext.py::Message.__init__",
+            "sphinx/builders/_epub_base.py::EpubBuilder.copy_image_files_pil",
+            "tests/test_build_html.py::test_html_scaled_image_link",
+            "sphinx/cmd/quickstart.py::ask_user",
+            "tests/test_intl.py::test_additional_targets_should_be_translated",
+            "tests/test_build_html.py::test_html_remote_logo",
+            "tests/test_build_gettext.py::test_build_gettext"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "sphinx-doc__sphinx-7440",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.021739130434782608,
+            "pack_tokens": 1517
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug_report.md",
+            "CONTRIBUTING.rst",
+            "doc/usage/installation.rst",
+            "README.rst",
+            ".circleci/config.yml",
+            "doc/develop.rst",
+            "doc/faq.rst",
+            "doc/usage/extensions/napoleon.rst",
+            "doc/usage/advanced/intl.rst",
+            "tests/test_domain_std.py"
+          ],
+          "top_symbols": [
+            "tests/test_domain_std.py::test_glossary_warning",
+            "sphinx/locale/__init__.py::setlocale",
+            "tests/test_markup.py::test_inline",
+            "sphinx/setup_command.py::BuildDoc",
+            "sphinx/cmd/quickstart.py::ask_user",
+            "tests/test_intl.py::test_text_glossary_term_inconsistencies",
+            "tests/test_build_latex.py::test_latex_show_urls_is_inline",
+            "tests/test_build_latex.py::test_latex_show_urls_is_no",
+            "tests/test_build_latex.py::test_latex_show_urls_is_footnote",
+            "sphinx/application.py::Sphinx.__init__"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "sphinx-doc__sphinx-7889",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.09090909090909091,
+            "pack_tokens": 640
+          },
+          "top_files": [
+            "doc/usage/installation.rst",
+            ".github/ISSUE_TEMPLATE/bug_report.md",
+            "doc/internals/contributing.rst",
+            "doc/usage/extensions/napoleon.rst",
+            "doc/faq.rst",
+            "doc/man/sphinx-build.rst",
+            "doc/usage/quickstart.rst",
+            "doc/usage/extensions/index.rst",
+            "doc/development/tutorials/todo.rst",
+            "doc/usage/advanced/intl.rst"
+          ],
+          "top_symbols": [
+            "sphinx/application.py::Sphinx.__init__",
+            "sphinx/locale/__init__.py::setlocale",
+            "tests/test_quickstart.py::test_quickstart_all_answers",
+            "sphinx/ext/autodoc/mock.py::_make_subclass",
+            "sphinx/ext/autodoc/mock.py::_MockModule.__getattr__",
+            "sphinx/ext/autodoc/mock.py::_MockObject.__getattr__",
+            "sphinx/ext/autodoc/mock.py::_MockObject.__getitem__",
+            "sphinx/cmd/quickstart.py::ask_user",
+            "sphinx/setup_command.py::BuildDoc",
+            "sphinx/ext/autodoc/mock.py::_MockObject.__new__"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "sphinx-doc__sphinx-8475",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 3218
+          },
+          "top_files": [
+            "tests/test_build_linkcheck.py",
+            "sphinx/builders/linkcheck.py",
+            ".github/PULL_REQUEST_TEMPLATE.md",
+            "doc/usage/configuration.rst",
+            "doc/internals/contributing.rst",
+            "sphinx/themes/basic/static/jquery-3.5.1.js",
+            "doc/usage/extensions/extlinks.rst",
+            "tests/test_build.py",
+            "sphinx/builders/_epub_base.py",
+            "sphinx/util/requests.py"
+          ],
+          "top_symbols": [
+            "sphinx/builders/linkcheck.py::CheckExternalLinksBuilder.check_thread",
+            "tests/test_build_linkcheck.py::test_follows_redirects_on_HEAD",
+            "tests/test_build_linkcheck.py::test_follows_redirects_on_GET",
+            "tests/test_build_linkcheck.py::make_redirect_handler",
+            "tests/test_build.py::test_build_all",
+            "sphinx/ext/intersphinx.py::_read_from_url",
+            "tests/test_build_linkcheck.py::test_invalid_ssl",
+            "tests/test_build_linkcheck.py::test_anchors_ignored",
+            "sphinx/util/requests.py::head",
+            "tests/test_build_linkcheck.py::test_connect_to_selfsigned_with_requests_env_var"
+          ],
+          "pack_files": 5
+        },
+        {
+          "id": "sphinx-doc__sphinx-8551",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0.5,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0.5,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 8183
+          },
+          "top_files": [
+            "doc/usage/restructuredtext/domains.rst",
+            "doc/usage/restructuredtext/roles.rst",
+            "doc/usage/restructuredtext/directives.rst",
+            "sphinx/domains/__init__.py",
+            "sphinx/domains/cpp.py",
+            "sphinx/domains/python.py",
+            "doc/development/tutorials/recipe.rst",
+            "sphinx/domains/c.py",
+            "doc/extdev/appapi.rst",
+            "sphinx/domains/std.py"
+          ],
+          "top_symbols": [
+            "sphinx/domains/cpp.py::CPPDomain._resolve_xref_inner",
+            "sphinx/domains/__init__.py::Domain",
+            "sphinx/domains/python.py::PythonDomain.resolve_xref",
+            "sphinx/domains/c.py::CDomain._resolve_xref_inner",
+            "sphinx/domains/__init__.py::Domain.resolve_xref",
+            "sphinx/domains/c.py::CXRefRole.run",
+            "sphinx/transforms/i18n.py::Locale.apply",
+            "tests/test_domain_js.py::test_domain_js_xrefs",
+            "sphinx/domains/std.py::StandardDomain._resolve_term_xref",
+            "sphinx/domains/javascript.py::JavaScriptDomain.resolve_xref"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "sphinx-doc__sphinx-8621",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.16666666666666666,
+            "pack_tokens": 3863
+          },
+          "top_files": [
+            "doc/usage/restructuredtext/roles.rst",
+            "tests/test_markup.py",
+            "doc/usage/installation.rst",
+            "doc/usage/builders/index.rst",
+            ".github/ISSUE_TEMPLATE/bug_report.md",
+            "sphinx/builders/html/transforms.py",
+            "doc/extdev/index.rst",
+            "doc/faq.rst",
+            "tests/test_build_html.py",
+            "doc/usage/restructuredtext/basics.rst"
+          ],
+          "top_symbols": [
+            "tests/test_markup.py::test_inline",
+            "sphinx/builders/html/transforms.py::KeyboardTransform",
+            "sphinx/builders/html/transforms.py::KeyboardTransform.run",
+            "tests/test_build_epub.py::test_html_download_role",
+            "sphinx/writers/html.py::HTMLTranslator.visit_literal",
+            "tests/test_build_html.py::test_html_download_role",
+            "tests/test_build_linkcheck.py::test_defaults_json",
+            "sphinx/writers/html5.py::HTML5Translator.visit_literal",
+            "tests/test_build_latex.py::test_latex_images",
+            "tests/test_build_html.py::test_html5_output"
+          ],
+          "pack_files": 6
+        },
+        {
+          "id": "sphinx-doc__sphinx-9591",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.012345679012345678,
+            "pack_tokens": 370
+          },
+          "top_files": [
+            ".github/ISSUE_TEMPLATE/bug-report.yml",
+            "doc/usage/installation.rst",
+            "doc/internals/contributing.rst",
+            "sphinx/themes/basic/static/jquery-3.5.1.js",
+            "doc/usage/extensions/napoleon.rst",
+            "doc/faq.rst",
+            "README.rst",
+            "doc/tutorial/getting-started.rst",
+            "doc/tutorial/narrative-documentation.rst",
+            "doc/usage/quickstart.rst"
+          ],
+          "top_symbols": [
+            "sphinx/writers/latex.py::LaTeXTranslator.visit_figure",
+            "doc/usage/extensions/example_google.py::ExampleClass",
+            "doc/usage/extensions/example_numpy.py::ExampleClass",
+            "sphinx/locale/__init__.py::setlocale",
+            "tests/test_build_html.py::test_html_inventory",
+            "sphinx/domains/cpp.py::ASTFoldExpr.get_id",
+            "sphinx/ext/githubpages.py::create_nojekyll_and_cname",
+            "sphinx/cmd/quickstart.py::ask_user",
+            "sphinx/builders/_epub_base.py::EpubBuilder.copy_image_files_pil",
+            "tests/test_environment_indexentries.py::test_create_single_index"
+          ],
+          "pack_files": 1
+        },
+        {
+          "id": "sphinx-doc__sphinx-9673",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.1,
+            "pack_tokens": 8189
+          },
+          "top_files": [
+            "doc/usage/extensions/example_numpy.py",
+            "doc/usage/extensions/example_google.py",
+            "tests/test_ext_autodoc_configs.py",
+            "sphinx/ext/napoleon/__init__.py",
+            "doc/usage/extensions/autodoc.rst",
+            "doc/usage/extensions/napoleon.rst",
+            ".github/ISSUE_TEMPLATE/bug-report.yml",
+            "tests/test_ext_napoleon_docstring.py",
+            "sphinx/ext/napoleon/docstring.py",
+            "sphinx/ext/autodoc/typehints.py"
+          ],
+          "top_symbols": [
+            "doc/usage/extensions/example_numpy.py::function_with_types_in_docstring",
+            "doc/usage/extensions/example_google.py::module_level_function",
+            "doc/usage/extensions/example_numpy.py::module_level_function",
+            "doc/usage/extensions/example_google.py::function_with_types_in_docstring",
+            "sphinx/ext/napoleon/__init__.py::Config",
+            "tests/test_ext_autodoc_configs.py::test_autodoc_typehints_description_no_undoc",
+            "doc/usage/extensions/example_numpy.py::ExampleClass.__init__",
+            "doc/usage/extensions/example_numpy.py::function_with_pep484_type_annotations",
+            "tests/test_ext_autodoc_configs.py::test_autodoc_typehints_description_with_documented_init_no_undoc",
+            "doc/usage/extensions/example_numpy.py::ExampleClass.example_method"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "sympy__sympy-13480",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 7994
+          },
+          "top_files": [
+            "sympy/functions/elementary/hyperbolic.py",
+            "sympy/functions/elementary/trigonometric.py",
+            "sympy/functions/special/gamma_functions.py",
+            "sympy/functions/special/error_functions.py",
+            "sympy/functions/elementary/tests/test_hyperbolic.py",
+            "sympy/functions/special/elliptic_integrals.py",
+            "sympy/functions/elementary/exponential.py",
+            "doc/src/gotchas.rst",
+            "sympy/core/numbers.py",
+            "sympy/core/tests/test_subs.py"
+          ],
+          "top_symbols": [
+            "sympy/functions/elementary/hyperbolic.py::coth.eval",
+            "sympy/functions/elementary/hyperbolic.py::tanh.eval",
+            "sympy/functions/elementary/trigonometric.py::cot.eval",
+            "sympy/functions/special/gamma_functions.py::loggamma.eval",
+            "sympy/functions/elementary/hyperbolic.py::asinh.eval",
+            "sympy/functions/elementary/trigonometric.py::cot._eval_subs",
+            "sympy/core/expr.py::Expr._eval_interval",
+            "sympy/functions/special/error_functions.py::li",
+            "sympy/functions/elementary/trigonometric.py::asec.eval",
+            "sympy/functions/elementary/exponential.py::log.eval"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "sympy__sympy-13551",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.125,
+            "pack_tokens": 7089
+          },
+          "top_files": [
+            "sympy/concrete/tests/test_products.py",
+            "doc/src/gotchas.rst",
+            "sympy/core/function.py",
+            "sympy/concrete/tests/test_sums_products.py",
+            "sympy/functions/combinatorial/factorials.py",
+            "sympy/logic/boolalg.py",
+            "doc/src/tutorial/basic_operations.rst",
+            "sympy/concrete/products.py",
+            "doc/src/aboutus.rst",
+            "sympy/simplify/simplify.py"
+          ],
+          "top_symbols": [
+            "sympy/concrete/tests/test_products.py::test_karr_proposition_2b",
+            "sympy/simplify/gammasimp.py::gammasimp",
+            "sympy/functions/combinatorial/factorials.py::RisingFactorial",
+            "sympy/core/function.py::Subs",
+            "sympy/utilities/randtest.py::test_derivative_numerically",
+            "sympy/concrete/tests/test_products.py::test_karr_convention",
+            "sympy/concrete/tests/test_products.py::test_karr_proposition_2a",
+            "sympy/simplify/simplify.py::simplify",
+            "sympy/series/acceleration.py::shanks",
+            "sympy/concrete/tests/test_sums_products.py::test_karr_proposition_2b"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "sympy__sympy-13878",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.35714285714285715,
+            "func_recall@5": 0.2857142857142857,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1995
+          },
+          "top_files": [
+            "sympy/stats/crv_types.py",
+            "sympy/stats/tests/test_continuous_rv.py",
+            "doc/src/modules/stats.rst",
+            "sympy/integrals/integrals.py",
+            "sympy/functions/special/gamma_functions.py",
+            "doc/src/python-comparisons.rst",
+            "sympy/stats/__init__.py",
+            "sympy/stats/crv.py",
+            "sympy/stats/rv.py",
+            "sympy/functions/elementary/trigonometric.py"
+          ],
+          "top_symbols": [
+            "sympy/stats/crv_types.py::Erlang",
+            "sympy/stats/crv_types.py::StudentT",
+            "sympy/stats/crv_types.py::UniformSum",
+            "sympy/stats/crv_types.py::Normal",
+            "sympy/stats/crv_types.py::GammaInverse",
+            "sympy/stats/crv_types.py::Uniform",
+            "sympy/stats/crv_types.py::ContinuousRV",
+            "sympy/stats/crv_types.py::Exponential",
+            "sympy/integrals/integrals.py::integrate",
+            "sympy/stats/crv_types.py::Laplace"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "sympy__sympy-14531",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 0.07692307692307693,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8101
+          },
+          "top_files": [
+            "sympy/printing/str.py",
+            "sympy/printing/tests/test_python.py",
+            "sympy/integrals/rubi/parsetools/parse.py",
+            "doc/src/tutorial/gotchas.rst",
+            "sympy/printing/tests/test_str.py",
+            "sympy/printing/python.py",
+            "sympy/utilities/codegen.py",
+            "sympy/printing/printer.py",
+            "doc/src/modules/printing.rst",
+            "doc/src/modules/codegen.rst"
+          ],
+          "top_symbols": [
+            "sympy/integrals/rubi/parsetools/parse.py::replaceWith",
+            "sympy/printing/tests/test_python.py::test_python_relational",
+            "sympy/printing/str.py::sstr",
+            "sympy/printing/str.py::StrPrinter._print_Zero",
+            "sympy/printing/str.py::StrPrinter._print_Integer",
+            "sympy/printing/str.py::StrPrinter._print_Rational",
+            "sympy/printing/str.py::StrPrinter",
+            "sympy/printing/tests/test_python.py::test_python_basic",
+            "sympy/utilities/codegen.py::Routine",
+            "sympy/printing/tests/test_python.py::test_python_derivatives"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "sympy__sympy-15345",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1405
+          },
+          "top_files": [
+            "sympy/printing/mathematica.py",
+            "sympy/printing/tests/test_mathematica.py",
+            "doc/src/modules/printing.rst",
+            "doc/src/modules/codegen.rst",
+            "sympy/parsing/mathematica.py",
+            "sympy/interactive/tests/test_ipython.py",
+            "sympy/interactive/session.py",
+            "sympy/plotting/intervalmath/lib_interval.py",
+            "sympy/utilities/runtests.py",
+            "sympy/printing/__init__.py"
+          ],
+          "top_symbols": [
+            "sympy/printing/mathematica.py::mathematica_code",
+            "sympy/printing/mathematica.py::MCodePrinter",
+            "sympy/interactive/tests/test_ipython.py::test_automatic_symbols",
+            "sympy/parsing/mathematica.py::mathematica",
+            "sympy/parsing/mathematica.py::MathematicaParser",
+            "sympy/utilities/runtests.py::SymPyDocTestRunner.run",
+            "sympy/printing/tests/test_theanocode.py::test_MatrixSymbol_wrong_dims",
+            "sympy/parsing/tests/test_mathematica.py::test_mathematica",
+            "examples/all.py::run_example",
+            "sympy/interactive/session.py::enable_automatic_int_sympification"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "sympy__sympy-17139",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 8025
+          },
+          "top_files": [
+            "sympy/simplify/fu.py",
+            "sympy/strategies/core.py",
+            "sympy/simplify/trigsimp.py",
+            "sympy/strategies/traverse.py",
+            "sympy/simplify/simplify.py",
+            "sympy/strategies/tree.py",
+            "sympy/strategies/tests/test_traverse.py",
+            "sympy/core/basic.py",
+            "doc/src/gotchas.rst",
+            "sympy/strategies/tools.py"
+          ],
+          "top_symbols": [
+            "sympy/simplify/fu.py::_TR56",
+            "sympy/strategies/core.py::minimize",
+            "sympy/simplify/fu.py::TR16",
+            "sympy/simplify/fu.py::TR15",
+            "sympy/simplify/trigsimp.py::trigsimp_old",
+            "sympy/simplify/fu.py::TR6",
+            "sympy/simplify/trigsimp.py::futrig",
+            "sympy/simplify/fu.py::TR22",
+            "sympy/simplify/trigsimp.py::_futrig",
+            "sympy/strategies/core.py::chain"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "sympy__sympy-18199",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 3572
+          },
+          "top_files": [
+            "sympy/ntheory/residue_ntheory.py",
+            "sympy/solvers/solveset.py",
+            "sympy/ntheory/tests/test_residue.py",
+            "sympy/solvers/diophantine.py",
+            "sympy/integrals/rubi/utility_function.py",
+            "sympy/solvers/ode.py",
+            "doc/src/modules/solvers/solveset.rst",
+            "sympy/functions/elementary/miscellaneous.py",
+            "sympy/solvers/tests/test_solveset.py",
+            "doc/src/modules/ntheory.rst"
+          ],
+          "top_symbols": [
+            "sympy/ntheory/residue_ntheory.py::nthroot_mod",
+            "sympy/ntheory/tests/test_residue.py::test_residue",
+            "sympy/solvers/solveset.py::_invert_modular",
+            "sympy/solvers/solveset.py::_is_modular",
+            "sympy/integrals/rubi/tests/test_utility_function.py::test_NthRoot",
+            "sympy/integrals/rubi/utility_function.py::NthRoot",
+            "sympy/core/compatibility.py::lru_cache",
+            "sympy/ntheory/residue_ntheory.py::_nthroot_mod1",
+            "sympy/solvers/diophantine.py::cornacchia",
+            "sympy/solvers/solveset.py::_solve_modular"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "sympy__sympy-19346",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.03125,
+            "pack_tokens": 3750
+          },
+          "top_files": [
+            "doc/src/tutorial/printing.rst",
+            "doc/src/modules/printing.rst",
+            "sympy/printing/tests/test_repr.py",
+            "sympy/physics/quantum/qexpr.py",
+            "doc/src/tutorial/matrices.rst",
+            "sympy/utilities/decorator.py",
+            "sympy/combinatorics/permutations.py",
+            "sympy/core/containers.py",
+            "sympy/combinatorics/free_groups.py",
+            "sympy/combinatorics/perm_groups.py"
+          ],
+          "top_symbols": [
+            "sympy/physics/quantum/qexpr.py::QExpr._print_label",
+            "sympy/combinatorics/permutations.py::Cycle",
+            "sympy/printing/tests/test_repr.py::test_FracElement",
+            "sympy/printing/tests/test_repr.py::test_PolyElement",
+            "sympy/core/compatibility.py::iterable",
+            "sympy/utilities/decorator.py::threaded",
+            "sympy/utilities/decorator.py::xthreaded",
+            "sympy/combinatorics/perm_groups.py::PermutationGroup.generate_dimino",
+            "sympy/core/containers.py::Dict.__new__",
+            "sympy/simplify/epathtools.py::epath"
+          ],
+          "pack_files": 10
+        },
+        {
+          "id": "sympy__sympy-19495",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 1,
+            "func_recall@10": 0.5,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.2,
+            "pack_tokens": 4741
+          },
+          "top_files": [
+            "sympy/solvers/tests/test_solveset.py",
+            "sympy/sets/tests/test_fancysets.py",
+            "sympy/solvers/solveset.py",
+            "doc/src/modules/solvers/solveset.rst",
+            "sympy/sets/conditionset.py",
+            "sympy/sets/handlers/intersection.py",
+            "sympy/sets/tests/test_conditionset.py",
+            "sympy/sets/tests/test_sets.py",
+            "doc/src/tutorial/solvers.rst",
+            "sympy/sets/fancysets.py"
+          ],
+          "top_symbols": [
+            "sympy/solvers/tests/test_solveset.py::test_solve_abs",
+            "sympy/solvers/tests/test_solveset.py::test_solve_hyperbolic",
+            "sympy/solvers/tests/test_solveset.py::test_solve_trig",
+            "sympy/sets/tests/test_fancysets.py::test_imageset_intersect_real",
+            "sympy/solvers/solveset.py::solveset",
+            "sympy/solvers/solveset.py::_invert_abs",
+            "sympy/sets/tests/test_fancysets.py::test_ImageSet",
+            "sympy/sets/conditionset.py::ConditionSet",
+            "sympy/solvers/tests/test_solveset.py::test_trig_system_fail",
+            "sympy/solvers/tests/test_solveset.py::test_solve_lambert"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "sympy__sympy-19637",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 1157
+          },
+          "top_files": [
+            "sympy/core/sympify.py",
+            "sympy/core/tests/test_sympify.py",
+            "sympy/parsing/fortran/fortran_parser.py",
+            "sympy/parsing/tests/test_fortran_parser.py",
+            "sympy/parsing/ast_parser.py",
+            "sympy/parsing/tests/test_sympy_parser.py",
+            "sympy/codegen/ast.py",
+            "sympy/parsing/tests/test_c_parser.py",
+            "sympy/parsing/sympy_parser.py",
+            "sympy/printing/codeprinter.py"
+          ],
+          "top_symbols": [
+            "sympy/core/sympify.py::kernS",
+            "sympy/core/tests/test_sympify.py::test_kernS",
+            "sympy/solvers/ode/tests/test_ode.py::test_linear_2eq_order2_type1_broken2",
+            "sympy/core/sympify.py::sympify",
+            "sympy/parsing/ast_parser.py::parse_expr",
+            "sympy/polys/rootoftools.py::ComplexRootOf.eval_approx",
+            "sympy/parsing/fortran/fortran_parser.py::ASR2PyVisitor.visit_Function",
+            "sympy/parsing/tests/test_sympy_parser.py::test_local_dict",
+            "sympy/parsing/fortran/fortran_parser.py::ASR2PyVisitor.visit_Assignment",
+            "sympy/parsing/tests/test_fortran_parser.py::test_assignment"
+          ],
+          "pack_files": 2
+        },
+        {
+          "id": "sympy__sympy-19954",
+          "metrics": {
+            "file_recall@1": 1,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 1,
+            "pack_tokens": 6350
+          },
+          "top_files": [
+            "sympy/combinatorics/perm_groups.py",
+            "sympy/combinatorics/tests/test_perm_groups.py",
+            "sympy/combinatorics/tests/test_pc_groups.py",
+            "sympy/combinatorics/testutil.py",
+            "sympy/core/tests/test_args.py",
+            "sympy/combinatorics/named_groups.py",
+            "sympy/combinatorics/homomorphisms.py",
+            "sympy/combinatorics/pc_groups.py",
+            "sympy/combinatorics/tests/test_homomorphisms.py",
+            "sympy/combinatorics/fp_groups.py"
+          ],
+          "top_symbols": [
+            "sympy/combinatorics/perm_groups.py::PermutationGroup.minimal_blocks",
+            "sympy/combinatorics/perm_groups.py::PermutationGroup.sylow_subgroup",
+            "sympy/combinatorics/tests/test_perm_groups.py::test_abelian_invariants",
+            "sympy/combinatorics/tests/test_perm_groups.py::test_minimal_blocks",
+            "sympy/combinatorics/tests/test_perm_groups.py::test_sylow_subgroup",
+            "sympy/combinatorics/tests/test_perm_groups.py::test_elementary",
+            "sympy/combinatorics/tests/test_perm_groups.py::test_is_solvable",
+            "sympy/combinatorics/perm_groups.py::PermutationGroup.stabilizer",
+            "sympy/combinatorics/perm_groups.py::PermutationGroup.center",
+            "sympy/combinatorics/perm_groups.py::PermutationGroup._sylow_alt_sym"
+          ],
+          "pack_files": 3
+        },
+        {
+          "id": "sympy__sympy-21612",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.004098360655737705,
+            "pack_tokens": 3703
+          },
+          "top_files": [
+            "sympy/parsing/latex/_parse_latex_antlr.py",
+            "sympy/parsing/tests/test_latex.py",
+            "doc/src/modules/parsing.rst",
+            "sympy/parsing/latex/__init__.py",
+            "doc/src/gotchas.rst",
+            "sympy/parsing/tests/test_sympy_parser.py",
+            "sympy/printing/latex.py",
+            "sympy/parsing/sympy_parser.py",
+            "sympy/parsing/tests/test_latex_deps.py",
+            "sympy/parsing/ast_parser.py"
+          ],
+          "top_symbols": [
+            "sympy/parsing/latex/__init__.py::parse_latex",
+            "sympy/parsing/latex/_parse_latex_antlr.py::parse_latex",
+            "sympy/parsing/latex/_parse_latex_antlr.py::MathErrorListener.syntaxError",
+            "sympy/parsing/tests/test_latex.py::test_not_parseable",
+            "sympy/parsing/tests/test_latex_deps.py::test_no_import",
+            "sympy/parsing/tests/test_latex.py::test_failing_not_parseable",
+            "sympy/parsing/tests/test_latex.py::test_parseable",
+            "sympy/parsing/latex/_parse_latex_antlr.py::MathErrorListener",
+            "sympy/parsing/latex/_parse_latex_antlr.py::convert_expr",
+            "sympy/parsing/latex/_parse_latex_antlr.py::MathErrorListener.__init__"
+          ],
+          "pack_files": 8
+        },
+        {
+          "id": "sympy__sympy-22080",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 0,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 0,
+            "mrr": 0.004032258064516129,
+            "pack_tokens": 1231
+          },
+          "top_files": [
+            "sympy/utilities/tests/test_lambdify.py",
+            "sympy/utilities/lambdify.py",
+            "doc/src/contributing/docstring.rst",
+            "doc/src/tutorial/basic_operations.rst",
+            "examples/all.py",
+            "sympy/utilities/source.py",
+            "sympy/multipledispatch/dispatcher.py",
+            "doc/src/modules/codegen.rst",
+            "sympy/plotting/experimental_lambdify.py",
+            "sympy/printing/printer.py"
+          ],
+          "top_symbols": [
+            "sympy/utilities/tests/test_lambdify.py::test_lambdify_inspect",
+            "sympy/utilities/lambdify.py::lambdify",
+            "sympy/utilities/tests/test_lambdify.py::test_namespace_order",
+            "sympy/utilities/source.py::source",
+            "sympy/multipledispatch/dispatcher.py::source",
+            "sympy/utilities/tests/test_lambdify.py::test_namespace_type",
+            "sympy/utilities/tests/test_lambdify.py::test_issue9474",
+            "sympy/tensor/index_methods.py::get_contraction_structure",
+            "sympy/physics/control/lti.py::TransferFunction.from_rational_expression",
+            "examples/all.py::load_example_module"
+          ],
+          "pack_files": 4
+        },
+        {
+          "id": "sympy__sympy-24213",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 0,
+            "file_recall@5": 0,
+            "func_recall@10": 0,
+            "func_recall@5": 0,
+            "gold_in_pack": 1,
+            "mrr": 0.14285714285714285,
+            "pack_tokens": 6494
+          },
+          "top_files": [
+            "sympy/physics/units/tests/test_quantities.py",
+            "sympy/physics/units/tests/test_prefixes.py",
+            "sympy/physics/units/quantities.py",
+            "doc/src/modules/physics/units/examples.rst",
+            "doc/src/explanation/active-deprecations.md",
+            "sympy/physics/units/tests/test_unitsystem.py",
+            "sympy/physics/units/unitsystem.py",
+            "sympy/physics/units/dimensions.py",
+            "sympy/physics/units/util.py",
+            "sympy/physics/units/systems/si.py"
+          ],
+          "top_symbols": [
+            "sympy/physics/units/tests/test_quantities.py::test_issue_24062",
+            "sympy/physics/units/tests/test_quantities.py::test_factor_and_dimension",
+            "sympy/physics/units/tests/test_quantities.py::test_issue_22164",
+            "sympy/physics/units/tests/test_quantities.py::test_dimensional_expr_of_derivative",
+            "sympy/physics/units/tests/test_quantities.py::test_issue_20288",
+            "sympy/physics/units/quantities.py::Quantity._collect_factor_and_dimension",
+            "sympy/physics/units/tests/test_prefixes.py::test_prefix_unit",
+            "sympy/physics/units/tests/test_quantities.py::test_check_unit_consistency",
+            "sympy/physics/units/tests/test_quantities.py::test_factor_and_dimension_with_Abs",
+            "sympy/physics/units/tests/test_unitsystem.py::test_definition"
+          ],
+          "pack_files": 9
+        },
+        {
+          "id": "sympy__sympy-24539",
+          "metrics": {
+            "file_recall@1": 0,
+            "file_recall@10": 1,
+            "file_recall@3": 1,
+            "file_recall@5": 1,
+            "func_recall@10": 1,
+            "func_recall@5": 1,
+            "gold_in_pack": 1,
+            "mrr": 0.5,
+            "pack_tokens": 8192
+          },
+          "top_files": [
+            "sympy/polys/tests/test_rings.py",
+            "sympy/polys/rings.py",
+            "sympy/polys/solvers.py",
+            "doc/src/modules/polys/domainsintro.rst",
+            "sympy/polys/ring_series.py",
+            "sympy/polys/polytools.py",
+            "sympy/polys/modulargcd.py",
+            "sympy/core/numbers.py",
+            "sympy/polys/numberfields/modules.py",
+            "doc/src/explanation/active-deprecations.md"
+          ],
+          "top_symbols": [
+            "sympy/polys/tests/test_rings.py::test_PolyElement_as_expr",
+            "sympy/polys/rings.py::PolyElement.as_expr",
+            "sympy/polys/rings.py::PolyElement.coeff",
+            "sympy/polys/rings.py::PolyElement.as_expr_dict",
+            "sympy/polys/tests/test_rings.py::test_PolyElement__str__",
+            "sympy/polys/solvers.py::sympy_eqs_to_ring",
+            "sympy/polys/rings.py::PolyElement.copy",
+            "sympy/polys/tests/test_rings.py::test_PolyElement_drop",
+            "sympy/polys/tests/test_rings.py::test_PolyElement_discriminant",
+            "sympy/polys/tests/test_rings.py::test_PolyElement_from_expr"
+          ],
+          "pack_files": 3
+        }
+      ]
     }
   ],
   "paired": [
@@ -13863,6 +17814,87 @@
       "n": 100
     },
     {
+      "a": "b0",
+      "b": "m1",
+      "metric": "file_recall@1",
+      "mean_diff": 0.24,
+      "ci_lo": 0.16,
+      "ci_hi": 0.33,
+      "n": 100
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "file_recall@3",
+      "mean_diff": 0.408333,
+      "ci_lo": 0.318333,
+      "ci_hi": 0.5,
+      "n": 100
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "file_recall@5",
+      "mean_diff": 0.430833,
+      "ci_lo": 0.34,
+      "ci_hi": 0.5225,
+      "n": 100
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "file_recall@10",
+      "mean_diff": 0.575833,
+      "ci_lo": 0.483333,
+      "ci_hi": 0.666667,
+      "n": 100
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "func_recall@5",
+      "mean_diff": 0.341604,
+      "ci_lo": 0.25,
+      "ci_hi": 0.441581,
+      "n": 95
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "func_recall@10",
+      "mean_diff": 0.428128,
+      "ci_lo": 0.33139,
+      "ci_hi": 0.528083,
+      "n": 95
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "mrr",
+      "mean_diff": 0.384916,
+      "ci_lo": 0.308521,
+      "ci_hi": 0.466788,
+      "n": 100
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.483333,
+      "ci_lo": 0.386667,
+      "ci_hi": 0.575,
+      "n": 100
+    },
+    {
+      "a": "b0",
+      "b": "m1",
+      "metric": "pack_tokens",
+      "mean_diff": 5117.95,
+      "ci_lo": 4523.22,
+      "ci_hi": 5708.69,
+      "n": 100
+    },
+    {
       "a": "b1-1k",
       "b": "b1-4k",
       "metric": "file_recall@1",
@@ -14025,6 +18057,87 @@
       "n": 100
     },
     {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "file_recall@1",
+      "mean_diff": 0.21,
+      "ci_lo": 0.12,
+      "ci_hi": 0.305,
+      "n": 100
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "file_recall@3",
+      "mean_diff": 0.323333,
+      "ci_lo": 0.206667,
+      "ci_hi": 0.438333,
+      "n": 100
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "file_recall@5",
+      "mean_diff": 0.280833,
+      "ci_lo": 0.155833,
+      "ci_hi": 0.405,
+      "n": 100
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "file_recall@10",
+      "mean_diff": 0.333333,
+      "ci_lo": 0.205,
+      "ci_hi": 0.456667,
+      "n": 100
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "func_recall@5",
+      "mean_diff": 0.331078,
+      "ci_lo": 0.23913,
+      "ci_hi": 0.428065,
+      "n": 95
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "func_recall@10",
+      "mean_diff": 0.417602,
+      "ci_lo": 0.322556,
+      "ci_hi": 0.514787,
+      "n": 95
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "mrr",
+      "mean_diff": 0.277912,
+      "ci_lo": 0.187514,
+      "ci_hi": 0.371642,
+      "n": 100
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.043333,
+      "ci_lo": -0.085,
+      "ci_hi": 0.163333,
+      "n": 100
+    },
+    {
+      "a": "b1-1k",
+      "b": "m1",
+      "metric": "pack_tokens",
+      "mean_diff": 4101.79,
+      "ci_lo": 3506.68,
+      "ci_hi": 4692.12,
+      "n": 100
+    },
+    {
       "a": "b1-4k",
       "b": "b2",
       "metric": "file_recall@1",
@@ -14103,6 +18216,168 @@
       "mean_diff": 4098.22,
       "ci_lo": 4096.65,
       "ci_hi": 4099.6,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "file_recall@1",
+      "mean_diff": 0.21,
+      "ci_lo": 0.12,
+      "ci_hi": 0.305,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "file_recall@3",
+      "mean_diff": 0.323333,
+      "ci_lo": 0.206667,
+      "ci_hi": 0.438333,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "file_recall@5",
+      "mean_diff": 0.280833,
+      "ci_lo": 0.155833,
+      "ci_hi": 0.405,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "file_recall@10",
+      "mean_diff": 0.333333,
+      "ci_lo": 0.205,
+      "ci_hi": 0.456667,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "func_recall@5",
+      "mean_diff": 0.331078,
+      "ci_lo": 0.23913,
+      "ci_hi": 0.428065,
+      "n": 95
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "func_recall@10",
+      "mean_diff": 0.417602,
+      "ci_lo": 0.322556,
+      "ci_hi": 0.514787,
+      "n": 95
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "mrr",
+      "mean_diff": 0.277912,
+      "ci_lo": 0.187514,
+      "ci_hi": 0.371642,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "gold_in_pack",
+      "mean_diff": -0.201667,
+      "ci_lo": -0.316667,
+      "ci_hi": -0.081667,
+      "n": 100
+    },
+    {
+      "a": "b1-4k",
+      "b": "m1",
+      "metric": "pack_tokens",
+      "mean_diff": 1028.09,
+      "ci_lo": 432.43,
+      "ci_hi": 1618.22,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "file_recall@1",
+      "mean_diff": 0.095,
+      "ci_lo": 0.02,
+      "ci_hi": 0.175,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "file_recall@3",
+      "mean_diff": 0.09,
+      "ci_lo": 0.02,
+      "ci_hi": 0.16,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "file_recall@5",
+      "mean_diff": 0.0575,
+      "ci_lo": -0.0175,
+      "ci_hi": 0.135,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "file_recall@10",
+      "mean_diff": 0.07,
+      "ci_lo": 0.005,
+      "ci_hi": 0.135,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "func_recall@5",
+      "mean_diff": 0.034085,
+      "ci_lo": -0.018519,
+      "ci_hi": 0.089286,
+      "n": 95
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "func_recall@10",
+      "mean_diff": 0.06898,
+      "ci_lo": 0.018433,
+      "ci_hi": 0.127537,
+      "n": 95
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "mrr",
+      "mean_diff": 0.092634,
+      "ci_lo": 0.037521,
+      "ci_hi": 0.154533,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "gold_in_pack",
+      "mean_diff": 0.328333,
+      "ci_lo": 0.235,
+      "ci_hi": 0.421667,
+      "n": 100
+    },
+    {
+      "a": "b2",
+      "b": "m1",
+      "metric": "pack_tokens",
+      "mean_diff": -3070.13,
+      "ci_lo": -3665.19,
+      "ci_hi": -2479.59,
       "n": 100
     }
   ]

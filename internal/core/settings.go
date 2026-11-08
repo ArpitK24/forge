@@ -192,6 +192,7 @@ func settingsIsEmpty(s Settings) bool {
 		s.Verbose ||
 		s.Theme != "" ||
 		s.AutoCompact != nil ||
+		s.ContextEngine != nil ||
 		len(s.McpServers) != 0 ||
 		len(s.PermissionRules) != 0 ||
 		len(s.TrustedProjects) != 0 {
@@ -224,6 +225,9 @@ func overlaySettings(dst *Settings, src Settings) {
 	}
 	if src.AutoCompact != nil {
 		dst.AutoCompact = src.AutoCompact
+	}
+	if src.ContextEngine != nil {
+		dst.ContextEngine = src.ContextEngine
 	}
 	if src.Theme != "" {
 		dst.Theme = src.Theme

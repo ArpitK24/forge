@@ -166,7 +166,7 @@ func TestCLIRetrieval(t *testing.T) {
 		t.Fatal("CLI output differs between runs")
 	}
 	var rep Report
-	if err := json.Unmarshal(outs[0], &rep); err != nil || rep.Scored != 1 || len(rep.Baselines) != 4 {
+	if err := json.Unmarshal(outs[0], &rep); err != nil || rep.Scored != 1 || len(rep.Baselines) != 5 {
 		t.Fatalf("report = %+v, %v", rep, err)
 	}
 }

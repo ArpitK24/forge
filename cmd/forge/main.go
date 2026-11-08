@@ -165,6 +165,7 @@ func dumpSystemPrompt(cfg *core.Config) error {
 		fmt.Printf("process_cwd:     %s\n", cwd)
 	}
 	fmt.Printf("auto_compact:    %v\n", cfg.AutoCompact)
+	fmt.Printf("context_engine:  %v\n", cfg.ContextEngine)
 	fmt.Println()
 	fmt.Println("# Assembled system prompt")
 	fmt.Println(core.BuildSystemPrompt(cfg, cwd))

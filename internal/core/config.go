@@ -234,6 +234,12 @@ type Config struct {
 	// flips it off (default is on).
 	AutoCompact bool `json:"auto_compact"`
 
+	// ContextEngine enables the experimental context engine
+	// (internal/ctxengine): a local index at .forge/index/ and a
+	// ranked <forge-context> block added to every turn. Default
+	// off. CLI: --context-engine; settings: "context_engine".
+	ContextEngine bool `json:"context_engine,omitempty"`
+
 	// ThinkingBudget is the extended-thinking token budget, 0 = off.
 	// Not directly a CLI flag in §7.1 — driven by /effort and /thinking.
 	ThinkingBudget int `json:"thinking_budget,omitempty"`
@@ -321,6 +327,9 @@ type Settings struct {
 	Verbose bool `json:"verbose,omitempty"`
 	// AutoCompact default.
 	AutoCompact *bool `json:"auto_compact,omitempty"`
+	// ContextEngine turns the experimental context engine on
+	// ("context_engine": true). Default off.
+	ContextEngine *bool `json:"context_engine,omitempty"`
 	// Theme name (referenced by tui, not used in Phase 1).
 	Theme string `json:"theme,omitempty"`
 	// McpServers is the list of MCP servers the user wants connected

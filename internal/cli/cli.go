@@ -108,6 +108,10 @@ type Args struct {
 	// NoAutoCompact disables §5.2's auto-compaction.
 	NoAutoCompact bool
 
+	// ContextEngine turns on the experimental context engine
+	// (ranked repository context each turn). Off by default.
+	ContextEngine bool
+
 	// ShowVersion prints the version and exits.
 	ShowVersion bool
 
@@ -150,6 +154,8 @@ func (p *Parser) Parse() (*Args, error) {
 		"shortcut for --permission-mode=bypass-permissions")
 	p.fs.BoolVar(&a.DumpSystemPrompt, "dump-system-prompt", false,
 		"print the assembled system prompt and exit, no API call")
+	p.fs.BoolVar(&a.ContextEngine, "context-engine", false,
+		"experimental: add ranked repository context to every turn")
 	p.fs.BoolVar(&a.NoAutoCompact, "no-auto-compact", false,
 		"disable automatic context compaction")
 	p.fs.BoolVar(&a.ShowVersion, "version", false, "print version and exit")
@@ -365,6 +371,7 @@ func (a *Args) ToConfig() (*core.Config, error) {
 		Verbose:               a.Verbose,
 		WorkingDir:            a.Cwd,
 		AutoCompact:           !a.NoAutoCompact,
+		ContextEngine:         a.ContextEngine,
 		McpServers:            mcpServers,
 		ResumeID:              a.Resume,
 		PluginDirs:            a.PluginDirs,
@@ -415,6 +422,7 @@ func Usage(program string) string {
 	b.WriteString("      --mcp-config <path>          MCP server config JSON file\n")
 	b.WriteString("      --plugin-dir <path>          directory to scan for plugins (repeatable)\n")
 	b.WriteString("      --no-auto-compact            disable automatic context compaction\n")
+	b.WriteString("      --context-engine             experimental: ranked repository context every turn\n")
 	b.WriteString("  -h, --help                       print this help and exit\n")
 	b.WriteString("      --version                    print version and exit\n")
 	b.WriteString("  --                               end of flags; everything after is the prompt\n")

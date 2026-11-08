@@ -8,6 +8,10 @@
 //     and a map of top definitions rendered to a 1k or 4k token budget.
 //   - B2 ("b2"): full-file grep. BM25 over identifier-split query terms,
 //     whole files packed greedily up to the budget.
+//   - M1 ("m1"): the Milestone 1 retriever (m1.go). FTS5 BM25 over
+//     symbol-level chunks of the SQLite index, file aggregation, a
+//     session-activity boost, and a packer of symbol bodies and
+//     signatures instead of whole files.
 //
 // Everything here is deterministic: inputs are sorted, scores are
 // quantized before ranking and ties break on the path or symbol id.
@@ -60,7 +64,7 @@ type Retriever interface {
 }
 
 // Names lists the baselines New accepts, in canonical order.
-var Names = []string{"b0", "b1-1k", "b1-4k", "b2"}
+var Names = []string{"b0", "b1-1k", "b1-4k", "b2", "m1"}
 
 // New returns the named baseline. "b1" is not a retriever by itself; use
 // ExpandNames to turn it into b1-1k and b1-4k.
@@ -74,6 +78,8 @@ func New(name string) (Retriever, error) {
 		return B1{MapTokens: 4096}, nil
 	case "b2":
 		return B2{}, nil
+	case "m1":
+		return NewM1(), nil
 	}
 	return nil, fmt.Errorf("unknown baseline %q (want one of %s, or b1)", name, strings.Join(Names, ", "))
 }
