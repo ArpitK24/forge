@@ -36,7 +36,7 @@ body:
     id: provider
     attributes:
       label: Provider and model
-      placeholder: e.g. Anthropic claude-sonnet-4-5, NVIDIA NIM llama-3.3-70b
+      placeholder: e.g. Anthropic claude-sonnet-4-5, NVIDIA NIM nemotron-3.5-lightning-30b-a3b
   - type: textarea
     id: logs
     attributes:

@@ -14,7 +14,7 @@ import (
 // Config is the per-call configuration for RunQueryLoop. Spec §5.1
 // calls this "QueryConfig" — we use a short local name.
 type Config struct {
-	// Model is the model id, e.g. "meta/llama-3.3-70b-instruct".
+	// Model is the model id, e.g. "nvidia/nemotron-3.5-lightning-30b-a3b".
 	// Required.
 	Model string
 	// SystemPrompt is the full system prompt (already assembled

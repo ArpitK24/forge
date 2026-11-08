@@ -208,7 +208,7 @@ All three carry the loop's real terminal `outcome` (`end_turn`, `max_tokens`, `c
 | `-p`, `--print` | Run headless with a positional prompt (or read from stdin) | — |
 | `--api-key` | API key (overrides all env vars) | — |
 | `--api-base` | API base URL | NIM default |
-| `-m`, `--model` | Model id to send in every request | `meta/llama-3.3-70b-instruct` |
+| `-m`, `--model` | Model id to send in every request | `nvidia/nemotron-3.5-lightning-30b-a3b` |
 | `--max-tokens` | Per-response output cap (hard ceiling: 200,000) | 8192 |
 | `--max-turns` | Cap on agentic turns per session | 10 |
 | `--output-format` | One of `text`, `json`, `stream-json` | `text` |
@@ -304,6 +304,9 @@ Every component is unit-tested in isolation. The full NIM round-trip is covered 
 
 **`forge: no API key found.`**
 Set one of `FORGE_API_KEY`, `NVIDIA_API_KEY`, or `OPENAI_API_KEY` (or pass `--api-key`).
+
+**`model '…' is unavailable on this provider (http 410)` or `(http 404)`.**
+The provider has retired that model or your key can't use it. NVIDIA retires NIM models on a schedule (the old default, `meta/llama-3.3-70b-instruct`, went end-of-life on 2026-08-26). Pick a current model with `--model <id>` or set `"model"` in `~/.forge/settings.json`. `curl -H "Authorization: Bearer $NVIDIA_API_KEY" https://integrate.api.nvidia.com/v1/models` lists what NIM serves; note that a listed model can still 404 for keys that lack access to it.
 
 **The model returned an answer but didn't run the tool I asked for.**
 In `-p` mode (headless), `--permission-mode=default` denies all non-read-only tools. Pass `--permission-mode=accept-edits` or `--permission-mode=bypass-permissions`. In the TUI, a dialog will pop — just press `Enter` on `Allow`.

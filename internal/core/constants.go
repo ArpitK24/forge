@@ -32,22 +32,27 @@ var (
 const (
 	// DefaultModel is the model used when no other choice is specified.
 	//
-	// Phase 2 ships against NVIDIA NIM (an OpenAI-compatible endpoint),
-	// so the default is a NIM-hosted model — meta/llama-3.3-70b-instruct
-	// has always-on tool calling on NIM and no thinking toggle is
-	// required. When the user supplies an Anthropic key in a later
-	// phase, they can re-pin the default to claude-sonnet-4-5 by
-	// editing the model field in settings.json (or passing --model).
-	DefaultModel = "meta/llama-3.3-70b-instruct"
+	// Forge ships against NVIDIA NIM (an OpenAI-compatible endpoint),
+	// so the default is a NIM-hosted model available on a free key.
+	// nvidia/nemotron-3.5-lightning-30b-a3b (30B MoE, 3B active) is
+	// built for agentic tool use, streams tool calls reliably, and
+	// answers in a few seconds. The previous default,
+	// meta/llama-3.3-70b-instruct, reached end of life on NIM on
+	// 2026-08-26 and now returns HTTP 410. Users on another provider
+	// re-pin the default by editing the model field in settings.json
+	// (or passing --model).
+	DefaultModel = "nvidia/nemotron-3.5-lightning-30b-a3b"
 
-	// FastModel is the cheap/fast tier. Used for things like the
-	// summarize-head call in auto-compaction (§5.2) where we want
-	// cost efficiency more than reasoning depth.
-	FastModel = "meta/llama-3.1-8b-instruct"
+	// FastModel is the cheap/fast tier: a compact 8B NIM model with
+	// tool calling. It is only a fallback today (/compact summarizes
+	// with the session's own model), so its smaller 64k window is
+	// not on the auto-compaction path.
+	FastModel = "nvidia/nemotron-3.5-bolt-e4b"
 
 	// SmartModel is the expensive/capable tier. The user can switch
-	// to it via --model or /model.
-	SmartModel = "meta/llama-3.1-70b-instruct"
+	// to it via --model or /model. Slower than the default but much
+	// stronger on harder coding tasks.
+	SmartModel = "nvidia/nemotron-3-ultra-550b-a55b"
 )
 
 // Token defaults. Per spec §2.4.

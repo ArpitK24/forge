@@ -21,7 +21,7 @@ import (
 // that can refresh the table from a network source.
 type ModelPricing struct {
 	// ModelSubstring is the lowercase substring used to match a
-	// model id (e.g. "llama-3.3-70b" matches "meta/llama-3.3-70b-instruct").
+	// model id (e.g. "nemotron-3.5-lightning" matches "nvidia/nemotron-3.5-lightning-30b-a3b").
 	ModelSubstring string `json:"model_substring"`
 	// InputPerMtok is the USD price per million input tokens.
 	// "Input" here means non-cached input; cache reads usually
@@ -40,16 +40,19 @@ type ModelPricing struct {
 // defaultPricingTable is the built-in, conservative estimate table.
 // Real prices change constantly; the goal here is "good enough to
 // render a sensible USD figure, not a billing source of truth."
-// Tier names loosely map to NIM's hosted Llama lineup.
+// Tier names loosely map to NIM's hosted Nemotron lineup.
 var defaultPricingTable = []ModelPricing{
-	// Llama 3.3 70B is NIM's mid-tier; pricing is approximate
-	// (NIM's pricing changes per region and per agreement).
-	{ModelSubstring: "llama-3.3-70b", InputPerMtok: 0.59, OutputPerMtok: 0.79},
-	// 3.1 70B is the previous generation; cheaper.
-	{ModelSubstring: "llama-3.1-70b", InputPerMtok: 0.59, OutputPerMtok: 0.79},
-	// 8B is the cheap/fast tier.
-	{ModelSubstring: "llama-3.1-8b", InputPerMtok: 0.18, OutputPerMtok: 0.18},
-	// OpenAI gpt-oss-120b on NIM.
+	// NIM-hosted Nemotron. The hosted API is free on a trial key;
+	// these are NVIDIA's published paid per-token rates, so the
+	// USD line stays meaningful for paid deployments.
+	{ModelSubstring: "nemotron-3.5-lightning", InputPerMtok: 0.05, OutputPerMtok: 0.20},
+	// Bolt (8B) is the cheap/fast tier; priced like Lightning
+	// until NVIDIA publishes a separate rate.
+	{ModelSubstring: "nemotron-3.5-bolt", InputPerMtok: 0.05, OutputPerMtok: 0.20},
+	// Ultra (550B A55B) is the smart tier.
+	{ModelSubstring: "nemotron-3-ultra", InputPerMtok: 0.60, OutputPerMtok: 2.40},
+	// OpenAI gpt-oss-120b (no longer on NIM; still served by
+	// other OpenAI-compatible hosts).
 	{ModelSubstring: "gpt-oss-120b", InputPerMtok: 0.15, OutputPerMtok: 0.60},
 	// Anthropic Claude (used when an Anthropic adapter lands in Phase 4).
 	{ModelSubstring: "claude-sonnet-4-5", InputPerMtok: 3.0, OutputPerMtok: 15.0},
