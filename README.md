@@ -305,7 +305,7 @@ Every component is unit-tested in isolation. The full NIM round-trip is covered 
 **`forge: no API key found.`**
 Set one of `FORGE_API_KEY`, `NVIDIA_API_KEY`, or `OPENAI_API_KEY` (or pass `--api-key`).
 
-**`model '…' is unavailable on this provider (http 410)` or `(http 404)`.**
+**`model "…" is unavailable on this provider (http 410: …)` or `(http 404: …)`.**
 The provider has retired that model or your key can't use it. NVIDIA retires NIM models on a schedule (the old default, `meta/llama-3.3-70b-instruct`, went end-of-life on 2026-08-26). Pick a current model with `--model <id>` or set `"model"` in `~/.forge/settings.json`. `curl -H "Authorization: Bearer $NVIDIA_API_KEY" https://integrate.api.nvidia.com/v1/models` lists what NIM serves; note that a listed model can still 404 for keys that lack access to it.
 
 **The model returned an answer but didn't run the tool I asked for.**
