@@ -3,148 +3,144 @@ package mcp
 import (
 	"bufio"
 	"bytes"
-	"fmt"
+	"encoding/json"
+	"errors"
 	"io"
 
 	"github.com/ArpitK24/forge/internal/core"
 )
 
-// writeFrame serializes a JSON-RPC body using the LSP-derived
-// Content-Length framing. The MCP spec (2025-06-18) adopts this
-// framing for the stdio transport, so we use the same shape:
+// MCP stdio framing.
 //
-//	Content-Length: N\r\n
-//	\r\n
-//	<body bytes>
+// The MCP stdio transport (spec 2025-06-18, basic/transports#stdio)
+// is newline-delimited JSON-RPC:
 //
-// Returns the number of bytes written. Errors are propagated
-// from the underlying io.Writer.
+//   - each message is one UTF-8 JSON-RPC request, notification or
+//     response, terminated by "\n";
+//   - a message MUST NOT contain embedded newlines;
+//   - nothing else may be written to the peer's stdin/stdout.
+//
+// There are no Content-Length headers. (LSP uses Content-Length
+// framing, and so does Forge's own plugin sidecar protocol in
+// internal/plugins, but MCP over stdio does not.)
+//
+// https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio
+
+// maxFrameBytes caps one inbound message. Real MCP messages are
+// usually small, but a tools/call result carrying an image or a
+// large file can run to several MiB once base64-encoded, so the
+// cap is generous. It still bounds what a buggy or hostile peer
+// can make us buffer for a single line.
+const maxFrameBytes = 32 << 20 // 32 MiB
+
+// writeFrame writes one JSON-RPC message followed by "\n".
+//
+// The body must be a single JSON value. encoding/json never emits
+// raw newlines, but a caller-supplied body might be indented; in
+// that case it is compacted first (JSON escapes newlines inside
+// strings, so compaction removes every raw newline). A body that
+// still cannot be put on one line is rejected rather than sent,
+// because a stray newline would desynchronize the peer's reader.
+// Bodies over maxFrameBytes are rejected too.
+//
+// The message and its terminator go out in a single Write so a
+// concurrent writer sharing the pipe can never split them.
+// Returns the number of bytes written.
 func writeFrame(w io.Writer, body []byte) (int, error) {
-	header := fmt.Sprintf("Content-Length: %d\r\n\r\n", len(body))
-	hN, err := io.WriteString(w, header)
-	if err != nil {
-		return hN, core.Wrap(core.KindIO, err, "write frame header")
+	if bytes.ContainsAny(body, "\r\n") {
+		var buf bytes.Buffer
+		if err := json.Compact(&buf, body); err != nil {
+			return 0, core.Wrap(core.KindMCP, err, "write frame: body contains a newline and is not valid JSON")
+		}
+		body = buf.Bytes()
 	}
-	bN, err := w.Write(body)
-	if err != nil {
-		return hN + bN, core.Wrap(core.KindIO, err, "write frame body")
+	if len(bytes.TrimSpace(body)) == 0 {
+		return 0, core.New(core.KindMCP, "write frame: empty message")
 	}
-	return hN + bN, nil
+	if len(body) > maxFrameBytes {
+		// Same cap as inbound: a peer using a similar limit
+		// would drop the message anyway.
+		return 0, core.Newf(core.KindMCP, "write frame: message is %d bytes (max %d)", len(body), maxFrameBytes)
+	}
+	// The full slice expression caps body's capacity, so append
+	// copies instead of writing the newline into the caller's
+	// backing array.
+	msg := append(body[:len(body):len(body)], '\n')
+	n, err := w.Write(msg)
+	if err != nil {
+		return n, core.Wrap(core.KindIO, err, "write frame")
+	}
+	return n, nil
 }
 
-// readFrame reads one Content-Length-framed message from r and
-// returns the body. Blocks until the full message is available
-// or an error occurs.
+// readFrame reads the next newline-delimited JSON-RPC message from
+// r and returns it without its line terminator. Blocks until a full
+// line is available or an error occurs.
+//
+// Tolerances: a trailing "\r" (CRLF line endings, e.g. a server on
+// Windows writing in text mode) is stripped, and blank or
+// whitespace-only lines between messages are skipped.
 //
 // Error classification:
 //
-//   - EOF before any header bytes: *core.Error{Kind:KindIO,
-//     Message:"read frame header: unexpected EOF"}. This is
-//     treated as a transport-level EOF (the peer disconnected
-//     cleanly before sending anything).
-//   - EOF mid-header or mid-body: *core.Error{Kind:KindIO} with
-//     "short read" framing. The peer hung up partway through a
-//     message — a protocol error, not a clean shutdown.
-//   - Header parse failure (malformed Content-Length, missing
-//     colon, missing \r\n\r\n terminator): *core.Error{Kind:
-//     KindMCP, Message:"invalid frame header"}. A wire-level
-//     bug, distinguishable from a transport failure.
-//   - Body length exceeds an internal sanity cap: *core.Error{
-//     Kind:KindMCP, Message:"frame too large"}. Defends against
-//     a malicious or buggy peer sending a 4 GiB Content-Length
-//     that would otherwise exhaust memory.
+//   - EOF before any message bytes: *core.Error{Kind:KindIO,
+//     Message:"read frame: unexpected EOF"}. The peer disconnected
+//     cleanly between messages.
+//   - EOF in the middle of a line (no terminating "\n"):
+//     *core.Error{Kind:KindIO}. The peer hung up partway through a
+//     message.
+//   - A line longer than maxFrameBytes: *core.Error{Kind:KindMCP,
+//     Message:"frame too large"}. The rest of that line is not
+//     buffered.
 //
-// The 1 MiB cap is generous: a real MCP message is rarely more
-// than a few hundred KiB (a tools/call response with a large
-// image block is the worst realistic case). 1 MiB leaves headroom
-// while still capping a hostile peer's framing bug.
-const maxFrameBytes = 1 << 20 // 1 MiB
-
+// readFrame does not validate the JSON itself; the client's read
+// loop decodes the envelope and reports malformed bodies.
 func readFrame(r *bufio.Reader) ([]byte, error) {
-	// Read until we hit the \r\n\r\n terminator. We tolerate
-	// any number of header lines; we only consume Content-Length.
-	// Other header lines (per LSP, e.g. Content-Type) are ignored.
-	var headerBuf bytes.Buffer
 	for {
-		line, err := r.ReadBytes('\n')
+		line, err := readLine(r)
 		if err != nil {
-			if err == io.EOF && headerBuf.Len() == 0 {
-				return nil, core.New(core.KindIO, "read frame header: unexpected EOF")
-			}
-			return nil, core.Wrap(core.KindIO, err, "read frame header")
+			return nil, err
 		}
-		// Strip trailing \r\n or \n.
-		line = bytes.TrimRight(line, "\r\n")
+		line = bytes.TrimSpace(line)
 		if len(line) == 0 {
-			// Empty line terminates the header block.
-			if headerBuf.Len() == 0 {
-				// Two \r\n\r\n in a row — treat as protocol error.
-				return nil, core.New(core.KindMCP, "empty header line before Content-Length")
-			}
-			break
+			continue // blank line between messages
 		}
-		headerBuf.Write(line)
-		headerBuf.WriteByte('\n')
-		if headerBuf.Len() > 4096 {
-			// Headers should never exceed a few hundred bytes.
-			return nil, core.Newf(core.KindMCP, "frame header exceeds 4 KiB sanity cap")
-		}
+		return line, nil
 	}
+}
 
-	// Parse the header buffer for Content-Length. We accept the
-	// single field the MCP spec requires; other LSP-derived headers
-	// are silently ignored.
-	headerText := headerBuf.String()
-	var contentLength int
-	for _, hl := range bytes.Split([]byte(headerText), []byte{'\n'}) {
-		hl = bytes.TrimRight(hl, "\r")
-		if len(hl) == 0 {
-			continue
+// readLine reads up to and including the next "\n" and returns the
+// line without it. It accumulates bufio.Reader fragments itself so
+// the size cap is enforced before the line is fully buffered.
+func readLine(r *bufio.Reader) ([]byte, error) {
+	var line []byte
+	for {
+		frag, err := r.ReadSlice('\n')
+		if len(line)+len(frag) > maxFrameBytes+2 { // +2 for "\r\n"
+			return nil, core.Newf(core.KindMCP, "frame too large: message exceeds %d bytes", maxFrameBytes)
 		}
-		colon := bytes.IndexByte(hl, ':')
-		if colon < 0 {
-			return nil, core.Newf(core.KindMCP, "malformed header line: %q", string(hl))
-		}
-		field := string(bytes.TrimSpace(hl[:colon]))
-		value := string(bytes.TrimSpace(hl[colon+1:]))
-		if field != "Content-Length" {
-			continue
-		}
-		// Parse a non-negative integer.
-		n := 0
-		for _, c := range value {
-			if c < '0' || c > '9' {
-				return nil, core.Newf(core.KindMCP, "invalid Content-Length: %q", value)
+		switch {
+		case err == nil:
+			if line == nil {
+				// Common case: the whole line fit in the
+				// reader's buffer. Copy it, because ReadSlice's
+				// result is only valid until the next read.
+				line = append(make([]byte, 0, len(frag)), frag...)
+			} else {
+				line = append(line, frag...)
 			}
-			n = n*10 + int(c-'0')
-		}
-		contentLength = n
-		break
-	}
-	if contentLength < 0 {
-		return nil, core.Newf(core.KindMCP, "negative Content-Length: %d", contentLength)
-	}
-	if contentLength > maxFrameBytes {
-		return nil, core.Newf(core.KindMCP, "frame too large: Content-Length=%d (max %d)", contentLength, maxFrameBytes)
-	}
-
-	// Read exactly contentLength bytes. bufio.Reader's Read
-	// handles the case where the body spans multiple underlying
-	// reads; we loop until we've collected contentLength bytes.
-	body := make([]byte, contentLength)
-	if contentLength == 0 {
-		return body, nil
-	}
-	total := 0
-	for total < contentLength {
-		n, err := r.Read(body[total:])
-		if err != nil {
-			if err == io.EOF {
-				return nil, core.Newf(core.KindIO, "short body: got %d, want %d", total, contentLength)
+			return line[:len(line)-1], nil
+		case errors.Is(err, bufio.ErrBufferFull):
+			line = append(line, frag...)
+			continue
+		case errors.Is(err, io.EOF):
+			line = append(line, frag...)
+			if len(bytes.TrimSpace(line)) == 0 {
+				return nil, core.New(core.KindIO, "read frame: unexpected EOF")
 			}
-			return nil, core.Wrap(core.KindIO, err, "read frame body")
+			return nil, core.Newf(core.KindIO, "read frame: EOF after %d bytes of an unterminated message", len(line))
+		default:
+			return nil, core.Wrap(core.KindIO, err, "read frame")
 		}
-		total += n
 	}
-	return body, nil
 }

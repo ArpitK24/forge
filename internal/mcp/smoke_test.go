@@ -14,8 +14,8 @@
 // `mocp-server` (mock MCP server, see main_mock.go) that
 // speaks the protocol over stdio. This:
 //
-//   - Tests the same wire protocol (JSON-RPC 2.0 + LSP
-//     Content-Length framing) the real server uses.
+//   - Tests the same wire protocol (JSON-RPC 2.0, newline-
+//     delimited on stdio per the MCP spec) real servers use.
 //   - Tests the same Go code paths (Manager.Connect, the
 //     client's id correlation, the stdio transport's
 //     Send/Recv/Close lifecycle).
@@ -68,51 +68,39 @@ import (
 //   - nonexistent_tool: returns isError:true when called.
 const mockServerScript = `#!/usr/bin/env node
 // Mock MCP server. Reads JSON-RPC envelopes from stdin and
-// writes responses to stdout using LSP Content-Length
-// framing. Prints startup banner to stderr so the test can
-// confirm the subprocess is alive.
+// writes responses to stdout as newline-delimited JSON, per
+// the MCP stdio transport spec. Prints startup banner to
+// stderr so the test can confirm the subprocess is alive.
 
 process.stderr.write("mock-mcp ready\n");
 
-let buf = Buffer.alloc(0);
-let pending = null;
-
-function readFrame() {
-  // Returns {body, totalBytes} or null if incomplete.
-  let headerEnd = -1;
-  let contentLength = -1;
-  let i = 0;
-  while (i < buf.length) {
-    const lineEnd = buf.indexOf(0x0A, i);
-    if (lineEnd < 0) break;
-    const line = buf.slice(i, lineEnd).toString("ascii").replace(/\r$/, "");
-    i = lineEnd + 1;
-    if (line === "") { headerEnd = i; break; }
-    const m = /^Content-Length:\s*(\d+)/i.exec(line);
-    if (m) contentLength = parseInt(m[1], 10);
-  }
-  if (headerEnd < 0 || contentLength < 0) return null;
-  const need = headerEnd + contentLength;
-  if (buf.length < need) return null;
-  const body = buf.slice(headerEnd, need).toString("utf8");
-  buf = buf.slice(need);
-  return body;
-}
+// MCP stdio transport: newline-delimited JSON-RPC, one message
+// per line, no embedded newlines, no Content-Length headers.
+// https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#stdio
+let buf = "";
 
 function writeFrame(obj) {
-  const body = JSON.stringify(obj);
-  const header = "Content-Length: " + Buffer.byteLength(body) + "\r\n\r\n";
-  process.stdout.write(header);
-  process.stdout.write(body);
+  process.stdout.write(JSON.stringify(obj) + "\n");
 }
 
+process.stdin.setEncoding("utf8");
 process.stdin.on("data", (chunk) => {
-  buf = Buffer.concat([buf, chunk]);
-  while (true) {
-    const frame = readFrame();
-    if (frame === null) break;
+  buf += chunk;
+  let nl;
+  while ((nl = buf.indexOf("\n")) >= 0) {
+    const line = buf.slice(0, nl).replace(/\r$/, "");
+    buf = buf.slice(nl + 1);
+    if (line.trim() === "") continue;
     let req;
-    try { req = JSON.parse(frame); } catch (e) { continue; }
+    try { req = JSON.parse(line); } catch (e) {
+      // A spec-conformant server cannot parse anything that
+      // is not one JSON message per line (e.g. an LSP
+      // Content-Length header). Fail loudly so a framing
+      // regression in the client shows up as a test failure.
+      process.stderr.write("mock-mcp: invalid stdin line: " + JSON.stringify(line) + "\n");
+      process.exit(3);
+    }
+    if (req.id === undefined) continue; // notification
     handle(req);
   }
 });

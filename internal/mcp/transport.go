@@ -7,8 +7,8 @@ import (
 // Transport is the seam between a per-server client and the
 // physical MCP connection. Two implementations exist:
 //
-//   - StdioTransport: subprocess + Content-Length-framed
-//     stdio (the bedrock, used for every real server today).
+//   - StdioTransport: subprocess + newline-delimited JSON
+//     on stdio (the bedrock, used for every real server today).
 //   - HTTPTransport: stub. Streamable-HTTP deferred to a
 //     follow-on step. Start returns a KindMCP error so a
 //     user who configures server_type: "http" learns why

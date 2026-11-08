@@ -11,9 +11,9 @@ import (
 )
 
 // isWindows reports whether the test is running on Windows.
-// Used to pick a cross-platform subprocess that emits a frame
-// header but never a body, so readFrame blocks on the body
-// loop (the in-flight Recv test relies on this).
+// Used to pick a cross-platform subprocess that stays silent
+// on stdout, so readFrame blocks waiting for a line (the
+// in-flight Recv test relies on this).
 func isWindows() bool { return runtime.GOOS == "windows" }
 
 // TestStdioTransport_StartMissingCommand verifies that Start
@@ -75,16 +75,15 @@ func TestStdioTransport_CloseIdempotent(t *testing.T) {
 // leaked goroutine, no panic, no indefinite hang.
 //
 // We simulate the blocked read by spawning a subprocess that
-// writes its header but never the body (so readFrame blocks
-// in its body-collection loop). Then we race Close against
+// never writes a line to stdout (so readFrame blocks waiting
+// for one). Then we race Close against
 // Recv and assert Recv returns an error (not a successful
 // frame) within shutdownGrace, and the transport's read
 // goroutine has exited.
 func TestStdioTransport_CloseWhileRecvInFlight(t *testing.T) {
-	// Use a cross-platform subprocess that emits one valid
-	// frame header and then goes silent: a one-line "sleep"
-	// is the simplest. We don't need a body — readFrame
-	// blocks on the body loop after reading the header.
+	// Use a cross-platform subprocess that stays silent on
+	// stdout: a one-line "sleep" is the simplest. readFrame
+	// blocks waiting for the first newline.
 	var cmd string
 	var args []string
 	if isWindows() {
@@ -93,8 +92,10 @@ func TestStdioTransport_CloseWhileRecvInFlight(t *testing.T) {
 		// respond to SIGTERM from outside, but the Go
 		// runtime will close its stdin pipe on Close(),
 		// which trips the EOF.
+		// ping prints to stdout, so send that to NUL: the
+		// child must stay silent or Recv would get a line.
 		cmd = "cmd"
-		args = []string{"/c", "ping", "-n", "30", "127.0.0.1"}
+		args = []string{"/c", "ping", "-n", "30", "127.0.0.1", ">NUL"}
 	} else {
 		// sleep on Unix ignores SIGTERM but exits when
 		// stdin closes — exactly the behavior we want.
@@ -139,7 +140,7 @@ func TestStdioTransport_CloseWhileRecvInFlight(t *testing.T) {
 	case r := <-recvCh:
 		// Recv returned. It should be an error (EOF, ctx
 		// cancel, or transport closed) — NOT a successful
-		// frame, because the subprocess never wrote a body.
+		// frame, because the subprocess never wrote a line.
 		if r.err == nil {
 			t.Errorf("Recv returned success (%q) during Close; want error", r.body)
 		}
@@ -236,7 +237,7 @@ func TestStdioTransport_DoubleStart(t *testing.T) {
 
 // TestStdioTransport_SendSerializesWrites covers the mutex
 // guarantee: two concurrent Send calls don't interleave their
-// header bytes with each other's body. We exercise this by
+// message bytes with each other. We exercise this by
 // having 5 goroutines Send distinct bodies and verifying none
 // observed each other's bytes in the wire stream.
 //
