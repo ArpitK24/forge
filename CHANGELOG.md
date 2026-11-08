@@ -14,6 +14,17 @@ All notable changes to Forge are documented here. The format follows
   `--permission-mode` flag now always wins over every settings file.
 
 ### Fixed
+- Default model: `meta/llama-3.3-70b-instruct` reached end of life on NVIDIA
+  NIM on 2026-08-26 and returns HTTP 410, so a fresh install failed on its
+  first request. The default is now `nvidia/nemotron-3.5-lightning-30b-a3b`;
+  the fast and smart tiers move to `nvidia/nemotron-3.5-bolt-e4b` and
+  `nvidia/nemotron-3-ultra-550b-a55b` (the old Llama 3.1 tiers and
+  `openai/gpt-oss-120b` are also retired on NIM). The model table and
+  pricing rows are updated to match.
+- A retired (HTTP 410) or unavailable (HTTP 404) model now produces an
+  actionable error naming the model and pointing at `--model` and the
+  `model` settings key, with the provider's own explanation, instead of
+  raw problem+json.
 - Settings layering: a missing project or local settings file no longer resets
   global/project values to compiled-in defaults, and loading settings no longer
   creates `.forge/` in the working directory.
