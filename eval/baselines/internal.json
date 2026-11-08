@@ -3703,7 +3703,7 @@
             "internal/core/constants.go",
             "cmd/forge/headless.go",
             "internal/core/config.go",
-            "internal/core/messages.go"
+            "internal/tools/grep.go"
           ],
           "top_symbols": [
             "internal/api/request.go::Request",

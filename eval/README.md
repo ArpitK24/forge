@@ -79,7 +79,16 @@ committed, so the split never moves even if the dataset is re-uploaded;
 out for milestone gates; do not tune on it.
 
 **Internal tasks** are mined by `forge eval mine` from every commit on
-`main` and on PR heads (`refs/pull/*/head`). A commit qualifies if it has
+`main` and on PR heads (`refs/pull/*/head`) up to PR #17; later PRs
+(including the eval harness itself) are not mined, so the set stays
+fixed. To regenerate it:
+
+```sh
+git fetch --no-tags origin '+refs/pull/*/head:refs/remotes/origin/pr/*'
+forge eval mine --revs "origin/main $(printf 'refs/remotes/origin/pr/%d ' $(seq 1 17))"
+```
+
+A commit qualifies if it has
 one parent, modifies at least one existing non-test `.go` file, touches a
 `_test.go` file, has at most 10 gold files and creates at most 10 new Go
 files. Duplicates are removed by `git patch-id --stable` and by identical
@@ -98,8 +107,8 @@ merges that repeat their PR's commits).
   `git diff base_commit fix_commit`.
 * `problem_statement`: the commit message with the conventional-commit
   prefix (`fix(tui):`), PR numbers and trailers removed, and every literal
-  mention of a touched file (full path or base name) replaced by
-  `<file>`. Function and type names are kept, as an issue reporter would
+  mention of a touched file (full path, base name, or a multi-segment
+  directory such as `internal/plugins`) replaced by `<file>`. Function and type names are kept, as an issue reporter would
   name them. This makes the internal set **easier** than SWE-bench
   (commit messages are written by the fixer); compare baselines on it,
   not absolute numbers against SWE-bench.
