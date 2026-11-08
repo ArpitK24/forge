@@ -201,24 +201,14 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 		}
 	})
 	// Save the session BEFORE restoring the terminal — any
-	// stderr output we produce will still be readable. We
-	// recover the final *Model from p.Run()'s return value;
-	// bubbletea passes the last value Update produced, which
-	// is the most up-to-date snapshot of the conversation.
-	//
-	// If the TUI was opened via --resume <id>, the model's
-	// LoadedSessionID is non-empty and we route through
-	// saveResumedSessionOnExit to overwrite the on-disk record
-	// in place. Otherwise we mint a fresh id via
-	// saveSessionOnExit. Both helpers honor the same nil/empty
-	// guards; finalModel can legitimately be nil after a
-	// pre-Init panic.
+	// stderr output we produce will still be readable.
+	// bubbletea returns the last Model VALUE Update produced
+	// (not a *Model), which is the most up-to-date snapshot of
+	// the conversation. A --resume run overwrites its loaded
+	// record in place; otherwise a fresh id is minted.
+	// finalModel can legitimately be nil after a pre-Init panic.
 	if finalModel != nil {
-		if fm, ok := finalModel.(*Model); ok && fm.LoadedSessionID != "" {
-			saveResumedSessionOnExit(cfg, logger, finalModel)
-		} else {
-			saveSessionOnExit(cfg, logger, finalModel)
-		}
+		saveFinalModel(cfg, logger, finalModel)
 	}
 	restore()
 	return nil
@@ -231,8 +221,14 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 // Returns an error if the API key is missing; the caller decides
 // whether to surface it or proceed without a provider (the TUI
 // still works for /commands).
+//
+// The base URL follows headless precedence: --api-base
+// (cfg.APIBase) → FORGE_API_BASE → the provider default.
 func buildProvider(cfg *core.Config, logger *slog.Logger) (api.Provider, error) {
 	apiKey := resolveAPIKey(cfg)
+	if cfg != nil && cfg.APIBase == "" {
+		cfg.APIBase = os.Getenv("FORGE_API_BASE")
+	}
 	return selector.Select(cfg, apiKey)
 }
 
@@ -266,7 +262,13 @@ func resolveAPIKey(cfg *core.Config) string {
 // it terminates. A shared channel would be poisoned for the next
 // turn. The per-turn channel is stashed on the Model as
 // currentEventCh so Update's re-subscribe can find it.
-func (m Model) startQueryLoop() tea.Cmd {
+//
+// Pointer receiver: the channel, cancel func and LoopRunning flag
+// must land on the Model that Update returns. Callers do
+// `cmd := m.startQueryLoop(); return m, cmd` (not
+// `return m, m.startQueryLoop()`, whose operand order is
+// unspecified).
+func (m *Model) startQueryLoop() tea.Cmd {
 	if m.bridge == nil || m.bridge.Provider == nil {
 		// No provider — surface an error immediately and don't
 		// spawn anything.
@@ -310,8 +312,9 @@ func (m Model) startQueryLoop() tea.Cmd {
 	// Snapshot everything the goroutine needs into locals so the
 	// closure captures values, not the Model (which is copied per
 	// Update call — the Model in the closure would be stale).
-	provider := m.bridge.Provider
-	sysPrompt := m.bridge.SystemPrompt
+	bridge := m.bridge
+	provider := bridge.Provider
+	sysPrompt := bridge.SystemPrompt
 	cfg := m.Config
 	cost := m.Cost
 
@@ -327,11 +330,11 @@ func (m Model) startQueryLoop() tea.Cmd {
 		// plugin tools (Phase 4 step). When no plugins were
 		// loaded, PluginTools is nil — append is a no-op for nil.
 		toolsList := tools.AllTools()
-		if mcpMgr := m.bridge.McpManager; mcpMgr != nil {
+		if mcpMgr := bridge.McpManager; mcpMgr != nil {
 			toolsList = append(toolsList, mcpMgr.Tools()...)
 		}
-		if len(m.bridge.PluginTools) > 0 {
-			toolsList = append(toolsList, m.bridge.PluginTools...)
+		if len(bridge.PluginTools) > 0 {
+			toolsList = append(toolsList, bridge.PluginTools...)
 		}
 		tc := &tools.ToolContext{
 			WorkingDir:  cfg.WorkingDir,
@@ -406,7 +409,7 @@ func (m Model) startQueryLoop() tea.Cmd {
 		// mutex is needed because the goroutine writes
 		// exactly once and then exits, and the reader
 		// blocks on the channel close before reading.
-		m.bridge.LastOutcome = &outcome
+		bridge.LastOutcome = &outcome
 	}()
 
 	// Return two subscribe Cmds: one for the loop event stream
