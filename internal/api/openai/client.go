@@ -179,6 +179,10 @@ func (c *Client) Stream(ctx context.Context, req api.Request) (<-chan api.Stream
 		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 			bodyBytes, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
 			resp.Body.Close()
+			if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusGone {
+				emitError(events, errs, modelUnavailableError(req.Model, resp.StatusCode, string(bodyBytes)))
+				return
+			}
 			emitError(events, errs, classifyHTTPError(resp.StatusCode, resp.Header.Get("Retry-After"), string(bodyBytes)))
 			return
 		}
@@ -401,6 +405,72 @@ func classifyHTTPError(status int, retryAfterHeader, body string) *core.Error {
 	default:
 		return core.Newf(core.KindAPI, "http %d: %s", status, body)
 	}
+}
+
+// modelUnavailableError builds the error for a 404 or 410 on
+// the chat-completions endpoint. On NVIDIA NIM these mean the
+// model was retired (410 Gone, "reached its end of life"), is
+// not enabled for this key (404 "Function ... Not found for
+// account"), or does not exist (404). The raw provider text is
+// kept, but the message leads with what the user can do about
+// it, because the first request of a fresh install is where an
+// end-of-life default model shows up.
+//
+// The error is KindAPI, which IsRetryable treats as permanent:
+// retrying a retired model only delays the same answer.
+func modelUnavailableError(model string, status int, body string) *core.Error {
+	reason := "not found, or not enabled for this API key"
+	if status == http.StatusGone {
+		reason = "it has been retired"
+	}
+	if model == "" {
+		model = "(none)"
+	}
+	msg := fmt.Sprintf(
+		"model %q is unavailable on this provider (http %d: %s). "+
+			"Choose another model with --model <id> or the \"model\" key in ~/.forge/settings.json. "+
+			"If you set --api-base, check that URL too.",
+		model, status, reason)
+	if detail := providerErrorDetail(body); detail != "" {
+		msg += " Provider said: " + detail
+	}
+	return core.Newf(core.KindAPI, "%s", msg).WithDetail("status", status)
+}
+
+// providerErrorDetail pulls the human-readable part out of a
+// provider error body: RFC 7807 problem+json ("detail", then
+// "title", as NIM sends), the OpenAI {"error":{"message"}}
+// shape, or the trimmed raw text. Long bodies are cut so the
+// error stays one readable line.
+func providerErrorDetail(body string) string {
+	const maxLen = 300
+	body = strings.TrimSpace(body)
+	if body == "" {
+		return ""
+	}
+	var problem struct {
+		Title  string `json:"title"`
+		Detail string `json:"detail"`
+		Error  *struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	out := body
+	if err := json.Unmarshal([]byte(body), &problem); err == nil {
+		switch {
+		case problem.Detail != "":
+			out = problem.Detail
+		case problem.Error != nil && problem.Error.Message != "":
+			out = problem.Error.Message
+		case problem.Title != "":
+			out = problem.Title
+		}
+	}
+	out = strings.Join(strings.Fields(out), " ")
+	if r := []rune(out); len(r) > maxLen {
+		out = string(r[:maxLen]) + "…"
+	}
+	return out
 }
 
 // parseRetryAfter parses an HTTP Retry-After header. It

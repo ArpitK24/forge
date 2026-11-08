@@ -20,8 +20,9 @@ func TestPricingForKnownModel(t *testing.T) {
 		modelID string
 		wantSub string // a unique substring of the expected row's ModelSubstring
 	}{
-		{"meta/llama-3.3-70b-instruct", "llama-3.3-70b"},
-		{"meta/llama-3.1-8b-instruct", "llama-3.1-8b"},
+		{"nvidia/nemotron-3.5-lightning-30b-a3b", "nemotron-3.5-lightning"},
+		{"nvidia/nemotron-3.5-bolt-e4b", "nemotron-3.5-bolt"},
+		{"nvidia/nemotron-3-ultra-550b-a55b", "nemotron-3-ultra"},
 		{"openai/gpt-oss-120b", "gpt-oss-120b"},
 		{"claude-sonnet-4-5", "claude-sonnet-4-5"},
 		{"random-unknown-model", "__default__"},
@@ -39,8 +40,8 @@ func TestPricingForKnownModel(t *testing.T) {
 }
 
 func TestPricingForIsCaseInsensitive(t *testing.T) {
-	upper := PricingFor("META/LLAMA-3.3-70B-INSTRUCT")
-	lower := PricingFor("meta/llama-3.3-70b-instruct")
+	upper := PricingFor("NVIDIA/NEMOTRON-3.5-LIGHTNING-30B-A3B")
+	lower := PricingFor("nvidia/nemotron-3.5-lightning-30b-a3b")
 	if upper.InputPerMtok != lower.InputPerMtok {
 		t.Errorf("case sensitivity changed pricing: upper=%+v lower=%+v",
 			upper, lower)
@@ -162,7 +163,7 @@ func TestCostTrackerNilSafe(t *testing.T) {
 
 func TestCostTrackerSummaryFormat(t *testing.T) {
 	ct := NewCostTracker()
-	ct.AddUsage(UsageInfo{InputTokens: 4200, OutputTokens: 1100}, "meta/llama-3.3-70b-instruct")
+	ct.AddUsage(UsageInfo{InputTokens: 4200, OutputTokens: 1100}, "nvidia/nemotron-3.5-lightning-30b-a3b")
 	summary := ct.Summary()
 	// Format: "1 turn · 4.2k in / 1.1k out · $0.XXXX"
 	if !strings.Contains(summary, "turn") {

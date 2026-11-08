@@ -15,7 +15,7 @@ import (
 // wire format. Downstream code (query loop, TUI, ACP) builds
 // this once and feeds it to whatever provider is active.
 type Request struct {
-	// Model is the model id, e.g. "meta/llama-3.3-70b-instruct".
+	// Model is the model id, e.g. "nvidia/nemotron-3.5-lightning-30b-a3b".
 	Model string
 	// MaxTokens is the per-response output cap.
 	MaxTokens int

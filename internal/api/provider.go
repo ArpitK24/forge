@@ -76,7 +76,7 @@ type ModelLister interface {
 // capability flags (supports extended thinking, supports
 // vision/image input, supports prompt caching)."
 type ModelInfo struct {
-	// ID is the model id, e.g. "meta/llama-3.3-70b-instruct".
+	// ID is the model id, e.g. "nvidia/nemotron-3.5-lightning-30b-a3b".
 	ID string
 	// Provider is the provider id (e.g. ProviderOpenAI, ProviderAnthropic).
 	// The provider id is informational here — the Provider
@@ -97,8 +97,8 @@ type ModelInfo struct {
 	// Phase 4 will set this true.
 	SupportsPromptCaching bool
 	// SupportsExtendedThinking is true if the provider supports
-	// the canonical ThinkingConfig. NIM does not (the 70B
-	// model has no separate thinking toggle). Anthropic does
+	// the canonical ThinkingConfig. NIM does not (Forge
+	// sends no separate thinking toggle on the NIM surface). Anthropic does
 	// (Phase 4 will set this true for Claude models).
 	SupportsExtendedThinking bool
 }
@@ -113,7 +113,7 @@ type ModelInfo struct {
 // (OpenAI-compatible vs Anthropic-native), curated entries in
 // knownModels tag by the backend that actually serves the
 // model. Today both shapes are ProviderOpenAI for NIM-hosted
-// Llama — when a real direct-OpenAI adapter lands, listing
+// models — when a real direct-OpenAI adapter lands, listing
 // will tag itself ProviderOpenAI while curated entries from
 // NIM stay ProviderNIM.
 
@@ -128,34 +128,38 @@ type ModelInfo struct {
 // NIM window can vary by deployment, so we use the public
 // published number.
 var knownModels = []ModelInfo{
+	// NIM-hosted models. Context windows are the conservative
+	// served size, not the model's theoretical maximum: NIM
+	// serves Nemotron 3.5 Lightning at its native 262,144-token
+	// window (the 1M figure needs a custom deployment) and caps a
+	// single response at 32,768 tokens, above Forge's 8,192
+	// default output cap. Ultra advertises 1M; we stay at the
+	// same 256k until NIM documents the hosted window. Bolt is
+	// listed at 66k on build.nvidia.com.
+	//
+	// meta/llama-3.x and openai/gpt-oss-120b used to live here.
+	// They reached end of life on NIM (HTTP 410 Gone) and were
+	// removed in favour of the Nemotron lineup.
 	{
-		ID:                       "meta/llama-3.3-70b-instruct",
+		ID:                       "nvidia/nemotron-3.5-lightning-30b-a3b",
 		Provider:                 core.ProviderNIM, // served by NIM today; OpenAI-compatible surface
-		ContextWindow:            128_000,
+		ContextWindow:            262_144,
 		SupportsToolUse:          true,
 		SupportsPromptCaching:    false, // NIM doesn't honor cache_control
 		SupportsExtendedThinking: false,
 	},
 	{
-		ID:                       "meta/llama-3.1-70b-instruct",
+		ID:                       "nvidia/nemotron-3.5-bolt-e4b",
 		Provider:                 core.ProviderNIM,
-		ContextWindow:            128_000,
+		ContextWindow:            65_536,
 		SupportsToolUse:          true,
 		SupportsPromptCaching:    false,
 		SupportsExtendedThinking: false,
 	},
 	{
-		ID:                       "meta/llama-3.1-8b-instruct",
+		ID:                       "nvidia/nemotron-3-ultra-550b-a55b",
 		Provider:                 core.ProviderNIM,
-		ContextWindow:            128_000,
-		SupportsToolUse:          true,
-		SupportsPromptCaching:    false,
-		SupportsExtendedThinking: false,
-	},
-	{
-		ID:                       "openai/gpt-oss-120b",
-		Provider:                 core.ProviderNIM,
-		ContextWindow:            128_000,
+		ContextWindow:            262_144,
 		SupportsToolUse:          true,
 		SupportsPromptCaching:    false,
 		SupportsExtendedThinking: false,
