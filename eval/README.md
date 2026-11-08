@@ -207,7 +207,7 @@ this directory carries the tables.
   "repro-only" mode (M4) may run a reproduction the agent writes itself,
   never the hidden tests.
 * Internal tasks leak more than SWE-bench (commit messages are written by
-  the person who made the fix and often name functions). File names are
+  the person who made the fix and often name functions). File names and package directories are
   masked; treat internal numbers as relative.
 * Contamination: SWE-bench repos and fixes are public and likely in model
   training data. That matters for end-to-end solve rate, not for these
