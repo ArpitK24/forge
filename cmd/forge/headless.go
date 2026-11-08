@@ -16,6 +16,7 @@ import (
 	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/cli"
 	"github.com/ArpitK24/forge/internal/core"
+	"github.com/ArpitK24/forge/internal/ctxengine/engine"
 	"github.com/ArpitK24/forge/internal/mcp"
 	"github.com/ArpitK24/forge/internal/plugins"
 	"github.com/ArpitK24/forge/internal/query"
@@ -199,13 +200,23 @@ func runHeadless(a *cli.Args, cfg *core.Config, logger *slog.Logger) error {
 	// exponential backoff and jitter as a floor. Non-retryable
 	// errors (auth, context-limit, 4xx other than 429) return
 	// immediately.
-	outcome := runWithRetry(ctx, provider, messages, toolsList, tc, query.Config{
+	loopCfg := query.Config{
 		Model:              model,
 		MaxTokens:          cfg.EffectiveMaxTokens(),
 		SystemPrompt:       systemPrompt,
 		AppendSystemPrompt: cfg.AppendSystemPrompt,
 		MaxTurns:           cfg.EffectiveMaxTurns(),
-	}, cost, events, logger)
+	}
+	// Experimental context engine, off unless --context-engine or
+	// "context_engine": true. A failure to open it is logged and
+	// the session runs without it.
+	if eng, err := engine.ForConfig(cfg, cwd); err != nil {
+		logger.Warn("context engine disabled", "err", err)
+	} else if eng != nil {
+		defer eng.Close()
+		loopCfg.Context = eng
+	}
+	outcome := runWithRetry(ctx, provider, messages, toolsList, tc, loopCfg, cost, events, logger)
 
 	// 11. Close the events channel so the renderer drains and
 	// returns, then wait for it.

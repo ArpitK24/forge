@@ -13,6 +13,7 @@ import (
 	"github.com/ArpitK24/forge/internal/api"
 	"github.com/ArpitK24/forge/internal/api/selector"
 	"github.com/ArpitK24/forge/internal/core"
+	"github.com/ArpitK24/forge/internal/ctxengine/engine"
 	"github.com/ArpitK24/forge/internal/mcp"
 	"github.com/ArpitK24/forge/internal/plugins"
 	"github.com/ArpitK24/forge/internal/query"
@@ -53,6 +54,10 @@ type programState struct {
 	// RunProgram and closed on TUI exit. Nil when no plugins
 	// were loaded.
 	PluginTools []tools.Tool
+	// Context is the session's context engine, nil unless
+	// --context-engine or "context_engine": true. One engine
+	// serves every loop of the session so its index stays warm.
+	Context query.ContextProvider
 }
 
 // RunProgram is the TUI entry point. It sets up the terminal,
@@ -123,6 +128,16 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 		}
 	}()
 
+	// 4b. Experimental context engine (off by default). A failure
+	// to open it is logged and the session runs without it.
+	var ctxProvider query.ContextProvider
+	if eng, err := engine.ForConfig(cfg, cfg.WorkingDir); err != nil {
+		logger.Warn("context engine disabled", "err", err)
+	} else if eng != nil {
+		defer eng.Close()
+		ctxProvider = eng
+	}
+
 	// 5. Set up raw mode + alt screen. The restore func is
 	// called on every exit path.
 	restore, err := setupRawMode()
@@ -138,6 +153,7 @@ func RunProgram(cfg *core.Config, cost *core.CostTracker, logger *slog.Logger) e
 		Logger:       logger,
 		McpManager:   mcpMgr,
 		PluginTools:  pluginTools,
+		Context:      ctxProvider,
 	}
 	// Expose the provider to slash commands that issue their own
 	// model calls (currently /compact). The provider is fixed
@@ -395,6 +411,7 @@ func (m *Model) startQueryLoop() tea.Cmd {
 			SystemPrompt:       sysPrompt,
 			AppendSystemPrompt: cfg.AppendSystemPrompt,
 			MaxTurns:           cfg.EffectiveMaxTurns(),
+			Context:            bridge.Context,
 		}, cost, eventCh)
 		// Stash the outcome on the bridge so the channel-close
 		// → loopFinishedMsg path can recover it. The bridge

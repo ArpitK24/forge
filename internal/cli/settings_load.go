@@ -241,6 +241,11 @@ func ApplySettings(cfg *core.Config, settings core.Settings) *core.Config {
 	if settings.AutoCompact != nil && !*settings.AutoCompact {
 		cfg.AutoCompact = false
 	}
+	// ContextEngine is off by default and --context-engine only
+	// turns it on, so settings may only turn it on too.
+	if settings.ContextEngine != nil && *settings.ContextEngine {
+		cfg.ContextEngine = true
+	}
 	// McpServers: ToConfig fills cfg.McpServers when --mcp-config
 	// was passed; settings.McpServers fills the gap when the CLI
 	// flag is absent. The CLI flag always wins — if the user
