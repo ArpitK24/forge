@@ -102,6 +102,20 @@ func (a *accumulator) apply(ev api.StreamEvent) {
 		if ev.Usage != nil {
 			usage := *ev.Usage
 			a.usage.OutputTokens += usage.OutputTokens
+			// OpenAI-format adapters only learn the prompt size
+			// from the final usage chunk, so input usage arrives
+			// here rather than on MessageStart. Take it only if
+			// MessageStart didn't already report it (Anthropic),
+			// so it is never counted twice.
+			if a.usage.InputTokens == 0 {
+				a.usage.InputTokens = usage.InputTokens
+			}
+			if a.usage.CacheCreationInputTokens == 0 {
+				a.usage.CacheCreationInputTokens = usage.CacheCreationInputTokens
+			}
+			if a.usage.CacheReadInputTokens == 0 {
+				a.usage.CacheReadInputTokens = usage.CacheReadInputTokens
+			}
 		}
 
 	case api.EventError, api.EventPing, api.EventMessageStop:

@@ -193,11 +193,15 @@ func TestRunQueryLoopPermissionDeniedAppendsToolError(t *testing.T) {
 	if out.Kind != OutcomeEndTurn {
 		t.Errorf("Kind = %v, want OutcomeEndTurn", out.Kind)
 	}
-	// The loop returns end_turn on the first turn when no tool
-	// was actually executed (all denied), rather than spinning
-	// forever. Turns is 1.
-	if out.Turns != 1 {
-		t.Errorf("Turns = %d, want 1", out.Turns)
+	if out.Turns != 2 {
+		t.Fatalf("Turns = %d, want 2 (denial reported, model answers)", out.Turns)
+	}
+	if got := out.Message.GetFirstText(); got != "fallback" {
+		t.Errorf("final message = %q, want 'fallback'", got)
+	}
+	tr := lastToolResult(t, fp.AllMessages()[1])
+	if !tr.IsError || !contains(string(tr.Content), "permission denied") {
+		t.Errorf("tool_result = %s (is_error=%v), want is_error permission denied", tr.Content, tr.IsError)
 	}
 }
 

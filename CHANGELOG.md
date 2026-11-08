@@ -25,6 +25,29 @@ All notable changes to Forge are documented here. The format follows
   an in-flight `Recv`.
 - `forge --version` can now be stamped at build time (the version was a
   const, which `-ldflags -X` cannot set).
+- OpenAI adapter: request `stream_options.include_usage` and read prompt
+  tokens from the final usage chunk, so input tokens, cost and the
+  auto-compaction trigger no longer read as zero on the default provider.
+- Auto-compaction circuit breaker now trips: its state was recreated every
+  turn, so a failing summarizer was retried on every turn forever. The
+  state now lives for the whole loop, and `query.Config.CompactState` lets
+  multi-call sessions share it.
+- Compaction summaries (auto and `/compact`) now use the session's active
+  model instead of a hard-coded NIM model that does not exist on
+  Anthropic/OpenAI, so compaction no longer always fails off NIM.
+  `query.Config.SummaryModel` can override it.
+- Compaction no longer splits a tool call from its result: the head/tail
+  cut moves earlier when the tail would start with a `tool_result`, which
+  providers reject once its `tool_use` has been summarized.
+- Denied and unknown tool calls are reported back to the model as
+  `is_error` tool results ("permission denied" / "unknown tool") and the
+  loop continues, as the README describes, instead of ending the session
+  silently. `MaxTurns` still bounds a model that keeps retrying.
+- Headless retry after a 429/529 resumes from the history the failed
+  attempt reached and only re-issues the model request; it no longer
+  restarts from the original prompt and re-runs tools that already ran
+  (side effects twice, history lost). The json output's `error` field is
+  cleared when the retry succeeds.
 
 ### Added
 - CI quality job: gofmt check, golangci-lint, race detector, coverage

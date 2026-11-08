@@ -141,7 +141,8 @@ const (
 //     marker on the summary message) can read it without a
 //     second signature change.
 //   - summaryModel: the model id to invoke for the summary
-//     call. In Step 1 this is hardcoded to core.FastModel.
+//     call. RunQueryLoop passes Config.SummaryModel, defaulting
+//     to the session model.
 //
 // Returns the compacted slice (summary message + tail). When
 // the conversation is shorter than AutoCompactTailKeep+1,
@@ -168,7 +169,12 @@ func CompactConversation(
 		// is the floor: everything is tail. Return unchanged.
 		return messages, nil
 	}
-	cutoff := len(messages) - core.AutoCompactTailKeep
+	cutoff := safeCompactCutoff(messages, len(messages)-core.AutoCompactTailKeep)
+	if cutoff <= 0 {
+		// Everything before the cut belongs to one tool
+		// exchange; nothing can be summarized on its own.
+		return messages, nil
+	}
 	head := make([]core.Message, cutoff)
 	copy(head, messages[:cutoff])
 	tail := messages[cutoff:]
@@ -187,6 +193,30 @@ func CompactConversation(
 	out = append(out, summaryMsg)
 	out = append(out, tail...)
 	return out, nil
+}
+
+// safeCompactCutoff moves a head/tail cut earlier until the tail
+// does not start with a tool_result. Starting the tail there would
+// summarize away the tool_use it answers, leaving an orphaned
+// tool_result that providers reject with a 400.
+func safeCompactCutoff(messages []core.Message, cutoff int) int {
+	for cutoff > 0 && cutoff < len(messages) && hasToolResult(messages[cutoff]) {
+		cutoff--
+	}
+	return cutoff
+}
+
+// hasToolResult reports whether m carries a tool_result block.
+func hasToolResult(m core.Message) bool {
+	if m.Content.IsString {
+		return false
+	}
+	for _, b := range m.Content.Blocks {
+		if b.Kind == core.BlockToolResult {
+			return true
+		}
+	}
+	return false
 }
 
 // buildSummaryMessage wraps the summary text in the
@@ -221,8 +251,8 @@ func buildSummaryMessage(text, model string, turnsSummarized int) core.Message {
 //   - model: the active loop model id. Forwarded to
 //     CompactConversation (currently unused inside).
 //   - summaryModel: the model id to use for the summary
-//     call. Hardcoded to core.FastModel by the call sites in
-//     Phase 4 Step 1.
+//     call. RunQueryLoop passes Config.SummaryModel, defaulting
+//     to the session model.
 //   - turnUsage: the most recent turn's token usage. Used as
 //     the "used" approximation in the trigger math; a proper
 //     implementation would track the running input total
@@ -261,6 +291,9 @@ func AutoCompactIfNeeded(
 	// one-shot test; don't bother with the counter."
 	failures := 0
 	if state != nil {
+		if state.Disabled {
+			return false
+		}
 		failures = state.ConsecutiveFailures
 	}
 	used := turnUsage.InputTokens
