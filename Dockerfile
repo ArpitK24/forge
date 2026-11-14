@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} \
 # ---- runtime stage -----------------------------------------------
 # Alpine rather than distroless: Forge's bash tool needs a shell,
 # and agents routinely run git.
-FROM alpine:3.22
+FROM alpine:3.24
 RUN apk add --no-cache bash git ca-certificates \
  && adduser -D -h /home/forge forge
 COPY --from=build /out/forge /usr/local/bin/forge
